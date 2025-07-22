@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>موقع تجربة الكود</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
+<style>
+body{background:#808080;margin:0;padding:10px;font-family:Arial,sans-serif;height:100vh;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column}
+.container{display:flex;flex-direction:column;height:100%;gap:10px}
+.code-container{height:60vh;background:#000;border:2px solid #333;border-radius:5px;overflow:hidden;display:flex;flex-direction:column}
+.controls{display:flex;gap:8px;padding:8px;background:#555;flex-wrap:wrap}
+.controls button{padding:9px 11.5px;min-width:36px;font-size:16px;transition:transform .1s}
+.controls button:active{transform:scale(1.05)}
+#codeArea{flex:1;padding:12px;background:#000;color:#fff;font-family:'Fira Code',monospace;font-size:14px;line-height:1.5;border:none;resize:none;white-space:pre;direction:ltr;text-align:left;overflow:auto;tab-size:4}
+.options-container{background:#555;border-radius:5px;padding:12px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:center}
+.option-group{display:flex;gap:8px;align-items:center}
+button,input{padding:10px 14px;border:none;border-radius:6px;background:#444;color:#fff;cursor:pointer;white-space:nowrap;font-size:14px;transition:all .2s}
+button:hover{background:#666}
+#runBtn{background:#4CAF50}
+#runBtn:hover{filter:brightness(1.1)}
+.notification{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:8px 16px;border-radius:6px;z-index:1000;display:none;animation:fadeIn .3s;box-shadow:0 2px 8px rgba(0,0,0,.2);max-width:90%}
+.notification.error{background:#d32f2f}
+@keyframes fadeIn{from{opacity:0;transform:translate(-50%,-10px)}to{opacity:1;transform:translate(-50%,0)}}
+.color-option{width:16px;height:16px;display:inline-block;margin-right:6px;vertical-align:middle;border:1px solid #fff;border-radius:2px}
+.dropdown{position:relative;display:inline-block}
+.dropdown-content{display:none;position:absolute;background:#444;box-shadow:0 4px 8px rgba(0,0,0,.2);z-index:1;border-radius:4px;padding:6px;bottom:100%;left:0;min-width:120px}
+.dropdown.active .dropdown-content{display:block}
+.dropdown-content button{width:100%;text-align:left;margin:2px 0;padding:6px 10px;border-radius:3px;font-size:13px}
+.toggle-switch{display:flex;align-items:center;gap:6px;color:#fff;font-size:14px}
+.switch{position:relative;display:inline-block;width:30px;height:18px}
+.switch input{opacity:0;width:0;height:0}
+.slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#ccc;transition:.4s;border-radius:18px}
+.slider:before{position:absolute;content:"";height:14px;width:14px;left:2px;bottom:2px;background:#fff;transition:.4s;border-radius:50%}
+input:checked+.slider{background:#4CAF50}
+input:checked+.slider:before{transform:translateX(12px)}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="code-container">
+<div class="controls">
+<button title="تراجع" id="undoBtn"><i class="fas fa-undo"></i></button>
+<button title="إعادة" id="redoBtn"><i class="fas fa-redo"></i></button>
+<button title="الذهاب إلى البداية" id="goTopBtn"><i class="fas fa-arrow-up"></i></button>
+<button title="الذهاب إلى النهاية" id="goBottomBtn"><i class="fas fa-arrow-down"></i></button>
+<button title="قص" id="cutBtn"><i class="fas fa-cut"></i></button>
+<button title="نسخ" id="copyBtn"><i class="far fa-copy"></i></button>
+<button title="لصق" id="pasteBtn"><i class="fas fa-paste"></i></button>
+<button title="حذف" id="deleteBtn"><i class="far fa-trash-alt"></i></button>
+</div>
+<textarea id="codeArea" spellcheck="false"></textarea>
+</div>
+<div class="options-container">
+<div class="option-group dropdown" id="colorDropdown">
+<button id="colorBtn"><i class="fas fa-palette"></i> لون النص</button>
+<div class="dropdown-content">
+<button data-color="#ffffff" data-bg="#000000"><span class="color-option" style="background:#fff"></span>أبيض</button>
+<button data-color="#000000" data-bg="#ffffff"><span class="color-option" style="background:#000"></span>أسود</button>
+<button data-color="#808080" data-bg="#000000"><span class="color-option" style="background:#808080"></span>رمادي</button>
+<button data-color="#90EE90" data-bg="#000000"><span class="color-option" style="background:#90EE90"></span>أخضر فاتح</button>
+<button data-color="#9370DB" data-bg="#000000"><span class="color-option" style="background:#9370DB"></span>بنفسجي</button>
+<button data-color="#FFD700" data-bg="#000000"><span class="color-option" style="background:#FFD700"></span>أصفر</button>
+<button data-color="#FFA500" data-bg="#000000"><span class="color-option" style="background:#FFA500"></span>برتقالي</button>
+</div>
+</div>
+<div class="option-group dropdown" id="compressDropdown">
+<button id="compressBtn"><i class="fas fa-compress-alt"></i> ضغط الكود</button>
+<div class="dropdown-content">
+<button id="removeSpacesBtn"><i class="fas fa-minus"></i> حذف الفراغات</button>
+<button id="removeLineBreaksBtn"><i class="fas fa-arrow-down"></i> حذف الأسطر</button>
+<button id="compressAllBtn"><i class="fas fa-file-archive"></i> ضغط كامل</button>
+</div>
+</div>
+<div class="option-group toggle-switch">
+<label for="wrapToggle"><i class="fas fa-text-width"></i> السطر التلقائي:</label>
+<label class="switch">
+<input type="checkbox" id="wrapToggle" checked>
+<span class="slider"></span>
+</label>
+</div>
+<div class="option-group">
+<input type="file" id="fileImport" accept=".html,.htm,.txt,.js,.css,.php" style="display:none">
+<button id="importFileBtn"><i class="fas fa-file-import"></i> استيراد من ملف</button>
+</div>
+<div class="option-group">
+<input type="text" id="urlInput" placeholder="رابط الكود">
+<button id="importUrlBtn"><i class="fas fa-link"></i> استيراد من رابط</button>
+</div>
+<button id="exportFileBtn"><i class="fas fa-file-export"></i> حفظ كملف</button>
+<button id="runBtn"><i class="fas fa-play"></i> تشغيل الكود</button>
+</div>
+</div>
+<div class="notification" id="notification"></div>
+<script>
+const el=id=>document.getElementById(id);
+const codeArea=el('codeArea'),colorDropdown=el('colorDropdown'),compressDropdown=el('compressDropdown'),
+wrapToggle=el('wrapToggle'),fileImport=el('fileImport'),notification=el('notification');
+let history=[''],historyIndex=0,isFirstLoad=true;
+function initEditor(){
+const savedColor=localStorage.getItem('textColor')||'#ffffff',savedBg=localStorage.getItem('textBg')||'#000000';
+codeArea.style.color=savedColor,codeArea.style.backgroundColor=savedBg;
+wrapToggle.checked=localStorage.getItem('wrapMode')!=='false',updateWrapMode(wrapToggle.checked);
+const savedCode=localStorage.getItem('savedCode');
+savedCode&&(codeArea.value=savedCode,history=[savedCode]),setupEventListeners(),isFirstLoad=false;
+}
+function setupEventListeners(){
+el('undoBtn').addEventListener('click',undo),el('redoBtn').addEventListener('click',redo);
+el('goTopBtn').addEventListener('click',()=>(codeArea.selectionStart=codeArea.selectionEnd=0,codeArea.focus(),showNotification('تم الانتقال إلى البداية')));
+el('goBottomBtn').addEventListener('click',()=>(codeArea.selectionStart=codeArea.selectionEnd=codeArea.value.length,codeArea.focus(),showNotification('تم الانتقال إلى النهاية')));
+el('cutBtn').addEventListener('click',()=>document.execCommand('cut')),el('copyBtn').addEventListener('click',copyText);
+el('pasteBtn').addEventListener('click',handlePaste),el('deleteBtn').addEventListener('click',handleDelete);
+document.querySelectorAll('[data-color]').forEach(btn=>{
+btn.addEventListener('click',e=>{
+const t=e.target.getAttribute('data-color'),n=e.target.getAttribute('data-bg');
+codeArea.style.color=t,codeArea.style.backgroundColor=n,localStorage.setItem('textColor',t),localStorage.setItem('textBg',n),
+colorDropdown.classList.remove('active'),!isFirstLoad&&showNotification('تم تغيير لون النص');
+});
+});
+el('removeSpacesBtn').addEventListener('click',()=>(compressCode('spaces'),compressDropdown.classList.remove('active')));
+el('removeLineBreaksBtn').addEventListener('click',()=>(compressCode('lineBreaks'),compressDropdown.classList.remove('active')));
+el('compressAllBtn').addEventListener('click',()=>(compressCode('all'),compressDropdown.classList.remove('active')));
+wrapToggle.addEventListener('change',()=>{
+const e=wrapToggle.checked;
+updateWrapMode(e),localStorage.setItem('wrapMode',e);
+}),el('importFileBtn').addEventListener('click',()=>fileImport.click());
+fileImport.addEventListener('change',e=>{
+const t=e.target.files[0];
+if(!t)return;
+const n=new FileReader;
+n.onload=e=>(codeArea.value=e.target.result,saveToHistory(),saveCode(),showNotification('تم تحميل الملف بنجاح')),
+n.readAsText(t);
+}),el('importUrlBtn').addEventListener('click',async()=>{
+const e=el('urlInput').value.trim();
+if(!e)return;
+try{
+const t=await fetch(e);
+if(!t.ok)throw new Error('فشل جلب الملف');
+const n=await t.text();
+codeArea.value=n,saveToHistory(),saveCode(),showNotification('تم تحميل الرابط بنجاح');
+}catch(e){
+showNotification('حدث خطأ أثناء جلب الملف: '+e.message,!0);
+}
+}),el('exportFileBtn').addEventListener('click',()=>{
+const e=new Blob([codeArea.value],{type:'text/html'}),t=URL.createObjectURL(e),
+n=document.createElement('a');
+n.href=t,n.download='index.html',n.click(),URL.revokeObjectURL(t),showNotification('تم تحميل الملف بنجاح');
+}),el('runBtn').addEventListener('click',()=>{
+const e=new Blob([`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>معاينة الكود</title></head><body>${codeArea.value}</body></html>`],
+{type:'text/html'}),t=URL.createObjectURL(e),n=window.open('about:blank','_blank');
+n.location.href=t,showNotification('تم تشغيل الكود في نافذة جديدة');
+}),codeArea.addEventListener('input',()=>{saveToHistory(),saveCode()});
+el('colorBtn').addEventListener('click',e=>(e.stopPropagation(),colorDropdown.classList.toggle('active'),compressDropdown.classList.remove('active')));
+el('compressBtn').addEventListener('click',e=>(e.stopPropagation(),compressDropdown.classList.toggle('active'),colorDropdown.classList.remove('active')));
+document.addEventListener('click',()=>(colorDropdown.classList.remove('active'),compressDropdown.classList.remove('active')));
+}
+function compressCode(mode){
+let compressed=codeArea.value;
+switch(mode){
+case 'spaces':
+compressed=compressed.replace(/[^\S\n]+/g,' ').replace(/^[ \t]+|[ \t]+$/gm,'');
+showNotification('تم حذف الفراغات الزائدة فقط');
+break;
+case 'lineBreaks':
+compressed=compressed.replace(/\n+/g,'\n').replace(/^\s*\n/gm,'');
+showNotification('تم حذف الأسطر الفارغة فقط');
+break;
+case 'all':
+compressed=compressed.replace(/\s+/g,' ');
+showNotification('تم ضغط الكود بالكامل');
+}
+codeArea.value=compressed,saveToHistory(),saveCode();
+}
+function updateWrapMode(enabled){
+enabled?(codeArea.style.whiteSpace='pre-wrap',codeArea.style.overflowX='hidden',codeArea.style.wordWrap='break-word'):
+(codeArea.style.whiteSpace='pre',codeArea.style.overflowX='auto',codeArea.style.wordWrap='normal');
+}
+function handlePaste(){
+navigator.clipboard.readText().then(e=>{
+const t=codeArea.selectionStart,n=codeArea.selectionEnd,o=codeArea.value;
+codeArea.value=o.substring(0,t)+e+o.substring(n),codeArea.selectionStart=codeArea.selectionEnd=t+e.length,
+saveToHistory(),saveCode(),showNotification('تم لصق النص');
+}).catch(()=>{document.execCommand('paste')});
+}
+function handleDelete(){
+codeArea.selectionStart===codeArea.selectionEnd?(codeArea.value='',showNotification('تم حذف كل النص')):
+(document.execCommand('delete'),showNotification('تم حذف النص المحدد')),saveToHistory(),saveCode();
+}
+function undo(){historyIndex>0&&(historyIndex--,codeArea.value=history[historyIndex],showNotification('تم التراجع'))}
+function redo(){historyIndex<history.length-1&&(historyIndex++,codeArea.value=history[historyIndex],showNotification('تم الإعادة'))}
+function copyText(){codeArea.select(),document.execCommand('copy'),showNotification('تم نسخ النص')}
+function saveToHistory(){codeArea.value!==history[historyIndex]&&(history=history.slice(0,historyIndex+1),
+history.push(codeArea.value),historyIndex=history.length-1,history.length>50&&(history.shift(),historyIndex--))}
+function saveCode(){localStorage.setItem('savedCode',codeArea.value)}
+function showNotification(e,t=!1){const n=notification;n.innerHTML=(t?'<i class="fas fa-exclamation-circle"></i> ':'')+e,
+n.className='notification'+(t?' error':''),n.style.display='block',setTimeout(()=>{n.style.display='none'},2e3)}
+initEditor();
+</script>
+</body>
+</html>
