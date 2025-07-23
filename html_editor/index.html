@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="ar">
+<!DOCTYPE html><html lang="ar">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -16,9 +15,12 @@ body{user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-se
 .controls button{padding:9px 11.5px;min-width:36px;font-size:16px;transition:transform .1s}
 .controls button:active{transform:scale(1.05)}
 #codeArea{flex:1;padding:12px;background:#000;color:#fff;font-family:'Fira Code',monospace;font-size:14px;line-height:1.5;border:none;resize:none;white-space:pre;direction:ltr;text-align:left;overflow:auto;tab-size:4}
-.options-container{background:#555;border-radius:5px;padding:12px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:center}
-.option-group{display:flex;gap:8px;align-items:center}
-button,input{padding:10px 14px;border:none;border-radius:6px;background:#444;color:#fff;cursor:pointer;white-space:nowrap;font-size:14px;transition:all .2s}
+.options-container{background:#555;border-radius:5px;padding:12px;display:flex;flex-direction:column;gap:12px}
+.options-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.url-import-wrapper{background:#444;border-radius:6px;padding:8px;display:flex;align-items:center;width:100%}
+.url-input{flex:1;background:#333;color:#fff;border:none;padding:8px 12px;font-family:'Fira Code',monospace;border-radius:4px;margin-right:8px}
+.import-url-btn{background:#666;border:none;color:#fff;cursor:pointer;padding:8px 12px;white-space:nowrap;border-radius:4px;height:36px}
+button{padding:10px 14px;border:none;border-radius:6px;background:#444;color:#fff;cursor:pointer;white-space:nowrap;font-size:14px;transition:all .2s}
 button:hover{background:#666}
 #runBtn{background:#4CAF50}
 #runBtn:hover{filter:brightness(1.1)}
@@ -55,6 +57,7 @@ input:checked+.slider:before{transform:translateX(12px)}
 <textarea id="codeArea" spellcheck="false"></textarea>
 </div>
 <div class="options-container">
+<div class="options-row">
 <div class="option-group dropdown" id="colorDropdown">
 <button id="colorBtn"><i class="fas fa-palette"></i> لون النص</button>
 <div class="dropdown-content">
@@ -82,23 +85,29 @@ input:checked+.slider:before{transform:translateX(12px)}
 <span class="slider"></span>
 </label>
 </div>
+</div>
+<div class="options-row">
+<div class="url-import-wrapper">
+<input type="text" id="urlInput" class="url-input" placeholder="رابط الكود">
+<button id="importUrlBtn" class="import-url-btn"><i class="fas fa-link"></i> استيراد</button>
+</div>
+</div>
+<div class="options-row">
 <div class="option-group">
 <input type="file" id="fileImport" accept=".html,.htm,.txt,.js,.css,.php" style="display:none">
 <button id="importFileBtn"><i class="fas fa-file-import"></i> استيراد من ملف</button>
 </div>
-<div class="option-group">
-<input type="text" id="urlInput" placeholder="رابط الكود">
-<button id="importUrlBtn"><i class="fas fa-link"></i> استيراد من رابط</button>
-</div>
 <button id="exportFileBtn"><i class="fas fa-file-export"></i> حفظ كملف</button>
 <button id="runBtn"><i class="fas fa-play"></i> تشغيل الكود</button>
+</div>
 </div>
 </div>
 <div class="notification" id="notification"></div>
 <script>
 const el=id=>document.getElementById(id);
 const codeArea=el('codeArea'),colorDropdown=el('colorDropdown'),compressDropdown=el('compressDropdown'),
-wrapToggle=el('wrapToggle'),fileImport=el('fileImport'),notification=el('notification');
+wrapToggle=el('wrapToggle'),fileImport=el('fileImport'),notification=el('notification'),
+urlInput=el('urlInput'),importUrlBtn=el('importUrlBtn');
 let history=[''],historyIndex=0,isFirstLoad=true;
 
 function initEditor(){
@@ -130,58 +139,53 @@ wrapToggle.addEventListener('change',()=>{
 const e=wrapToggle.checked;
 updateWrapMode(e),localStorage.setItem('wrapMode',e);
 }),el('importFileBtn').addEventListener('click',()=>fileImport.click());
-fileImport.addEventListener('change',e=>{
-const t=e.target.files[0];
-if(!t)return;
-const n=new FileReader;
-n.onload=e=>(codeArea.value=e.target.result,saveToHistory(),saveCode(),showNotification('تم تحميل الملف بنجاح')),
-n.readAsText(t);
-}),el('importUrlBtn').addEventListener('click',async()=>{
-const e=el('urlInput').value.trim();
-if(!e)return;
+fileImport.addEventListener('change',function(e){
+const file=e.target.files[0];
+if(!file)return;
+const reader=new FileReader();
+reader.onload=function(e){
+codeArea.value=e.target.result;
+saveToHistory();
+saveCode();
+showNotification('تم تحميل الملف بنجاح');
+};
+reader.readAsText(file);
+});
+importUrlBtn.addEventListener('click',async function(){
+const url=urlInput.value.trim();
+if(!url)return showNotification('الرجاء إدخال رابط صحيح',true);
 try{
-const t=await fetch(e);
-if(!t.ok)throw new Error('فشل جلب الملف');
-const n=await t.text();
-codeArea.value=n,saveToHistory(),saveCode(),showNotification('تم تحميل الرابط بنجاح');
-}catch(e){
-showNotification('حدث خطأ أثناء جلب الملف: '+e.message,!0);
+const response=await fetch(url);
+if(!response.ok)throw new Error('فشل جلب الملف');
+const text=await response.text();
+codeArea.value=text;
+saveToHistory();
+saveCode();
+showNotification('تم تحميل الرابط بنجاح');
+}catch(error){
+showNotification('حدث خطأ أثناء جلب الملف: '+error.message,true);
 }
-}),el('exportFileBtn').addEventListener('click',()=>{
-const e=new Blob([codeArea.value],{type:'text/html'}),t=URL.createObjectURL(e),
-n=document.createElement('a');
-n.href=t,n.download='index.html',n.click(),URL.revokeObjectURL(t),showNotification('تم تحميل الملف بنجاح');
-}),el('runBtn').addEventListener('click',()=>{
-const e=new Blob([`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>معاينة الكود</title></head><body>${codeArea.value}</body></html>`],
-{type:'text/html'}),t=URL.createObjectURL(e),n=window.open('about:blank','_blank');
-n.location.href=t,showNotification('تم تشغيل الكود في نافذة جديدة');
-}),codeArea.addEventListener('input',()=>{saveToHistory(),saveCode()});
+});
+el('exportFileBtn').addEventListener('click',()=>{
+const blob=new Blob([codeArea.value],{type:'text/html'}),url=URL.createObjectURL(blob),
+a=document.createElement('a');
+a.href=url,a.download='index.html',a.click(),URL.revokeObjectURL(url),showNotification('تم تحميل الملف بنجاح');
+});
+el('runBtn').addEventListener('click',function(){
+showNotification('جاري تحميل النتيجة...');
+setTimeout(()=>{
+const content=codeArea.value;
+const isHTML=/<[a-z][\s\S]*>/i.test(content);
+const htmlContent=isHTML?content:`<!DOCTYPE html><html dir="rtl"><head><meta charset="UTF-8"><title>معاينة النص</title><style>body{font-family:Arial;padding:20px;line-height:1.6;white-space:pre-wrap}</style></head><body>${content}</body></html>`;
+const blob=new Blob([htmlContent],{type:'text/html'});
+const url=URL.createObjectURL(blob);
+window.open(url,'_blank');
+},500);
+});
+codeArea.addEventListener('input',saveToHistory);
 el('colorBtn').addEventListener('click',e=>(e.stopPropagation(),colorDropdown.classList.toggle('active'),compressDropdown.classList.remove('active')));
 el('compressBtn').addEventListener('click',e=>(e.stopPropagation(),compressDropdown.classList.toggle('active'),colorDropdown.classList.remove('active')));
 document.addEventListener('click',()=>(colorDropdown.classList.remove('active'),compressDropdown.classList.remove('active')));
-document.addEventListener('contextmenu',function(e){if(e.target.id!=='codeArea'){e.preventDefault();}});
-document.addEventListener('keydown',function(e){if((e.ctrlKey||e.metaKey)&&e.key==='c'){if(document.activeElement.id!=='codeArea'){e.preventDefault();showNotification('النسخ غير مسموح خارج منطقة الكود',!0);}}});
-}
-
-function copyText(){
-if(codeArea.selectionStart===codeArea.selectionEnd){
-// إذا لم يكن هناك نص محدد، نسخ المحتوى كاملاً بدون تحديد
-navigator.clipboard.writeText(codeArea.value)
-.then(()=>showNotification('تم نسخ الكود بالكامل'))
-.catch(()=>{
-const textarea=document.createElement('textarea');
-textarea.value=codeArea.value;
-document.body.appendChild(textarea);
-textarea.select();
-document.execCommand('copy');
-document.body.removeChild(textarea);
-showNotification('تم نسخ الكود بالكامل');
-});
-}else{
-// إذا كان هناك نص محدد، نسخ الجزء المحدد فقط
-document.execCommand('copy');
-showNotification('تم نسخ النص المحدد');
-}
 }
 
 function compressCode(mode){
@@ -199,7 +203,9 @@ case 'all':
 compressed=compressed.replace(/\s+/g,' ');
 showNotification('تم ضغط الكود بالكامل');
 }
-codeArea.value=compressed,saveToHistory(),saveCode();
+codeArea.value=compressed;
+saveToHistory();
+saveCode();
 }
 
 function updateWrapMode(enabled){
@@ -207,26 +213,88 @@ enabled?(codeArea.style.whiteSpace='pre-wrap',codeArea.style.overflowX='hidden',
 (codeArea.style.whiteSpace='pre',codeArea.style.overflowX='auto',codeArea.style.wordWrap='normal');
 }
 
+function copyText(){
+if(codeArea.selectionStart===codeArea.selectionEnd){
+navigator.clipboard.writeText(codeArea.value)
+.then(()=>showNotification('تم نسخ الكود بالكامل'))
+.catch(()=>{
+const textarea=document.createElement('textarea');
+textarea.value=codeArea.value;
+document.body.appendChild(textarea);
+textarea.select();
+document.execCommand('copy');
+document.body.removeChild(textarea);
+showNotification('تم نسخ الكود بالكامل');
+});
+}else{
+document.execCommand('copy');
+showNotification('تم نسخ النص المحدد');
+}
+}
+
 function handlePaste(){
-navigator.clipboard.readText().then(e=>{
-const t=codeArea.selectionStart,n=codeArea.selectionEnd,o=codeArea.value;
-codeArea.value=o.substring(0,t)+e+o.substring(n),codeArea.selectionStart=codeArea.selectionEnd=t+e.length,
-saveToHistory(),saveCode(),showNotification('تم لصق النص');
-}).catch(()=>{document.execCommand('paste')});
+navigator.clipboard.readText().then(text=>{
+const start=codeArea.selectionStart,end=codeArea.selectionEnd;
+codeArea.value=codeArea.value.substring(0,start)+text+codeArea.value.substring(end);
+codeArea.selectionStart=codeArea.selectionEnd=start+text.length;
+saveToHistory();
+saveCode();
+showNotification('تم لصق النص');
+}).catch(()=>{
+document.execCommand('paste');
+saveToHistory();
+saveCode();
+showNotification('تم لصق النص');
+});
 }
 
 function handleDelete(){
-codeArea.selectionStart===codeArea.selectionEnd?(codeArea.value='',showNotification('تم حذف كل النص')):
-(document.execCommand('delete'),showNotification('تم حذف النص المحدد')),saveToHistory(),saveCode();
+if(codeArea.selectionStart===codeArea.selectionEnd){
+codeArea.value='';
+showNotification('تم حذف كل النص');
+}else{
+document.execCommand('delete');
+showNotification('تم حذف النص المحدد');
+}
+saveToHistory();
+saveCode();
 }
 
-function undo(){historyIndex>0&&(historyIndex--,codeArea.value=history[historyIndex],showNotification('تم التراجع'))}
-function redo(){historyIndex<history.length-1&&(historyIndex++,codeArea.value=history[historyIndex],showNotification('تم الإعادة'))}
-function saveToHistory(){codeArea.value!==history[historyIndex]&&(history=history.slice(0,historyIndex+1),
-history.push(codeArea.value),historyIndex=history.length-1,history.length>50&&(history.shift(),historyIndex--))}
-function saveCode(){localStorage.setItem('savedCode',codeArea.value)}
-function showNotification(e,t=!1){const n=notification;n.innerHTML=(t?'<i class="fas fa-exclamation-circle"></i> ':'')+e,
-n.className='notification'+(t?' error':''),n.style.display='block',setTimeout(()=>{n.style.display='none'},2e3)}
+function undo(){
+if(historyIndex>0){
+historyIndex--;
+codeArea.value=history[historyIndex];
+showNotification('تم التراجع');
+}
+}
+function redo(){
+if(historyIndex<history.length-1){
+historyIndex++;
+codeArea.value=history[historyIndex];
+showNotification('تم الإعادة');
+}
+}
+function saveToHistory(){
+if(codeArea.value!==history[historyIndex]){
+history=history.slice(0,historyIndex+1);
+history.push(codeArea.value);
+historyIndex=history.length-1;
+if(history.length>50){
+history.shift();
+historyIndex--;
+}
+}
+}
+function saveCode(){
+localStorage.setItem('savedCode',codeArea.value);
+}
+function showNotification(message,isError=false){
+const notification=el('notification');
+notification.innerHTML=(isError?'<i class="fas fa-exclamation-circle"></i> ':'')+message;
+notification.className='notification'+(isError?' error':'');
+notification.style.display='block';
+setTimeout(()=>{notification.style.display='none'},2000);
+}
 initEditor();
 </script>
 </body>
