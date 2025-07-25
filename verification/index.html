@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>التحقق من الأمان</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #1a1a1a;
+            color: #f0f0f0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .header {
+            margin-bottom: 30px;
+        }
+        
+        .target-url {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #4a90e2;
+        }
+        
+        .message {
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+        
+        .verification-box {
+            background-color: #2d2d2d;
+            border-radius: 8px;
+            padding: 20px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            margin-bottom: 20px;
+        }
+        
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+            border: 2px solid #555;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            height: 60px;
+        }
+        
+        .checkbox-container:hover {
+            border-color: #777;
+        }
+        
+        .checkbox-container.failed {
+            border-color: #ff4d4d;
+            animation: shake 0.5s;
+        }
+        
+        .checkbox-container.success {
+            border-color: #4CAF50;
+        }
+        
+        .checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #777;
+            border-radius: 4px;
+            margin-left: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .checkbox.checked {
+            background-color: #4CAF50;
+            border-color: #4CAF50;
+        }
+        
+        .checkbox-label {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        .status-message {
+            margin-top: 15px;
+            font-size: 14px;
+            min-height: 20px;
+        }
+        
+        .status-message.error {
+            color: #ff4d4d;
+        }
+        
+        .status-message.success {
+            color: #4CAF50;
+        }
+        
+        .loading {
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #4a90e2;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        .checkmark {
+            width: 24px;
+            height: 24px;
+            display: none;
+        }
+        
+        .footer {
+            margin-top: 40px;
+            font-size: 14px;
+            color: #777;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .footer img {
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="target-url" id="targetUrl"></div>
+        <div class="message">ساعدنا في التغلب على الروبوتات :)</div>
+    </div>
+    
+    <div class="verification-box">
+        <div class="checkbox-container" id="checkboxContainer">
+            <div class="checkbox" id="checkbox">
+                <div class="loading" id="loading"></div>
+                <svg class="checkmark" id="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+            </div>
+            <span class="checkbox-label">أنا لست روبوتًا</span>
+        </div>
+        <div class="status-message" id="statusMessage">يجب التأكيد من كونك لست روبوتا للولوج الى الصفحة</div>
+    </div>
+    
+    <div class="footer">
+        <img src="https://tamaa-pro.github.io/azro/data/pictures/tamaa_pro_logo.png" alt="TAMAA PRO STUDIO">
+        <span>Powered by TAMAA PRO STUDIO</span>
+    </div>
+
+    <script>
+        // تحليل البيانات
+        const screenWidth = window.screen.width;
+        const screenHeight = window.screen.height;
+        const connectionType = navigator.connection ? navigator.connection.effectiveType : 'unknown';
+        let userBehavior = {
+            mouseMovements: 0,
+            clicks: 0,
+            touches: 0,
+            scrolls: 0,
+            timeOnPage: 0
+        };
+        
+        // تعقب تفاعلات المستخدم
+        document.addEventListener('mousemove', () => userBehavior.mouseMovements++);
+        document.addEventListener('click', () => userBehavior.clicks++);
+        document.addEventListener('touchstart', () => userBehavior.touches++);
+        document.addEventListener('scroll', () => userBehavior.scrolls++);
+        
+        // تحديث وقت البقاء على الصفحة كل ثانية
+        const timeInterval = setInterval(() => {
+            userBehavior.timeOnPage++;
+        }, 1000);
+        
+        // عناصر DOM
+        const checkboxContainer = document.getElementById('checkboxContainer');
+        const checkbox = document.getElementById('checkbox');
+        const loading = document.getElementById('loading');
+        const checkmark = document.getElementById('checkmark');
+        const statusMessage = document.getElementById('statusMessage');
+        const targetUrl = document.getElementById('targetUrl');
+        
+        // عرض عنوان URL الهدف
+        const urlParams = new URLSearchParams(window.location.search);
+        const target = urlParams.get('target');
+        targetUrl.textContent = target || window.location.hostname;
+        
+        // متغيرات الحالة
+        let isVerifying = false;
+        let isVerified = false;
+        
+        // مرحلة التحليل الأولي (5 ثواني)
+        setTimeout(() => {
+            initialAnalysisComplete();
+        }, 5000);
+        
+        function initialAnalysisComplete() {
+            loading.style.display = 'none';
+            checkbox.style.border = '2px solid #777';
+            checkbox.style.cursor = 'pointer';
+            
+            // إضافة حدث النقر
+            checkboxContainer.addEventListener('click', startVerification);
+        }
+        
+        function startVerification() {
+            if (isVerifying || isVerified) return;
+            
+            isVerifying = true;
+            checkbox.style.borderColor = '#4a90e2';
+            loading.style.display = 'block';
+            statusMessage.textContent = 'جاري التحقق من كونك لست روبوتا';
+            
+            // محاكاة عملية التحقق (3-5 ثواني)
+            const verificationTime = 3000 + Math.random() * 2000;
+            
+            setTimeout(() => {
+                completeVerification();
+            }, verificationTime);
+            
+            // جمع المزيد من بيانات المستخدم خلال عملية التحقق
+            collectAdditionalData();
+        }
+        
+        function collectAdditionalData() {
+            // يمكنك هنا جمع المزيد من البيانات عن المستخدم
+            // مثل سرعة الحركة، نمط النقرات، إلخ.
+        }
+        
+        function completeVerification() {
+            // قرار التحقق (90% نجاح، 10% فشل لمحاكاة الحالات الواقعية)
+            const isHuman = Math.random() > 0.1;
+            
+            if (isHuman) {
+                verificationSuccess();
+            } else {
+                verificationFailed();
+            }
+        }
+        
+        function verificationSuccess() {
+            isVerifying = false;
+            isVerified = true;
+            
+            loading.style.display = 'none';
+            checkmark.style.display = 'block';
+            checkbox.classList.add('checked');
+            checkboxContainer.classList.add('success');
+            statusMessage.textContent = 'تم التحقق من كونك انسان ، تابع ما تقوم به';
+            statusMessage.classList.add('success');
+            
+            // حفظ حالة التحقق في localStorage
+            localStorage.setItem('tamaa_verification', 'verified');
+            
+            // توجيه المستخدم إلى الصفحة المطلوبة بعد ثانيتين
+            setTimeout(() => {
+                if (target) {
+                    window.location.href = target;
+                } else {
+                    window.location.href = '/';
+                }
+            }, 2000);
+        }
+        
+        function verificationFailed() {
+            isVerifying = false;
+            
+            loading.style.display = 'none';
+            checkboxContainer.classList.add('failed');
+            statusMessage.textContent = 'حصلت مشكلة اثناء اكمال العملية';
+            statusMessage.classList.add('error');
+            
+            // إعادة تعيين بعد 3 ثواني
+            setTimeout(() => {
+                checkboxContainer.classList.remove('failed');
+                statusMessage.classList.remove('error');
+                statusMessage.textContent = 'يجب التأكيد من كونك لست روبوتا للولوج الى الصفحة';
+                checkbox.style.border = '2px solid #777';
+            }, 3000);
+        }
+        
+        // تنظيف عند مغادرة الصفحة
+        window.addEventListener('beforeunload', () => {
+            clearInterval(timeInterval);
+        });
+    </script>
+</body>
+</html>
