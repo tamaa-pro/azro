@@ -1,5 +1,11 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+<script>
+// السماح بالعرض في iframe من أي نطاق
+if (window !== window.top) {
+    window.top.postMessage('verification_loaded', '*');
+}
+</script>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
