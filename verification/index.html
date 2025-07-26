@@ -112,6 +112,14 @@ statusMessage.textContent='تم التحقق من كونك انسان ، جار�
 statusMessage.classList.add('success');
 localStorage.setItem('tamaa_verification','verified');
 setTimeout(()=>{window.location.href=target||'/';},2000);
+
+if (window.parent !== window.self) {
+    window.parent.postMessage('verification_complete', '*');
+} else {
+    localStorage.setItem('tamaa_verification', 'verified');
+    const urlParams = new URLSearchParams(window.location.search);
+    const target = urlParams.get('target');
+    if (target) window.location.href = target;
 }
 
 function verificationFailed(){
