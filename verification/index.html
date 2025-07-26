@@ -142,6 +142,22 @@ statusMessage.classList.remove('error');
 
 // إضافة حدث النقر
 checkboxContainer.addEventListener('click',startVerification);
+
+// عند نجاح التحقق
+function verificationSuccess() {
+    // ... الكود الأصلي ...
+    
+    // إرسال رسالة للصفحة الأم
+    if (window.parent !== window.self) {
+        window.parent.postMessage('verification_complete', '*');
+    }
+    // التوجيه إذا كانت الصفحة مستقلة
+    else {
+        localStorage.setItem('tamaa_verification', 'verified');
+        const target = new URLSearchParams(window.location.search).get('target');
+        if (target) window.location.href = target;
+    }
+        }
 </script>
 </body>
 </html>
