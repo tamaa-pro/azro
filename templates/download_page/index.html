@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<script>
+(function(){let m=navigator.userAgent;if(!localStorage.getItem("trusted"))setTimeout(()=>localStorage.setItem("trusted","yes"),3000);if(!/Android|iPhone|iPad|iPod|Mobile/i.test(m)&&!localStorage.getItem("trusted")){window.open("about:blank","_self");}})();
+</script>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>اسم الموقع</title>
+<meta name="description" content="وصف الموقع">
+<meta name="keywords" content="كلمات مفتاحية مفصولة بفواصل>
+<link rel="icon" href="رابط ايقونة الصفحة" type="image/png">
+<style>
+html, body {margin: 0;padding: 0;background-color: #444444;color: white;font-family: sans-serif;overflow-y: auto;}
+.container {max-width: 800px;margin: 40px auto;padding: 20px;background-color: #444444;border-radius: 15px;box-shadow: 0 0 10px #000;}
+a, h2, p, span {color: white;text-decoration: none;}
+</style>
+</head>
+<body>
+<!-- تحديث الصفحة عند الفتح تلقائيا لضمان عمل عداد التحميلات بدون مشاكل -->
+<script>
+if ('serviceWorker' in navigator) {navigator.serviceWorker.getRegistrations().then(function(registrations) {for(let registration of registrations) {registration.unregister();}});}
+window.addEventListener('pageshow', function (event) {if (event.persisted) {window.location.reload();}});
+</script>
+<!-- منع امكانية النسخ او التكبير -->
+<script>
+document.addEventListener('wheel', function(e) {if (e.ctrlKey) e.preventDefault();}, { passive: false });document.addEventListener('keydown', function(e) {if ((e.ctrlKey && (e.key === '+' || e.key === '-' || e.key === '=')) || e.key === 'Meta') {e.preventDefault();}});document.addEventListener('contextmenu', e => e.preventDefault());document.addEventListener('selectstart', function(e) {e.preventDefault();});document.addEventListener('copy', function(e) {e.preventDefault();});
+document.addEventListener('keydown', function(e) {if ((e.ctrlKey || e.metaKey) && 
+(e.key === '+' || e.key === '-' || e.key === '0' || e.keyCode === 187 || e.keyCode === 189 || e.keyCode === 48)) {e.preventDefault();}});document.addEventListener('wheel', function(e) {if (e.ctrlKey) {e.preventDefault();}}, { passive: false });let lastTouchEnd = 0;document.addEventListener('touchstart', function(e) {if (e.touches.length > 1) {e.preventDefault();}});document.addEventListener('touchend', function(e) {const now = Date.now();if (now - lastTouchEnd <= 300) {e.preventDefault();}
+lastTouchEnd = now;}, { passive: false });document.addEventListener('touchmove', function(e) {if (e.touches.length > 1) {e.preventDefault();}}, { passive: false });document.addEventListener('dblclick', function(e) {e.preventDefault();}, { passive: false });const viewportMeta = document.querySelector('meta[name="viewport"]');viewportMeta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
+</script>
+<script>
+if (performance.navigation.type !== 1 && !sessionStorage.getItem("reloaded")) {sessionStorage.setItem("reloaded", "true");
+setTimeout(() => {location.reload();}, 1000);} else {sessionStorage.removeItem("reloaded");}
+</script>
+<a href="stats/" style="display: inline-block;background: #222;padding: 3px 5px;border-radius: 5px;margin-top: 5px;margin-left: 5px;text-decoration: none;float: left;" onmousedown="this.querySelector('i').style.color='red'" onmouseup="this.querySelector('i').style.color='#007bff'">
+<i class="fas fa-chart-line" style="color: #007bff;font-size: 15px;transition: color 0.3s ease;"></i>
+</a>
+<!-- يمكنك رفع الصور على github ثم ادراجها هنا -->
+<div style="background-color: #444444; border-radius: 0px; color: white; font-family: sans-serif; margin: auto; max-width: 700px; padding: 20px;">
+<div style="align-items: center; display: flex; gap: 15px; margin-bottom: 20px;">
+<img alt="أيقونة التطبيق" src="رابط صورة التطبيق" style="border-radius: 15px; height: 80px; object-fit: cover; width: 80px;" />
+<div>
+<h2 style="margin: 0px;">اسم التطبيق</h2>
+<p style="color: #cccccc; font-size: 14px; margin: 3px 0px;">استوديو التطوير</p>
+</div>
+</div>
+<div style="background-color: #333333; border-radius: 8px; font-size: 14px; margin-bottom: 15px; overflow-x: auto; padding: 10px; white-space: nowrap;">
+<!-- شريط معلومات التطبيق -->
+<span id="downloads" style="margin-right: 20px;">[ التحميلات: ⌕ ]</span>
+<span id="size" style="margin-right: 20px;">[ حجم التطبيق ]</span>
+<span id="version" style="margin-right: 20px;">[ الإصدار ]</span>
+<span id="date" style="margin-right: 20px;">[ تاريخ نشر آخر اصدار ]</span>
+<span id="platform" style="margin-right: 20px;">[ النظام المستهدف ]</span>
+<span id="author" style="margin-right: 20px;">[ صاحب التطبيق ]</span>
+</div>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+<div id="tip-toast" style="align-items: center; background: rgb(46, 46, 46); border-radius: 10px; box-shadow: rgb(0, 0, 0) 0px 0px 10px; color: white; display: flex; font-size: 13px; gap: 10px; max-width: 320px; opacity: 0; padding: 10px 15px; position: fixed; right: 20px; top: 20px; transform: translateY(-150%); transition: transform 0.4s, opacity 0.4s; z-index: 9999;"><i class="fa-solid fa-circle-info" id="tip-icon" style="font-size: 16px;"></i><span id="tip-text"></span></div><style>#counter,#tip-size,#tip-version,#tip-date,#tip-platform,#tip-author{cursor:pointer;outline:none;user-select:none}</style><script>const tips={downloads:
+["fa-chart-column","عدد مرات الضغط على زر التحميل ."],
+"size":
+["fa-box-archive","حجم التطبيق الكامل قبل التثبيت ."],
+"version":
+["fa-code-branch","رقم آخر إصدار للتطبيق ."],
+"date":
+["fa-calendar-days",
+"تاريخ نشر هذا الإصدار ."],
+"platform":
+["fab fa-android","نظام التشغيل المدعوم ."],
+"author":
+["fa-user-gear","صاحب التطبيق ."]
+};let isShowing=!1,pendingTip=null;for(const id in tips){const el=document.getElementById(id);el&&el.addEventListener("click",e=>{e.stopPropagation(),isShowing?(pendingTip=tips[id],hideTip(!0)):showTip(...tips[id])})}function showTip(e,t){const i=document.getElementById("tip-toast"),n=document.getElementById("tip-icon"),o=document.getElementById("tip-text");n.className=e.includes("fab")?`fab ${e.split(" ")[1]}`:`fa-solid ${e}`,o.textContent=t,i.style.display="flex",requestAnimationFrame(()=>{i.style.opacity="1",i.style.transform="translateY(0)",isShowing=!0}),clearTimeout(window.toastTimer),window.toastTimer=setTimeout(()=>hideTip(!1),4e3)}function hideTip(e){const t=document.getElementById("tip-toast");t.style.opacity="0",t.style.transform="translateY(-150%)",isShowing=!1,clearTimeout(window.toastTimer),setTimeout(()=>{t.style.display="none",e&&pendingTip&&(showTip(...pendingTip),pendingTip=null)},400)}document.addEventListener("click",()=>{isShowing&&hideTip(!1)});</script>
+<div style="margin: 20px auto; padding: 0px 10px; text-align: center;">
+<!-- بإمكانك رفع ملف التطبيق على github ثم ادراج رابط الملف هنا -->
+<a href="الرابط المباشر للتحميل" id="downloadBtn" onclick="startDownload(event)" style="background-color: #4caf50; border-radius: 8px; color: white; cursor: pointer; display: inline-block; font-size: 14px; max-width: 450px; padding: 14px 0px; text-decoration: none; width: 100%;">تحميل التطبيق</a>
+</div>
+<style>#toastUpdate{position:fixed;bottom:-100px;left:50%;transform:translateX(-50%);width:90%;max-width:600px;height:45px;line-height:45px;background:#222;color:#fff;padding:0 15px;border-radius:5px;font-family:sans-serif;font-size:12px;box-shadow:0 0 10px #000;z-index:9999;white-space:nowrap;overflow:hidden;text-overflow:clip;text-align:center;transition:bottom 0.6s ease;display:none}</style>
+<div id="toastUpdate">يتم تحديث التطبيق و رفعه للموقع في الوقت الحالي، يرجى العودة في وقت لاحق...</div>
+<!-- غير updateInProgress من false الى true لتعطيل زر التحميل في فترة رفع اصدار جديد -->
+<script>let updateInProgress=false;if(updateInProgress){window.addEventListener("DOMContentLoaded",()=>{const b=document.getElementById("downloadBtn"),t=document.getElementById("toastUpdate");if(b){b.disabled=true;b.style.pointerEvents="none";b.style.backgroundColor="#8B0000";b.innerText="في انتظار التحديث..."}t.style.display="block";setTimeout(()=>{t.style.bottom="25px"},100);});}</script>
+<style>
+@keyframes jump{0%{transform:translateY(0)}100%{transform:translateY(-6px)}}
+</style>
+<script>
+document.getElementById("downloadBtn").addEventListener("click",function(){
+  const t=document.getElementById("toastMessage");
+  t.style.bottom="30px";
+  setTimeout(()=>{t.style.bottom="-100px"},8500);
+});
+</script>
+<script>
+const ua = navigator.userAgent.toLowerCase(); if (ua.includes('fbav') || ua.includes('instagram') || ua.includes('telegram')) { const warning = document.createElement('div');
+warning.style.backgroundColor = '#ffdddd';
+warning.style.color = '#b30000';
+warning.style.padding = '10px';
+warning.style.borderRadius = '8px';
+warning.style.margin = '15px';
+warning.style.fontSize = '11px';
+warning.style.textAlign = 'center';
+warning.innerHTML = 
+'⚠︎ المتصفح الذي تستعمله لا يدعم تحميل الملفات بشكل مباشر .<br> يُفضل فتح هذه الصفحة في متصفح خارجي مثل <b>Chrome</b> لتجنب مشاكل التحميل .';
+document.body.insertBefore(warning, document.body.firstChild);}
+</script>
+<script>
+function startDownload(event) {const btn = event.currentTarget;btn.innerHTML = '<span style="display:inline-block; width:16px; height:16px; border:2px solid white; border-top:2px solid transparent; border-radius:50%; margin-right:8px; vertical-align:middle; animation: spin 1s linear infinite;"></span> جاري التحميل';btn.removeAttribute('id');btn.removeAttribute('href');btn.removeAttribute('onclick');btn.style.pointerEvents = 'none';btn.style.opacity = '0.7';setTimeout(() => {window.location.href = "https://github.com/tamaa-pro/minecraft_bedrock_library/releases/download/v2.5/library.apk";}, 500);event.preventDefault();}
+const style = document.createElement('style');style.textContent = `@keyframes spin {0% { transform: rotate(0deg); }100% { transform: rotate(360deg); }}a:focus {outline: none !important;box-shadow: none !important;}`;document.head.appendChild(style);
+</script>
+<script>
+(function(){const a=document.getElementById("downloads"),b=document.getElementById("downloadBtn"),
+
+
+c="ID_تحصل عليه من موقع jsonbin.com",
+d="key_عليه من موقع jsonbin.com";
+
+
+async function e(){try{const f=await fetch(`https://api.jsonbin.io/v3/b/${c}/latest`,{headers:{"X-Master-Key":d}}),g=await f.json(),h=g.record.count||0;a.textContent=`[ التحميلات: ${h} ]`}catch(i){a.textContent="[ التحميلات: غير متوفرة ]",console.error(i)}}async function j(){try{if(sessionStorage.getItem("alreadyDownloaded"))return;const k=await fetch(`https://api.jsonbin.io/v3/b/${c}/latest`,{headers:{"X-Master-Key":d}}),l=await k.json();let m=l.record.count||0;m++;await fetch(`https://api.jsonbin.io/v3/b/${c}`,{method:"PUT",headers:{"Content-Type":"application/json","X-Master-Key":d,"X-Bin-Versioning":"false"},body:JSON.stringify({count:m})});a.textContent=`[ التحميلات: ${m} ]`;sessionStorage.setItem("alreadyDownloaded","true")}catch(n){alert("[ فشل تحديث عدد التحميلات ]"),console.error(n)}}e(),b.addEventListener("click",j)})();
+</script>
+<txt style="color:#00F500">لقطات من التطبيق :</txt>
+<style>
+.ss-track{display:flex;gap:10px;overflow-x:auto;margin-top:20px;padding-bottom:5px}
+.ss-item{width:91px;height:180px;background:#000;border-radius:10px;position:relative;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.ss-item img{max-width:100%;max-height:100%;object-fit:contain;display:none}
+.ss-spinner{position:absolute;width:24px;height:24px;border:3px solid #555;border-top:3px solid lime;border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+<div class="ss-track" id="ssContainer"></div>
+<!-- يمكنك رفع الصور على github ثم ادراجها هنا -->
+<script>
+const images=[
+["رابط الصورة",
+ "عنوان الصورة"],
+
+["رابط الصورة",
+ "عنوان الصورة"],
+
+["رابط الصورة",
+ "عنوان الصورة"]
+
+];const container=document.getElementById("ssContainer");const elements=[];images.forEach(([src,alt])=>{const wrap=document.createElement("div");wrap.className="ss-item";const spinner=document.createElement("div");spinner.className="ss-spinner";const img=document.createElement("img");img.alt=alt;img.src=src;
+img.style.display="none";
+wrap.appendChild(spinner);wrap.appendChild(img);container.appendChild(wrap);elements.push({img,spinner,src});img.onload=()=>{img.style.display="block";spinner.remove();};img.onerror=()=>{const errorWrapper=document.createElement("div");errorWrapper.style.position="absolute";errorWrapper.style.display="flex";errorWrapper.style.flexDirection="column";errorWrapper.style.alignItems="center";errorWrapper.style.justifyContent="center";errorWrapper.style.width="100%";errorWrapper.style.height="100%";const errorIcon=document.createElement("div");errorIcon.innerHTML=`<svg width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9" stroke="#FF0000" stroke-width="2"/><path d="M12 8V12" stroke="#FF0000" stroke-width="2" stroke-linecap="round"/><path d="M12 16H12.01" stroke="#FF0000" stroke-width="2" stroke-linecap="round"/></svg>`;const errorText=document.createElement("span");errorText.textContent="فشل التحميل";errorText.style.color="#FF0000";errorText.style.fontSize="12px";errorText.style.marginTop="5px";errorWrapper.appendChild(errorIcon);errorWrapper.appendChild(errorText);spinner.remove();img.parentNode.appendChild(errorWrapper);};});
+</script>
+<br /><hr />
+<p style="line-height: 1.6;">
+  ✦ وصف التطبيق
+
+
+  
+</p>
+<hr />
+
+<style>
+#infoToggle {cursor: pointer;color: #a259ff;font-weight: bold;text-align: rghte;padding: 10px;}
+#infoPanel {max-height: 0;overflow: hidden;transition: max-height 0.4s ease;background-color: #1e1e1e;color: #ddd;font-size: 14px;padding: 0 15px;border-top: 1px solid #444;}
+#infoPanel.open {max-height: 445px;padding: 10px 15px;}
+</style>
+<div id="infoToggle">عرض معلومات الصفحة</div>
+<div id="infoPanel">
+<info>تاريخ إنشاء الصفحة : 2025/06/01</info><br>
+<info>تاريخ آخر تحديث للصفحة : 2025/07/26</info><br>
+<info>رمز آخر تعديل للصفحة : 60</info><br>
+<info>تاريخ آخر تحديث لحزمة التطبيق (رقم الإصدار) : التاريخ</info><br>
+<info>تاريخ الإصدار الأول لحزمة التطبيق (رقم الإصدار) : التاريخ</info><br>
+<info>المالك : اسم صاحب التطبيق</info><br>
+<info>تابع لطرف : اسم الأستوديو</info>
+</div>
+<script>
+const toggle = document.getElementById('infoToggle');const panel = document.getElementById('infoPanel');toggle.addEventListener('click', () => {panel.classList.toggle('open');toggle.textContent = panel.classList.contains('open') ? "إخفاء معلومات الصفحة": "عرض معلومات الصفحة";});
+</script>
+<hr/>
+<div style="margin-top: 25px; text-align: center;">
+<a href="رابط الصفحة او القناة" style="color: #0066ff; text-decoration: underline;" target="_blank">قناة/صفحة التطبيق</a>
+</div>
+</div>
+</div>
+</body>
+</html>
