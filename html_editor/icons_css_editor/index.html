@@ -192,6 +192,7 @@
         <div class="toolbar">
             <div class="toolbar-title">محرر أيقونات CSS</div>
             <div class="toolbar-buttons">
+                <button onclick="downloadFavicon()">📥 تحميل كـ favicon</button>
                 <button title="تحويل إلى صورة" id="export-btn"><i class="fas fa-download"></i></button>
                 <div class="dropdown">
                     <button title="خيارات إضافية"><i class="fas fa-cog"></i></button>
@@ -408,6 +409,42 @@
         
         // حفظ المحتوى عند مغادرة الصفحة
         window.addEventListener('beforeunload', saveContent);
+    </script>
+    <script>
+    function downloadFavicon() {
+  const icon = document.querySelector('.icon-editor');
+  const scale = 2; // لتحسين الجودة
+
+  const canvas = document.createElement('canvas');
+  canvas.width = icon.offsetWidth * scale;
+  canvas.height = icon.offsetHeight * scale;
+
+  const ctx = canvas.getContext('2d');
+  const svgData = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="${canvas.width}" height="${canvas.height}">
+      <foreignObject width="100%" height="100%">
+        ${new XMLSerializer().serializeToString(icon)}
+      </foreignObject>
+    </svg>`;
+
+  const img = new Image();
+  const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+  const url = URL.createObjectURL(svgBlob);
+
+  img.onload = function () {
+    ctx.drawImage(img, 0, 0);
+    URL.revokeObjectURL(url);
+
+    const pngUrl = canvas.toDataURL('image/png');
+
+    const link = document.createElement('a');
+    link.download = 'favicon.png';
+    link.href = pngUrl;
+    link.click();
+  };
+
+  img.src = url;
+    }
     </script>
 </body>
 </html>
