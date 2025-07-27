@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>محرر أيقونات CSS - TAMAA PRO STUDIO</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --editor-bg: #000;
+            --editor-text: #fff;
+            --preview-bg: #333;
+            --toolbar-bg: #222;
+            --container-margin: 15px;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #333;
+            color: white;
+        }
+        
+        .container {
+            width: calc(100% - 2 * var(--container-margin));
+            max-width: 1200px;
+            margin: var(--container-margin) auto;
+            box-sizing: border-box;
+        }
+        
+        .toolbar {
+            background-color: var(--toolbar-bg);
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 5px 5px 0 0;
+            position: relative;
+            margin-bottom: 5px;
+        }
+        
+        .toolbar-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+        
+        .toolbar button {
+            background-color: #444;
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+        
+        .toolbar button:hover {
+            background-color: #555;
+        }
+        
+        .editor-container {
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        #css-editor {
+            width: 100%;
+            height: 300px;
+            min-height: 200px;
+            max-height: 500px;
+            background-color: var(--editor-bg);
+            color: var(--editor-text);
+            font-family: monospace;
+            font-size: 14px;
+            padding: 10px;
+            border: none;
+            resize: vertical;
+            direction: ltr;
+            tab-size: 2;
+            box-sizing: border-box;
+        }
+        
+        .preview {
+            width: 100%;
+            height: 200px;
+            min-height: 150px;
+            background-color: var(--preview-bg);
+            margin-top: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 0 0 5px 5px;
+            box-sizing: border-box;
+        }
+        
+        .icon-preview {
+            font-size: 48px;
+            color: white;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 15px;
+            color: #aaa;
+            font-size: 12px;
+        }
+        
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            left: 0;
+            background-color: #444;
+            min-width: 250px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 4px;
+            padding: 10px;
+        }
+        
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        
+        .color-option {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+            justify-content: space-between;
+        }
+        
+        .color-option label {
+            min-width: 80px;
+            text-align: right;
+            margin-left: 10px;
+        }
+        
+        .color-option input[type="color"] {
+            margin-left: 10px;
+            direction: ltr;
+            width: 30px;
+            height: 30px;
+            padding: 0;
+            border: none;
+            background: none;
+        }
+        
+        .option-section {
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #666;
+        }
+        
+        .option-section h4 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            text-align: right;
+        }
+        
+        .color-preset {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-left: 5px;
+            cursor: pointer;
+            border: 1px solid #777;
+        }
+        
+        .color-option-container {
+            display: flex;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="toolbar">
+            <div class="toolbar-title">محرر أيقونات CSS</div>
+            <div class="dropdown">
+                <button title="خيارات إضافية"><i class="fas fa-cog"></i></button>
+                <div class="dropdown-content">
+                    <div class="option-section">
+                        <h4>تلوين المحرر</h4>
+                        <div class="color-option">
+                            <div class="color-option-container">
+                                <span>أبيض على أسود</span>
+                                <div class="color-preset" style="background-color: white;" onclick="setEditorColors('white', 'black')"></div>
+                            </div>
+                        </div>
+                        <div class="color-option">
+                            <div class="color-option-container">
+                                <span>أسود على أبيض</span>
+                                <div class="color-preset" style="background-color: black;" onclick="setEditorColors('black', 'white')"></div>
+                            </div>
+                        </div>
+                        <div class="color-option">
+                            <label for="editor-text-color">لون النص:</label>
+                            <input type="color" id="editor-text-color" value="#ffffff" onchange="updateEditorCustomColor()">
+                        </div>
+                        <div class="color-option">
+                            <label for="editor-bg-color">لون الخلفية:</label>
+                            <input type="color" id="editor-bg-color" value="#000000" onchange="updateEditorCustomColor()">
+                        </div>
+                    </div>
+                    
+                    <div class="option-section">
+                        <h4>خلفية العارض</h4>
+                        <div class="color-option">
+                            <div class="color-option-container">
+                                <span>أبيض</span>
+                                <div class="color-preset" style="background-color: white;" onclick="setPreviewBg('white')"></div>
+                            </div>
+                        </div>
+                        <div class="color-option">
+                            <div class="color-option-container">
+                                <span>أسود</span>
+                                <div class="color-preset" style="background-color: black;" onclick="setPreviewBg('black')"></div>
+                            </div>
+                        </div>
+                        <div class="color-option">
+                            <div class="color-option-container">
+                                <span>رمادي</span>
+                                <div class="color-preset" style="background-color: #333;" onclick="setPreviewBg('#333')"></div>
+                            </div>
+                        </div>
+                        <div class="color-option">
+                            <label for="preview-bg-color">مخصص:</label>
+                            <input type="color" id="preview-bg-color" value="#333333" onchange="updatePreviewCustomColor()">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="editor-container">
+            <textarea id="css-editor" placeholder="أدخل كود CSS للأيقونة هنا..."></textarea>
+            <div class="preview">
+                <div class="icon-preview"></div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            Powered by TAMAA PRO STUDIO
+        </div>
+    </div>
+
+    <script>
+        // عناصر DOM
+        const cssEditor = document.getElementById('css-editor');
+        const iconPreview = document.querySelector('.icon-preview');
+        const editorTextColor = document.getElementById('editor-text-color');
+        const editorBgColor = document.getElementById('editor-bg-color');
+        const previewBgColor = document.getElementById('preview-bg-color');
+        
+        // كود CSS ابتدائي للأيقونة
+        const initialCSS = `.icon-preview {
+    width: 50px;
+    height: 50px;
+    background-color: #3498db;
+    border-radius: 50%;
+    position: relative;
+}
+
+.icon-preview::after {
+    content: "";
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    width: 20px;
+    height: 20px;
+    background-color: white;
+    border-radius: 3px;
+}`;
+
+        // تحميل المحتوى المحفوظ
+        function loadSavedContent() {
+            const savedContent = localStorage.getItem('cssIconEditorContent');
+            if (savedContent) {
+                cssEditor.value = savedContent;
+            } else {
+                cssEditor.value = initialCSS;
+            }
+            updatePreview();
+        }
+        
+        // حفظ المحتوى
+        function saveContent() {
+            localStorage.setItem('cssIconEditorContent', cssEditor.value);
+        }
+        
+        // تحديث العارض عند تغيير المحرر
+        cssEditor.addEventListener('input', function() {
+            updatePreview();
+            saveContent();
+        });
+        
+        // وظيفة تحديث العارض
+        function updatePreview() {
+            const css = cssEditor.value;
+            iconPreview.innerHTML = `<style>${css}</style><div class="icon-preview"></div>`;
+        }
+        
+        // وظائف تغيير الألوان
+        function setEditorColors(textColor, bgColor) {
+            document.documentElement.style.setProperty('--editor-text', textColor);
+            document.documentElement.style.setProperty('--editor-bg', bgColor);
+            
+            // حفظ الألوان المخصصة
+            editorTextColor.value = textColor === 'white' ? '#ffffff' : '#000000';
+            editorBgColor.value = bgColor === 'black' ? '#000000' : '#ffffff';
+        }
+        
+        function setPreviewBg(color) {
+            document.documentElement.style.setProperty('--preview-bg', color);
+            previewBgColor.value = color === 'white' ? '#ffffff' : 
+                                  color === 'black' ? '#000000' : '#333333';
+        }
+        
+        function updateEditorCustomColor() {
+            document.documentElement.style.setProperty('--editor-text', editorTextColor.value);
+            document.documentElement.style.setProperty('--editor-bg', editorBgColor.value);
+        }
+        
+        function updatePreviewCustomColor() {
+            document.documentElement.style.setProperty('--preview-bg', previewBgColor.value);
+        }
+        
+        // تحميل المحتوى عند بدء التشغيل
+        window.addEventListener('DOMContentLoaded', loadSavedContent);
+        
+        // حفظ المحتوى عند مغادرة الصفحة
+        window.addEventListener('beforeunload', saveContent);
+    </script>
+</body>
+</html>
