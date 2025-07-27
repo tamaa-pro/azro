@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>محرر أيقونات CSS - TAMAA PRO STUDIO</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
         :root {
             --editor-bg: #000;
@@ -44,6 +45,11 @@
             font-size: 18px;
             font-weight: bold;
             margin-right: 15px;
+        }
+        
+        .toolbar-buttons {
+            display: flex;
+            gap: 10px;
         }
         
         .toolbar button {
@@ -185,56 +191,59 @@
     <div class="container">
         <div class="toolbar">
             <div class="toolbar-title">محرر أيقونات CSS</div>
-            <div class="dropdown">
-                <button title="خيارات إضافية"><i class="fas fa-cog"></i></button>
-                <div class="dropdown-content">
-                    <div class="option-section">
-                        <h4>تلوين المحرر</h4>
-                        <div class="color-option">
-                            <div class="color-option-container">
-                                <span>أبيض على أسود</span>
-                                <div class="color-preset" style="background-color: white;" onclick="setEditorColors('white', 'black')"></div>
+            <div class="toolbar-buttons">
+                <button title="تحويل إلى صورة" id="export-btn"><i class="fas fa-download"></i></button>
+                <div class="dropdown">
+                    <button title="خيارات إضافية"><i class="fas fa-cog"></i></button>
+                    <div class="dropdown-content">
+                        <div class="option-section">
+                            <h4>تلوين المحرر</h4>
+                            <div class="color-option">
+                                <div class="color-option-container">
+                                    <span>أبيض على أسود</span>
+                                    <div class="color-preset" style="background-color: white;" onclick="setEditorColors('white', 'black')"></div>
+                                </div>
+                            </div>
+                            <div class="color-option">
+                                <div class="color-option-container">
+                                    <span>أسود على أبيض</span>
+                                    <div class="color-preset" style="background-color: black;" onclick="setEditorColors('black', 'white')"></div>
+                                </div>
+                            </div>
+                            <div class="color-option">
+                                <label for="editor-text-color">لون النص:</label>
+                                <input type="color" id="editor-text-color" value="#ffffff" onchange="updateEditorCustomColor()">
+                            </div>
+                            <div class="color-option">
+                                <label for="editor-bg-color">لون الخلفية:</label>
+                                <input type="color" id="editor-bg-color" value="#000000" onchange="updateEditorCustomColor()">
                             </div>
                         </div>
-                        <div class="color-option">
-                            <div class="color-option-container">
-                                <span>أسود على أبيض</span>
-                                <div class="color-preset" style="background-color: black;" onclick="setEditorColors('black', 'white')"></div>
+                        
+                        <div class="option-section">
+                            <h4>خلفية العارض</h4>
+                            <div class="color-option">
+                                <div class="color-option-container">
+                                    <span>أبيض</span>
+                                    <div class="color-preset" style="background-color: white;" onclick="setPreviewBg('white')"></div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="color-option">
-                            <label for="editor-text-color">لون النص:</label>
-                            <input type="color" id="editor-text-color" value="#ffffff" onchange="updateEditorCustomColor()">
-                        </div>
-                        <div class="color-option">
-                            <label for="editor-bg-color">لون الخلفية:</label>
-                            <input type="color" id="editor-bg-color" value="#000000" onchange="updateEditorCustomColor()">
-                        </div>
-                    </div>
-                    
-                    <div class="option-section">
-                        <h4>خلفية العارض</h4>
-                        <div class="color-option">
-                            <div class="color-option-container">
-                                <span>أبيض</span>
-                                <div class="color-preset" style="background-color: white;" onclick="setPreviewBg('white')"></div>
+                            <div class="color-option">
+                                <div class="color-option-container">
+                                    <span>أسود</span>
+                                    <div class="color-preset" style="background-color: black;" onclick="setPreviewBg('black')"></div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="color-option">
-                            <div class="color-option-container">
-                                <span>أسود</span>
-                                <div class="color-preset" style="background-color: black;" onclick="setPreviewBg('black')"></div>
+                            <div class="color-option">
+                                <div class="color-option-container">
+                                    <span>رمادي</span>
+                                    <div class="color-preset" style="background-color: #333;" onclick="setPreviewBg('#333')"></div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="color-option">
-                            <div class="color-option-container">
-                                <span>رمادي</span>
-                                <div class="color-preset" style="background-color: #333;" onclick="setPreviewBg('#333')"></div>
+                            <div class="color-option">
+                                <label for="preview-bg-color">مخصص:</label>
+                                <input type="color" id="preview-bg-color" value="#333333" onchange="updatePreviewCustomColor()">
                             </div>
-                        </div>
-                        <div class="color-option">
-                            <label for="preview-bg-color">مخصص:</label>
-                            <input type="color" id="preview-bg-color" value="#333333" onchange="updatePreviewCustomColor()">
                         </div>
                     </div>
                 </div>
@@ -260,6 +269,7 @@
         const editorTextColor = document.getElementById('editor-text-color');
         const editorBgColor = document.getElementById('editor-bg-color');
         const previewBgColor = document.getElementById('preview-bg-color');
+        const exportBtn = document.getElementById('export-btn');
         
         // كود CSS ابتدائي للأيقونة
         const initialCSS = `.icon-star {
@@ -330,6 +340,43 @@
             }
             return null;
         }
+        
+        // تحويل الأيقونة إلى صورة وتحميلها
+        exportBtn.addEventListener('click', async function() {
+            try {
+                // إنشاء عنصر مؤقت للتصدير
+                const exportElement = document.createElement('div');
+                exportElement.style.padding = '20px';
+                exportElement.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--preview-bg');
+                exportElement.style.display = 'inline-block';
+                
+                // نسخ عنصر الأيقونة
+                const iconClone = iconDisplay.cloneNode(true);
+                exportElement.appendChild(iconClone);
+                
+                // إضافة العنصر إلى الجسم مؤقتاً
+                document.body.appendChild(exportElement);
+                
+                // استخدام html2canvas لتحويل العنصر إلى صورة
+                const canvas = await html2canvas(exportElement, {
+                    backgroundColor: null,
+                    scale: 2 // زيادة الدقة
+                });
+                
+                // إنشاء رابط تحميل
+                const link = document.createElement('a');
+                link.download = 'icon-' + new Date().getTime() + '.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                
+                // إزالة العنصر المؤقت
+                document.body.removeChild(exportElement);
+                
+            } catch (err) {
+                console.error('فشل في تصدير الصورة:', err);
+                alert('حدث خطأ أثناء تحويل الأيقونة إلى صورة');
+            }
+        });
         
         // وظائف تغيير الألوان
         function setEditorColors(textColor, bgColor) {
