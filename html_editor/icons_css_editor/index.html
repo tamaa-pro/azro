@@ -99,9 +99,8 @@
             box-sizing: border-box;
         }
         
-        .icon-preview {
+        .icon-display {
             font-size: 48px;
-            color: white;
         }
         
         .footer {
@@ -245,7 +244,7 @@
         <div class="editor-container">
             <textarea id="css-editor" placeholder="أدخل كود CSS للأيقونة هنا..."></textarea>
             <div class="preview">
-                <div class="icon-preview"></div>
+                <div class="icon-display"></div>
             </div>
         </div>
         
@@ -257,29 +256,17 @@
     <script>
         // عناصر DOM
         const cssEditor = document.getElementById('css-editor');
-        const iconPreview = document.querySelector('.icon-preview');
+        const iconDisplay = document.querySelector('.icon-display');
         const editorTextColor = document.getElementById('editor-text-color');
         const editorBgColor = document.getElementById('editor-bg-color');
         const previewBgColor = document.getElementById('preview-bg-color');
         
         // كود CSS ابتدائي للأيقونة
-        const initialCSS = `.icon-preview {
-    width: 50px;
-    height: 50px;
-    background-color: #3498db;
-    border-radius: 50%;
-    position: relative;
-}
-
-.icon-preview::after {
-    content: "";
-    position: absolute;
-    top: 15px;
-    left: 15px;
-    width: 20px;
-    height: 20px;
-    background-color: white;
-    border-radius: 3px;
+        const initialCSS = `.icon-star {
+    width: 24px;
+    height: 24px;
+    background: radial-gradient(circle at center, gold 40%, orange 60%, transparent 70%);
+    clip-path: polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);
 }`;
 
         // تحميل المحتوى المحفوظ
@@ -307,7 +294,41 @@
         // وظيفة تحديث العارض
         function updatePreview() {
             const css = cssEditor.value;
-            iconPreview.innerHTML = `<style>${css}</style><div class="icon-preview"></div>`;
+            
+            // إنشاء عنصر مؤقت لتحليل CSS
+            const styleElement = document.createElement('style');
+            styleElement.textContent = css;
+            
+            // إنشاء عنصر لعرض الأيقونة
+            const iconElement = document.createElement('div');
+            
+            // البحث عن أول فئة أيقونة في CSS
+            const firstIconClass = findFirstIconClass(css);
+            
+            if (firstIconClass) {
+                iconElement.className = firstIconClass;
+            } else {
+                // إذا لم يتم العثور على أيقونة، نستخدم فئة افتراضية
+                iconElement.className = 'icon-star';
+                if (!css.includes('.icon-star')) {
+                    styleElement.textContent += initialCSS;
+                }
+            }
+            
+            // تحديث العرض
+            iconDisplay.innerHTML = '';
+            iconDisplay.appendChild(styleElement);
+            iconDisplay.appendChild(iconElement);
+        }
+        
+        // البحث عن أول فئة أيقونة في CSS
+        function findFirstIconClass(css) {
+            const classMatches = css.match(/\.([a-zA-Z][a-zA-Z0-9_-]*)\s*\{/g);
+            if (classMatches && classMatches.length > 0) {
+                // نأخذ أول فئة ونزيل النقطة من البداية
+                return classMatches[0].replace('.', '').replace('{', '').trim();
+            }
+            return null;
         }
         
         // وظائف تغيير الألوان
