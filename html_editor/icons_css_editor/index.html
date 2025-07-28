@@ -5,12 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>محرر أيقونات CSS - TAMAA PRO STUDIO</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
         :root {
             --editor-bg: #000;
             --editor-text: #fff;
-            --preview-bg: #444;
+            --preview-bg: #333;
             --toolbar-bg: #222;
             --container-margin: 15px;
         }
@@ -77,7 +76,7 @@
         
         #css-editor {
             width: 100%;
-            height: 350px;
+            height: 300px;
             min-height: 200px;
             max-height: 500px;
             background-color: var(--editor-bg);
@@ -103,10 +102,22 @@
             align-items: center;
             border-radius: 0 0 5px 5px;
             box-sizing: border-box;
+            overflow: hidden;
+            position: relative;
         }
         
-        .icon-display {
-            font-size: 48px;
+        .icon-display-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .icon-wrapper {
+            position: relative;
+            display: inline-block;
         }
         
         .footer {
@@ -253,7 +264,7 @@
         <div class="editor-container">
             <textarea id="css-editor" placeholder="أدخل كود CSS للأيقونة هنا..."></textarea>
             <div class="preview">
-                <div class="icon-display"></div>
+                <div class="icon-display-container" id="icon-container"></div>
             </div>
         </div>
         
@@ -265,29 +276,19 @@
     <script>
         // عناصر DOM
         const cssEditor = document.getElementById('css-editor');
-        const iconDisplay = document.querySelector('.icon-display');
+        const iconContainer = document.getElementById('icon-container');
         const editorTextColor = document.getElementById('editor-text-color');
         const editorBgColor = document.getElementById('editor-bg-color');
         const previewBgColor = document.getElementById('preview-bg-color');
         const exportBtn = document.getElementById('export-btn');
         
-        // كود CSS ابتدائي للأيقونة
-        const initialCSS = `.icon-star {
-    width: 24px;
-    height: 24px;
-    background: radial-gradient(circle at center, gold 40%, orange 60%, transparent 70%);
-    clip-path: polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);
-}`;
-
         // تحميل المحتوى المحفوظ
         function loadSavedContent() {
             const savedContent = localStorage.getItem('cssIconEditorContent');
             if (savedContent) {
                 cssEditor.value = savedContent;
-            } else {
-                cssEditor.value = initialCSS;
+                updatePreview();
             }
-            updatePreview();
         }
         
         // حفظ المحتوى
@@ -304,73 +305,111 @@
         // وظيفة تحديث العارض
         function updatePreview() {
             const css = cssEditor.value;
+            iconContainer.innerHTML = '';
             
-            // إنشاء عنصر مؤقت لتحليل CSS
+            if (!css.trim()) return;
+            
             const styleElement = document.createElement('style');
             styleElement.textContent = css;
             
-            // إنشاء عنصر لعرض الأيقونة
-            const iconElement = document.createElement('div');
+            const iconWrapper = document.createElement('div');
+            iconWrapper.className = 'icon-wrapper';
             
-            // البحث عن أول فئة أيقونة في CSS
-            const firstIconClass = findFirstIconClass(css);
+            // إنشاء عنصر الأيقونة الرئيسي
+            const iconClasses = findIconClasses(css);
             
-            if (firstIconClass) {
-                iconElement.className = firstIconClass;
+            if (iconClasses.length > 0) {
+                const mainIcon = document.createElement('div');
+                mainIcon.className = iconClasses[0];
+                iconWrapper.appendChild(mainIcon);
+                
+                // إضافة العناصر الفرعية إذا وجدت
+                for (let i = 1; i < iconClasses.length; i++) {
+                    const part = document.createElement('div');
+                    part.className = iconClasses[i];
+                    iconWrapper.appendChild(part);
+                }
             } else {
                 // إذا لم يتم العثور على أيقونة، نستخدم فئة افتراضية
-                iconElement.className = 'icon-star';
-                if (!css.includes('.icon-star')) {
-                    styleElement.textContent += initialCSS;
-                }
+                const defaultIcon = document.createElement('div');
+                defaultIcon.className = 'default-icon';
+                defaultIcon.style.width = '50px';
+                defaultIcon.style.height = '50px';
+                defaultIcon.style.backgroundColor = '#3498db';
+                defaultIcon.style.borderRadius = '50%';
+                iconWrapper.appendChild(defaultIcon);
             }
             
-            // تحديث العرض
-            iconDisplay.innerHTML = '';
-            iconDisplay.appendChild(styleElement);
-            iconDisplay.appendChild(iconElement);
+            iconContainer.appendChild(styleElement);
+            iconContainer.appendChild(iconWrapper);
         }
         
-        // البحث عن أول فئة أيقونة في CSS
-        function findFirstIconClass(css) {
+        // البحث عن جميع فئات الأيقونات في CSS
+        function findIconClasses(css) {
             const classMatches = css.match(/\.([a-zA-Z][a-zA-Z0-9_-]*)\s*\{/g);
-            if (classMatches && classMatches.length > 0) {
-                // نأخذ أول فئة ونزيل النقطة من البداية
-                return classMatches[0].replace('.', '').replace('{', '').trim();
+            if (classMatches) {
+                return classMatches.map(match => 
+                    match.replace('.', '').replace('{', '').trim()
+                );
             }
-            return null;
+            return [];
         }
         
         // تحويل الأيقونة إلى صورة وتحميلها
         exportBtn.addEventListener('click', async function() {
             try {
+                const iconWrapper = iconContainer.querySelector('.icon-wrapper');
+                if (!iconWrapper) {
+                    alert('لا توجد أيقونة لعرضها');
+                    return;
+                }
+                
                 // إنشاء عنصر مؤقت للتصدير
-                const exportElement = document.createElement('div');
-                exportElement.style.padding = '20px';
-                exportElement.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--preview-bg');
-                exportElement.style.display = 'inline-block';
+                const exportWrapper = document.createElement('div');
+                exportWrapper.style.position = 'absolute';
+                exportWrapper.style.left = '-9999px';
+                exportWrapper.style.backgroundColor = 'transparent';
                 
-                // نسخ عنصر الأيقونة
-                const iconClone = iconDisplay.cloneNode(true);
-                exportElement.appendChild(iconClone);
+                const clonedIcon = iconWrapper.cloneNode(true);
+                exportWrapper.appendChild(clonedIcon);
+                document.body.appendChild(exportWrapper);
                 
-                // إضافة العنصر إلى الجسم مؤقتاً
-                document.body.appendChild(exportElement);
+                // تحديد حجم الأيقونة
+                const iconRect = clonedIcon.getBoundingClientRect();
+                const canvas = document.createElement('canvas');
+                canvas.width = iconRect.width;
+                canvas.height = iconRect.height;
                 
-                // استخدام html2canvas لتحويل العنصر إلى صورة
-                const canvas = await html2canvas(exportElement, {
-                    backgroundColor: null,
-                    scale: 2 // زيادة الدقة
-                });
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
                 
-                // إنشاء رابط تحميل
-                const link = document.createElement('a');
-                link.download = 'icon-' + new Date().getTime() + '.png';
-                link.href = canvas.toDataURL('image/png');
-                link.click();
+                // تطبيق جميع أنماط CSS
+                const styleElement = iconContainer.querySelector('style');
+                const tempStyle = document.createElement('style');
+                tempStyle.textContent = styleElement.textContent;
+                exportWrapper.appendChild(tempStyle);
                 
-                // إزالة العنصر المؤقت
-                document.body.removeChild(exportElement);
+                // استخدام html2canvas للتصدير
+                const html2canvasScript = document.createElement('script');
+                html2canvasScript.src = 'https://html2canvas.hertzen.com/dist/html2canvas.min.js';
+                html2canvasScript.onload = function() {
+                    html2canvas(clonedIcon, {
+                        backgroundColor: null,
+                        scale: 2,
+                        logging: false,
+                        useCORS: true
+                    }).then(canvas => {
+                        const link = document.createElement('a');
+                        link.download = 'icon-' + Date.now() + '.png';
+                        link.href = canvas.toDataURL('image/png');
+                        link.click();
+                        
+                        document.body.removeChild(exportWrapper);
+                        document.body.removeChild(html2canvasScript);
+                    });
+                };
+                
+                document.body.appendChild(html2canvasScript);
                 
             } catch (err) {
                 console.error('فشل في تصدير الصورة:', err);
