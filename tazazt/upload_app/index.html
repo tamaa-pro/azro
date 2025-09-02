@@ -784,7 +784,7 @@
                     status.textContent = "✅ تم رفع التطبيق بنجاح";
                     status.className = "success";
                     
-                    await addAppToDownloadsCounter(packageName);
+                    await addAppToDownloadsCounter(newApp.package);
                     
                     downloadLink.href = `https://tamaa-pro.github.io/azro/tazazt/download_app?${packageName}`;
                     downloadLink.style.display = "block";
