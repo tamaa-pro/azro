@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تحميل التطبيق</title>
+    <style>
+        :root {
+            --bg-primary: #121212;
+            --bg-secondary: #1e1e1e;
+            --bg-tertiary: #252525;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --accent: #4CAF50;
+            --accent-hover: #3e8e41;
+            --error: #ff4d4d;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 15px;
+            background-color: var(--bg-secondary);
+            border-radius: 10px;
+        }
+        
+        h1 {
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+        
+        .app-container {
+            background-color: var(--bg-secondary);
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+        
+        .app-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .app-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 16px;
+            object-fit: cover;
+        }
+        
+        .app-info h2 {
+            margin-bottom: 5px;
+            color: var(--accent);
+        }
+        
+        .app-info .developer {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .app-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .detail-item {
+            background-color: var(--bg-tertiary);
+            padding: 12px;
+            border-radius: 8px;
+        }
+        
+        .detail-item .label {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+        }
+        
+        .detail-item .value {
+            font-weight: 500;
+        }
+        
+        .description {
+            margin-bottom: 25px;
+            line-height: 1.7;
+        }
+        
+        .screenshots {
+            margin-bottom: 25px;
+        }
+        
+        .screenshots h3 {
+            margin-bottom: 15px;
+            color: var(--accent);
+        }
+        
+        .screenshots-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .screenshot {
+            width: 100%;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        .screenshot:hover {
+            transform: scale(1.03);
+        }
+        
+        .social-links {
+            margin-bottom: 25px;
+        }
+        
+        .social-links h3 {
+            margin-bottom: 15px;
+            color: var(--accent);
+        }
+        
+        .links-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .social-link {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            padding: 10px 15px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: background-color 0.3s;
+        }
+        
+        .social-link:hover {
+            background-color: #333;
+        }
+        
+        .download-section {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background-color: var(--bg-tertiary);
+            border-radius: 10px;
+        }
+        
+        .download-btn {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-bottom: 15px;
+        }
+        
+        .download-btn:hover {
+            background-color: var(--accent-hover);
+        }
+        
+        .download-info {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .additional-info {
+            margin-top: 25px;
+            padding: 15px;
+            background-color: var(--bg-tertiary);
+            border-radius: 8px;
+            border-left: 4px solid var(--accent);
+        }
+        
+        .additional-info h4 {
+            margin-bottom: 10px;
+            color: var(--accent);
+        }
+        
+        .loading, .error {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2rem;
+        }
+        
+        .loading {
+            color: var(--text-secondary);
+        }
+        
+        .error {
+            color: var(--error);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        
+        .modal.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 15px;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>تحميل التطبيق</h1>
+        <p>قم بتنزيل التطبيق مباشرة إلى جهازك</p>
+    </header>
+    
+    <div id="appContent">
+        <div class="loading" id="loading">جاري تحميل بيانات التطبيق...</div>
+        <div class="error" id="error" style="display: none;"></div>
+        
+        <div id="appData" style="display: none;">
+            <div class="app-container">
+                <div class="app-header">
+                    <img id="appIcon" class="app-icon" src="" alt="أيقونة التطبيق">
+                    <div class="app-info">
+                        <h2 id="appName"></h2>
+                        <div class="developer" id="appDeveloper"></div>
+                    </div>
+                </div>
+                
+                <div class="app-details">
+                    <div class="detail-item">
+                        <div class="label">رقم الإصدار</div>
+                        <div class="value" id="appVersion"></div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="label">تاريخ الإصدار</div>
+                        <div class="value" id="appReleaseDate"></div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="label">تاريخ الرفع</div>
+                        <div class="value" id="appUploadDate"></div>
+                    </div>
+                </div>
+                
+                <div class="description">
+                    <h3>وصف التطبيق</h3>
+                    <p id="appDescription"></p>
+                </div>
+                
+                <div class="screenshots" id="screenshotsSection">
+                    <h3>لقطات الشاشة</h3>
+                    <div class="screenshots-container" id="screenshotsContainer"></div>
+                </div>
+                
+                <div class="social-links" id="socialLinksSection">
+                    <h3>روابط التواصل</h3>
+                    <div class="links-container" id="socialLinksContainer"></div>
+                </div>
+                
+                <div class="additional-info" id="additionalInfoSection">
+                    <h4>معلومات إضافية</h4>
+                    <p id="additionalInfo"></p>
+                </div>
+            </div>
+            
+            <div class="download-section">
+                <button class="download-btn" id="downloadBtn">تحميل التطبيق</button>
+                <div class="download-info">حجم الملف: سيبدأ التحميل مباشرة بعد النقر على الزر</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="imageModal">
+        <span class="modal-close" id="modalClose">&times;</span>
+        <img class="modal-content" id="modalImage">
+    </div>
+    
+    <div class="footer">Powered by TAMAA PRO STUDIO</div>
+
+    <script>
+        const jsonBinUrl = "https://api.jsonbin.io/v3/b/68b5a02ed0ea881f406e0b94";
+        const downloadsBinUrl = "https://api.jsonbin.io/v3/b/68b73b75d0ea881f406fa775";
+        const apiKey = "$2a$10$F5TR7pSKPRRNAeBzsdxQ4.NYog8xHGUi0hektkor0q/QWFVXzba3q";
+        
+        document.addEventListener('DOMContentLoaded', async function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const packageParam = urlParams.get('');
+            
+            if (!packageParam) {
+                showError("لم يتم تحديد تطبيق للتحميل");
+                return;
+            }
+            
+            const packageName = packageParam.replace(/-/g, '.');
+            
+            try {
+                const appData = await getAppData(packageName);
+                
+                if (!appData) {
+                    showError("التطبيق غير موجود");
+                    return;
+                }
+                
+                displayAppData(appData);
+                await incrementDownloadCount(packageName);
+                
+            } catch (error) {
+                showError("حدث خطأ أثناء تحميل بيانات التطبيق");
+            }
+        });
+        
+        async function getAppData(packageName) {
+            try {
+                const res = await fetch(jsonBinUrl, {
+                    headers: {
+                        "X-Master-Key": apiKey
+                    }
+                });
+                const data = await res.json();
+                return data.record.applications.find(app => app.package === packageName);
+            } catch (error) {
+                return null;
+            }
+        }
+        
+        function displayAppData(appData) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('appData').style.display = 'block';
+            
+            document.getElementById('appIcon').src = appData.icon;
+            document.getElementById('appName').textContent = appData.name;
+            document.getElementById('appDeveloper').textContent = appData.developer;
+            document.getElementById('appVersion').textContent = appData.version;
+            document.getElementById('appReleaseDate').textContent = formatDate(appData.releaseDate);
+            document.getElementById('appUploadDate').textContent = formatDate(appData.uploadDate);
+            document.getElementById('appDescription').textContent = appData.longDesc;
+            
+            if (appData.screenshots && appData.screenshots.length > 0) {
+                const screenshotsContainer = document.getElementById('screenshotsContainer');
+                appData.screenshots.forEach(screenshot => {
+                    const img = document.createElement('img');
+                    img.src = screenshot;
+                    img.className = 'screenshot';
+                    img.addEventListener('click', () => openModal(screenshot));
+                    screenshotsContainer.appendChild(img);
+                });
+            } else {
+                document.getElementById('screenshotsSection').style.display = 'none';
+            }
+            
+            if (appData.social && appData.social.length > 0) {
+                const socialLinksContainer = document.getElementById('socialLinksContainer');
+                appData.social.forEach(link => {
+                    if (link.trim()) {
+                        const a = document.createElement('a');
+                        a.href = link;
+                        a.className = 'social-link';
+                        a.target = '_blank';
+                        a.textContent = getDomainFromUrl(link);
+                        socialLinksContainer.appendChild(a);
+                    }
+                });
+            } else {
+                document.getElementById('socialLinksSection').style.display = 'none';
+            }
+            
+            if (appData.extraInfo && appData.extraInfo.trim()) {
+                document.getElementById('additionalInfo').textContent = appData.extraInfo;
+            } else {
+                document.getElementById('additionalInfoSection').style.display = 'none';
+            }
+            
+            document.getElementById('downloadBtn').addEventListener('click', function() {
+                window.open(appData.download, '_blank');
+            });
+        }
+        
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('ar-EG');
+        }
+        
+        function getDomainFromUrl(url) {
+            try {
+                const domain = new URL(url).hostname;
+                return domain.replace('www.', '');
+            } catch {
+                return 'رابط التواصل';
+            }
+        }
+        
+        function openModal(imageSrc) {
+            const modal = document.getElementById('imageModal');
+            const modalImage = document.getElementById('modalImage');
+            modalImage.src = imageSrc;
+            modal.classList.add('show');
+            
+            document.getElementById('modalClose').addEventListener('click', closeModal);
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) closeModal();
+            });
+        }
+        
+        function closeModal() {
+            document.getElementById('imageModal').classList.remove('show');
+        }
+        
+        function showError(message) {
+            document.getElementById('loading').style.display = 'none';
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+        
+        async function incrementDownloadCount(packageName) {
+            try {
+                const res = await fetch(downloadsBinUrl, {
+                    headers: {
+                        "X-Master-Key": apiKey
+                    }
+                });
+                
+                const data = await res.json();
+                const downloadsData = data.record.applications_downloads || {};
+                
+                if (downloadsData[packageName] !== undefined) {
+                    downloadsData[packageName] += 1;
+                } else {
+                    downloadsData[packageName] = 1;
+                }
+                
+                await fetch(downloadsBinUrl, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-Master-Key": apiKey
+                    },
+                    body: JSON.stringify({ applications_downloads: downloadsData })
+                });
+            } catch (error) {
+                console.error("خطأ في تحديث عداد التحميلات:", error);
+            }
+        }
+    </script>
+</body>
+</html>
