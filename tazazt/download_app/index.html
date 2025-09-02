@@ -1,440 +1,76 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="https://k.top4top.io/p_35326d4d31.jpg" type="image/png">
-    <title>تحميل التطبيق</title>
-    <style>
-        :root {
-            --bg-primary: #121212;
-            --bg-secondary: #1e1e1e;
-            --bg-tertiary: #252525;
-            --text-primary: #e0e0e0;
-            --text-secondary: #a0a0a0;
-            --accent: #4CAF50;
-            --accent-hover: #3e8e41;
-            --error: #ff4d4d;
-            --success: #4caf50;
-        }
-        
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
-            line-height: 1.6;
-            padding: 20px;
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-        
-        header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding: 20px;
-            background-color: var(--bg-secondary);
-            border-radius: 10px;
-        }
-        
-        h1 {
-            color: var(--accent);
-            margin-bottom: 10px;
-        }
-        
-        .app-container {
-            background-color: var(--bg-secondary);
-            border-radius: 10px;
-            padding: 25px;
-            margin-bottom: 20px;
-        }
-        
-        .app-header {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-        
-        .app-icon {
-            width: 80px;
-            height: 80px;
-            border-radius: 16px;
-            object-fit: cover;
-        }
-        
-        .app-info h2 {
-            margin-bottom: 5px;
-            color: var(--accent);
-        }
-        
-        .developer {
-            color: var(--text-secondary);
-            margin-bottom: 10px;
-        }
-        
-        .version {
-            background-color: var(--bg-tertiary);
-            padding: 5px 10px;
-            border-radius: 12px;
-            font-size: 14px;
-            display: inline-block;
-        }
-        
-        .download-btn {
-            display: block;
-            width: 100%;
-            padding: 15px;
-            background-color: var(--accent);
-            color: white;
-            text-align: center;
-            border-radius: 8px;
-            font-size: 18px;
-            font-weight: bold;
-            text-decoration: none;
-            margin: 20px 0;
-            transition: background-color 0.3s;
-        }
-        
-        .download-btn:hover {
-            background-color: var(--accent-hover);
-        }
-        
-        .download-count {
-            text-align: center;
-            color: var(--text-secondary);
-            margin-bottom: 20px;
-        }
-        
-        .screenshots {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 15px;
-            margin: 20px 0;
-        }
-        
-        .screenshot {
-            width: 100%;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: transform 0.3s;
-        }
-        
-        .screenshot:hover {
-            transform: scale(1.05);
-        }
-        
-        .description {
-            margin: 20px 0;
-            line-height: 1.8;
-        }
-        
-        .social-links {
-            display: flex;
-            gap: 15px;
-            margin: 20px 0;
-            flex-wrap: wrap;
-        }
-        
-        .social-link {
-            padding: 10px 15px;
-            background-color: var(--bg-tertiary);
-            border-radius: 8px;
-            text-decoration: none;
-            color: var(--text-primary);
-            transition: background-color 0.3s;
-        }
-        
-        .social-link:hover {
-            background-color: #333;
-        }
-        
-        .additional-info {
-            background-color: var(--bg-tertiary);
-            padding: 15px;
-            border-radius: 8px;
-            margin: 20px 0;
-        }
-        
-        .error-message {
-            text-align: center;
-            padding: 40px;
-            background-color: var(--bg-secondary);
-            border-radius: 10px;
-            color: var(--error);
-        }
-        
-        .loading {
-            text-align: center;
-            padding: 40px;
-            background-color: var(--bg-secondary);
-            border-radius: 10px;
-        }
-        
-        .spinner {
-            display: inline-block;
-            width: 40px;
-            height: 40px;
-            border: 4px solid rgba(255,255,255,.3);
-            border-radius: 50%;
-            border-top-color: var(--accent);
-            animation: spin 1s ease-in-out infinite;
-            margin-bottom: 20px;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.9);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.3s;
-            pointer-events: none;
-        }
-        
-        .modal.show {
-            opacity: 1;
-            pointer-events: auto;
-        }
-        
-        .modal-content {
-            max-width: 90%;
-            max-height: 90%;
-        }
-        
-        .modal-close {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            color: white;
-            font-size: 30px;
-            cursor: pointer;
-            background: var(--error);
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تحميل التطبيق</title>
+<style>
+body{background:#111;color:#eee;font-family:sans-serif;margin:0;padding:20px}
+.container{max-width:900px;margin:auto}
+h1{text-align:center;margin-bottom:20px}
+.app-header{display:flex;align-items:center;gap:15px;margin-bottom:20px}
+.app-header img{width:80px;height:80px;border-radius:20px;object-fit:cover}
+button{padding:10px 20px;background:#4caf50;border:none;border-radius:10px;color:#fff;font-size:16px;cursor:pointer}
+button:hover{background:#45a049}
+.screenshots{display:flex;gap:10px;flex-wrap:wrap;margin:20px 0}
+.screenshots img{max-width:200px;border-radius:10px;border:1px solid #333}
+.socials a{color:#4da6ff;display:block;margin:5px 0;text-decoration:none}
+.note{background:#222;padding:5px 10px;font-size:12px;color:#aaa;border-radius:6px;margin-top:5px}
+.counter{text-align:right;margin-top:10px;color:#aaa}
+</style>
 </head>
 <body>
-    <header>
-        <h1>تحميل التطبيق</h1>
-        <p>قم بتحميل التطبيق واستمتع بميزاته الرائعة</p>
-    </header>
-    
-    <div id="appContent">
-        <div class="loading">
-            <div class="spinner"></div>
-            <p>جاري تحميل بيانات التطبيق...</p>
-        </div>
-    </div>
+<div class="container">
+<div id="appContent"></div>
+</div>
 
-    <div id="imageModal" class="modal">
-        <span class="modal-close">&times;</span>
-        <img class="modal-content" id="modalImage">
-    </div>
+<script>
+const mainBin="https://api.jsonbin.io/v3/b/68b5a02ed0ea881f406e0b94";
+const downloadsBin="https://api.jsonbin.io/v3/b/68b73b75d0ea881f406fa775";
+const apiKey="$2a$10$F5TR7pSKPRRNAeBzsdxQ4.NYog8xHGUi0hektkor0q/QWFVXzba3q";
 
-    <script>
-        const jsonBinUrl = "https://api.jsonbin.io/v3/b/68b5a02ed0ea881f406e0b94";
-        const downloadsBinUrl = "https://api.jsonbin.io/v3/b/68b73b75d0ea881f406fa775";
-        const apiKey = "$2a$10$F5TR7pSKPRRNAeBzsdxQ4.NYog8xHGUi0hektkor0q/QWFVXzba3q";
-        
-        document.addEventListener('DOMContentLoaded', async function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const packageName = urlParams.get('package') || urlParams.get('app') || urlParams.get('id');
-            
-            if (!packageName) {
-                showError("لم يتم تحديد تطبيق للتحميل");
-                return;
-            }
-            
-            try {
-                const appData = await getAppData(packageName);
-                
-                if (!appData) {
-                    showError("التطبيق غير موجود");
-                    return;
-                }
-                
-                await incrementDownloadCount(packageName);
-                displayAppData(appData);
-            } catch (error) {
-                showError("حدث خطأ أثناء تحميل بيانات التطبيق");
-            }
-        });
-        
-        async function getAppData(packageName) {
-            const res = await fetch(jsonBinUrl, {
-                headers: {
-                    "X-Master-Key": apiKey
-                }
-            });
-            const data = await res.json();
-            return data.record.applications.find(app => app.package === packageName);
-        }
-        
-        async function getDownloadCount(packageName) {
-            try {
-                const res = await fetch(downloadsBinUrl, {
-                    headers: {
-                        "X-Master-Key": apiKey
-                    }
-                });
-                const data = await res.json();
-                return data.record.applications_downloads[packageName] || 0;
-            } catch (error) {
-                return 0;
-            }
-        }
-        
-        async function incrementDownloadCount(packageName) {
-            try {
-                const res = await fetch(downloadsBinUrl, {
-                    headers: {
-                        "X-Master-Key": apiKey
-                    }
-                });
-                const data = await res.json();
-                const downloadsData = data.record.applications_downloads || {};
-                
-                downloadsData[packageName] = (downloadsData[packageName] || 0) + 1;
-                
-                await fetch(downloadsBinUrl, {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-Master-Key": apiKey
-                    },
-                    body: JSON.stringify({ applications_downloads: downloadsData })
-                });
-            } catch (error) {
-            }
-        }
-        
-        function displayAppData(appData) {
-            const appContent = document.getElementById('appContent');
-            const downloadCount = await getDownloadCount(appData.package);
-            
-            appContent.innerHTML = `
-                <div class="app-container">
-                    <div class="app-header">
-                        <img src="${appData.icon}" alt="${appData.name}" class="app-icon">
-                        <div class="app-info">
-                            <h2>${appData.name}</h2>
-                            <div class="developer">${appData.developer}</div>
-                            <div class="version">الإصدار: ${appData.version}</div>
-                        </div>
-                    </div>
-                    
-                    <div class="download-count">تم التحميل ${downloadCount} مرة</div>
-                    
-                    <a href="${appData.download}" class="download-btn">تحميل التطبيق</a>
-                    
-                    ${appData.screenshots && appData.screenshots.length > 0 ? `
-                        <h3>لقطات الشاشة</h3>
-                        <div class="screenshots">
-                            ${appData.screenshots.map(screenshot => `
-                                <img src="${screenshot}" class="screenshot" onclick="openModal('${screenshot}')">
-                            `).join('')}
-                        </div>
-                    ` : ''}
-                    
-                    ${appData.longDesc ? `
-                        <div class="description">
-                            <h3>عن التطبيق</h3>
-                            <p>${appData.longDesc}</p>
-                        </div>
-                    ` : ''}
-                    
-                    ${appData.social && appData.social.length > 0 ? `
-                        <div class="social-links">
-                            <h3 style="width: 100%;">وسائل التواصل</h3>
-                            ${appData.social.map(link => `
-                                <a href="${link}" target="_blank" class="social-link">${getSocialName(link)}</a>
-                            `).join('')}
-                        </div>
-                    ` : ''}
-                    
-                    ${appData.extraInfo ? `
-                        <div class="additional-info">
-                            <h3>معلومات إضافية</h3>
-                            <p>${appData.extraInfo}</p>
-                        </div>
-                    ` : ''}
-                </div>
-            `;
-            
-            initializeModal();
-        }
-        
-        function getSocialName(url) {
-            if (url.includes('facebook.com')) return 'فيسبوك';
-            if (url.includes('twitter.com')) return 'تويتر';
-            if (url.includes('instagram.com')) return 'إنستغرام';
-            if (url.includes('youtube.com')) return 'يوتيوب';
-            if (url.includes('t.me')) return 'تلغرام';
-            if (url.includes('whatsapp.com')) return 'واتساب';
-            return 'رابط التواصل';
-        }
-        
-        function showError(message) {
-            const appContent = document.getElementById('appContent');
-            appContent.innerHTML = `
-                <div class="error-message">
-                    <h2>${message}</h2>
-                    <p>تأكد من صحة رابط التحميل</p>
-                </div>
-            `;
-        }
-        
-        function initializeModal() {
-            const modal = document.getElementById('imageModal');
-            const modalImg = document.getElementById('modalImage');
-            const closeBtn = document.querySelector('.modal-close');
-            
-            document.querySelectorAll('.screenshot').forEach(img => {
-                img.addEventListener('click', function() {
-                    modal.classList.add('show');
-                    modalImg.src = this.src;
-                });
-            });
-            
-            closeBtn.addEventListener('click', function() {
-                modal.classList.remove('show');
-            });
-            
-            modal.addEventListener('click', function(e) {
-                if (e.target === modal) {
-                    modal.classList.remove('show');
-                }
-            });
-        }
-        
-        window.openModal = function(src) {
-            const modal = document.getElementById('imageModal');
-            const modalImg = document.getElementById('modalImage');
-            modal.classList.add('show');
-            modalImg.src = src;
-        };
-    </script>
+function getPackageFromUrl(){const q=window.location.search;return q.startsWith("?")?q.substring(1):null}
+
+async function fetchBin(url){const res=await fetch(url,{headers:{"X-Master-Key":apiKey}});return res.json()}
+
+async function updateDownloads(pkg){const d=await fetchBin(downloadsBin);let record=d.record.applications_downloads;if(!record[pkg]&&record[pkg]!==0)record[pkg]=0;record[pkg]++;await fetch(downloadsBin,{method:"PUT",headers:{"Content-Type":"application/json","X-Master-Key":apiKey},body:JSON.stringify({applications_downloads:record})});return record[pkg]}
+
+async function loadApp(){
+const pkg=getPackageFromUrl();if(!pkg){document.getElementById("appContent").innerHTML="<p>❌ لم يتم تحديد التطبيق</p>";return}
+try{
+const data=await fetchBin(mainBin);const apps=data.record.applications;
+const app=apps.find(a=>a.package===pkg);
+if(!app){document.getElementById("appContent").innerHTML="<p>❌ التطبيق غير موجود</p>";return}
+
+const dData=await fetchBin(downloadsBin);let downloads=dData.record.applications_downloads[pkg]||0;
+
+document.getElementById("appContent").innerHTML=`
+<div class="app-header">
+<img src="${app.icon}" alt="icon">
+<div>
+<h1>${app.name}</h1>
+<p>الإصدار: ${app.version} | ${app.releaseDate}</p>
+<p>المطور: ${app.developer}</p>
+</div>
+</div>
+<p>${app.longDesc}</p>
+<div class="screenshots">
+${app.screenshots.map(s=>`<img src="${s}">`).join("")}
+</div>
+${app.extraInfo?`<div class="note">${app.extraInfo}</div>`:""}
+${app.social&&app.social.length?`<div class="socials">${app.social.map(s=>`<a href="${s}" target="_blank">${s}</a>`).join("")}</div>`:""}
+<div class="counter">عدد التحميلات: <span id="dlCount">${downloads}</span></div>
+<button id="downloadBtn">⬇ تحميل</button>
+`;
+
+document.getElementById("downloadBtn").addEventListener("click",async()=>{
+const newCount=await updateDownloads(pkg);
+document.getElementById("dlCount").textContent=newCount;
+window.location.href=app.download;
+});
+}catch(err){document.getElementById("appContent").innerHTML="<p>❌ خطأ في جلب البيانات</p>"}
+}
+loadApp();
+</script>
 </body>
 </html>
