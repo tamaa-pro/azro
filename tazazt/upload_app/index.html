@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://k.top4top.io/p_35326d4d31.jpg" type="image/png">
     <title>رفع تطبيق</title>
     <style>
         :root {
@@ -713,7 +714,7 @@
                         throw new Error("اسم الحزمة موجود بالفعل في قاعدة البيانات");
                     }
 
-                    let iconLink = appIconUrl; // استخدام رابط الأيقونة المخزن
+                    let iconLink = appIconUrl;
                     if (!iconLink && document.getElementById("iconFile").files[0]) {
                         iconLink = await uploadToCloudinary(document.getElementById("iconFile").files[0]);
                     }
@@ -785,7 +786,7 @@
                     
                     await addAppToDownloadsCounter(packageName);
                     
-                    downloadLink.href = `https://tamaa-pro.github.io/azro/app_download?${packageName}`;
+                    downloadLink.href = `https://tamaa-pro.github.io/azro/tazazt/download_app?${packageName}`;
                     downloadLink.style.display = "block";
                     
                 } catch (err) {
