@@ -796,5 +796,39 @@
             });
         });
     </script>
+        <script>
+const downloadsBinUrl = "https://api.jsonbin.io/v3/b/68b73b75d0ea881f406fa775";
+const downloadsApiKey = "$2a$10$F5TR7pSKPRRNAeBzsdxQ4.NYog8xHGUi0hektkor0q/QWFVXzba3q";
+
+async function addAppToDownloadsCounter(packageName) {
+    try {
+        const res = await fetch(downloadsBinUrl, {
+            headers: {
+                "X-Master-Key": downloadsApiKey
+            }
+        });
+        
+        const data = await res.json();
+        const downloadsData = data.record.applications_downloads || {};
+        
+        if (!downloadsData[packageName]) {
+            downloadsData[packageName] = 0;
+            
+            await fetch(downloadsBinUrl, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-Master-Key": downloadsApiKey
+                },
+                body: JSON.stringify({ applications_downloads: downloadsData })
+            });
+            
+            console.log("تم إضافة التطبيق إلى عداد التحميلات");
+        }
+    } catch (error) {
+        console.error("خطأ في إضافة التطبيق إلى عداد التحميلات:", error);
+    }
+}
+    </script>
 </body>
 </html>
