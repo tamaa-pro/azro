@@ -216,120 +216,48 @@ const mainBin="https://api.jsonbin.io/v3/b/68b5a02ed0ea881f406e0b94";
 const downloadsBin="https://api.jsonbin.io/v3/b/68b73b75d0ea881f406fa775";
 const apiKey="$2a$10$F5TR7pSKPRRNAeBzsdxQ4.NYog8xHGUi0hektkor0q/QWFVXzba3q";
 
-function getPackageFromUrl(){
-    const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get('package') || urlParams.get('app') || urlParams.get('id');
-}
+function getPackageFromUrl(){const q=window.location.search;return q.startsWith("?")?q.substring(1):null}
 
-async function fetchBin(url){
-    const res=await fetch(url,{headers:{"X-Master-Key":apiKey}});
-    return res.json();
-}
+async function fetchBin(url){const res=await fetch(url,{headers:{"X-Master-Key":apiKey}});return res.json()}
 
-async function updateDownloads(pkg){
-    const d=await fetchBin(downloadsBin);
-    let record=d.record.applications_downloads;
-    if(!record) record = {};
-    if(!record[pkg]&&record[pkg]!==0) record[pkg]=0;
-    record[pkg]++;
-    await fetch(downloadsBin,{
-        method:"PUT",
-        headers:{
-            "Content-Type":"application/json",
-            "X-Master-Key":apiKey
-        },
-        body:JSON.stringify({applications_downloads:record})
-    });
-    return record[pkg];
-}
+async function updateDownloads(pkg){const d=await fetchBin(downloadsBin);let record=d.record.applications_downloads;if(!record[pkg]&&record[pkg]!==0)record[pkg]=0;record[pkg]++;await fetch(downloadsBin,{method:"PUT",headers:{"Content-Type":"application/json","X-Master-Key":apiKey},body:JSON.stringify({applications_downloads:record})});return record[pkg]}
 
 async function loadApp(){
-    const pkg=getPackageFromUrl();
-    if(!pkg){
-        document.getElementById("appContent").innerHTML=`
-            <div class="error-message">
-                <h2>❌ لم يتم تحديد التطبيق</h2>
-                <p>يرجى التأكد من الرابط</p>
-            </div>`;
-        return;
-    }
-    
-    try{
-        const data=await fetchBin(mainBin);
-        const apps=data.record.applications;
-        const app=apps.find(a=>a.package===pkg);
-        
-        if(!app){
-            document.getElementById("appContent").innerHTML=`
-                <div class="error-message">
-                    <h2>❌ التطبيق غير موجود</h2>
-                    <p>التطبيق المطلوب غير موجود في قاعدة البيانات</p>
-                </div>`;
-            return;
-        }
+const pkg=getPackageFromUrl();if(!pkg){document.getElementById("appContent").innerHTML="<p>❌ لم يتم تحديد التطبيق</p>";return}
+try{
+const data=await fetchBin(mainBin);const apps=data.record.applications;
+const app=apps.find(a=>a.package===pkg);
+if(!app){document.getElementById("appContent").innerHTML="<p>❌ التطبيق غير موجود</p>";return}
 
-        const dData=await fetchBin(downloadsBin);
-        let downloads=dData.record.applications_downloads[pkg]||0;
+const dData=await fetchBin(downloadsBin);let downloads=dData.record.applications_downloads[pkg]||0;
 
-        document.getElementById("appContent").innerHTML=`
-            <div class="app-card">
-                <div class="app-header">
-                    <img src="${app.icon}" alt="${app.name}">
-                    <div class="app-info">
-                        <h2>${app.name}</h2>
-                        <div class="developer">${app.developer}</div>
-                        <div class="version">الإصدار: ${app.version} | ${app.releaseDate}</div>
-                    </div>
-                </div>
-                
-                <div class="download-count">تم التحميل ${downloads} مرة</div>
-                
-                <button class="download-btn" id="downloadBtn">⬇ تحميل التطبيق</button>
-                
-                ${app.screenshots&&app.screenshots.length>0?`
-                    <h3>لقطات الشاشة</h3>
-                    <div class="screenshots">
-                        ${app.screenshots.map(s=>`<img src="${s}" class="screenshot">`).join("")}
-                    </div>
-                `:""}
-                
-                ${app.longDesc?`
-                    <div class="description">
-                        <h3>عن التطبيق</h3>
-                        <p>${app.longDesc}</p>
-                    </div>
-                `:""}
-                
-                ${app.social&&app.social.length>0?`
-                    <div class="social-links">
-                        <h3 style="width:100%;">وسائل التواصل</h3>
-                        ${app.social.map(s=>`
-                            <a href="${s}" target="_blank" class="social-link">${getSocialName(s)}</a>
-                        `).join("")}
-                    </div>
-                `:""}
-                
-                ${app.extraInfo?`
-                    <div class="additional-info">
-                        <h3>معلومات إضافية</h3>
-                        <p>${app.extraInfo}</p>
-                    </div>
-                `:""}
-            </div>
-        `;
+document.getElementById("appContent").innerHTML=`
+<div class="app-card">
+    <div class="app-header">
+        <img src="${app.icon}" alt="icon">
+        <div class="app-info">
+            <h2>${app.name}</h2>
+            <p class="developer">الإصدار: ${app.version} | ${app.releaseDate}</p>
+            <p class="developer">المطور: ${app.developer}</p>
+        </div>
+    </div>
+    <p class="description">${app.longDesc}</p>
+    <div class="screenshots">
+        ${app.screenshots.map(s=>`<img src="${s}" class="screenshot">`).join("")}
+    </div>
+    ${app.extraInfo?`<div class="additional-info">${app.extraInfo}</div>`:""}
+    ${app.social&&app.social.length?`<div class="social-links">${app.social.map(s=>`<a href="${s}" target="_blank" class="social-link">${getSocialName(s)}</a>`).join("")}</div>`:""}
+    <div class="download-count">عدد التحميلات: <span id="dlCount">${downloads}</span></div>
+    <button class="download-btn" id="downloadBtn">⬇ تحميل</button>
+</div>
+`;
 
-        document.getElementById("downloadBtn").addEventListener("click",async()=>{
-            const newCount=await updateDownloads(pkg);
-            document.querySelector(".download-count").textContent = `تم التحميل ${newCount} مرة`;
-            window.location.href=app.download;
-        });
-    }catch(err){
-        document.getElementById("appContent").innerHTML=`
-            <div class="error-message">
-                <h2>❌ خطأ في جلب البيانات</h2>
-                <p>حدث خطأ أثناء تحميل بيانات التطبيق</p>
-            </div>`;
-    }
+document.getElementById("downloadBtn").addEventListener("click",async()=>{
+const newCount=await updateDownloads(pkg);
+document.getElementById("dlCount").textContent=newCount;
+window.location.href=app.download;
+});
+}catch(err){document.getElementById("appContent").innerHTML="<p>❌ خطأ في جلب البيانات</p>"}
 }
 
 function getSocialName(url){
