@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>رفع تطبيق</title>
+    <style>
+        :root {
+            --bg-primary: #121212;
+            --bg-secondary: #1e1e1e;
+            --bg-tertiary: #252525;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --accent: #4CAF50;
+            --accent-hover: #3e8e41;
+            --error: #ff4d4d;
+            --success: #4caf50;
+            --warning: #ff9800;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 15px;
+            background-color: var(--bg-secondary);
+            border-radius: 10px;
+            color: var(--accent);
+        }
+        
+        form {
+            display: grid;
+            gap: 25px;
+        }
+        
+        .section {
+            background-color: var(--bg-secondary);
+            padding: 25px;
+            border-radius: 10px;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--bg-tertiary);
+            color: var(--accent);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        input, textarea, button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        input, textarea {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid #444;
+            resize: vertical;
+        }
+        
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        button {
+            background: var(--accent);
+            color: #fff;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: var(--accent-hover);
+        }
+        
+        .note {
+            background: var(--bg-tertiary);
+            padding: 8px 12px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            border-radius: 6px;
+            margin-top: 8px;
+            line-height: 1.4;
+        }
+        
+        .preview {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .preview img {
+            max-height: 100px;
+            border-radius: 8px;
+            border: 1px solid #444;
+            object-fit: cover;
+        }
+        
+        .counter {
+            text-align: right;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+        
+        #status {
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        
+        .success {
+            background-color: rgba(76, 175, 80, 0.2);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+        
+        .error {
+            background-color: rgba(255, 77, 77, 0.2);
+            color: var(--error);
+            border: 1px solid var(--error);
+        }
+        
+        .loading {
+            background-color: rgba(33, 150, 243, 0.2);
+            color: var(--text-primary);
+            border: 1px solid #2196f3;
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .input-group input {
+            flex: 1;
+        }
+        
+        .input-group button {
+            width: auto;
+            padding: 12px 20px;
+        }
+        
+        .file-input-container {
+            position: relative;
+            margin-bottom: 10px;
+        }
+        
+        .file-input-container input[type="file"] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        
+        .file-input-button {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #444;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .file-input-button:hover {
+            background: #333;
+        }
+        
+        .buttons-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .buttons-container button {
+            width: auto;
+            min-width: 150px;
+        }
+        
+        .edit-button {
+            background: #ff9800;
+        }
+        
+        .edit-button:hover {
+            background: #e68900;
+        }
+        
+        .download-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            padding: 12px;
+            background: rgba(33, 150, 243, 0.2);
+            color: #2196f3;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            border: 1px solid #2196f3;
+        }
+        
+        .download-link:hover {
+            background: rgba(33, 150, 243, 0.3);
+        }
+        
+        .screenshot-item {
+            position: relative;
+            display: inline-block;
+            margin: 5px;
+        }
+        
+        .remove-screenshot {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: var(--error);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+        
+        .social-link-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .social-link-item input {
+            flex: 1;
+            background: var(--bg-primary);
+        }
+        
+        .remove-social-link {
+            background: var(--error);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
+            cursor: pointer;
+            width: auto;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 15px;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        
+        .max-files-warning {
+            color: var(--warning);
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        #longDesc {
+            min-height: 150px;
+        }
+        
+        #extraInfo {
+            min-height: 100px;
+        }
+        
+        .version-input {
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <h1>رفع تطبيق جديد</h1>
+    <form id="appForm">
+        <div class="section">
+            <div class="section-title">البيانات الأساسية</div>
+            
+            <div class="form-group">
+                <label>أيقونة التطبيق</label>
+                <div class="file-input-container">
+                    <div class="file-input-button">اختر ملف الأيقونة</div>
+                    <input type="file" id="iconFile" accept="image/*">
+                </div>
+                <div class="input-group">
+                    <input type="url" id="iconUrl" placeholder="أو أدخل رابط الصورة">
+                    <button type="button" id="addIconUrl">إضافة</button>
+                </div>
+                <div class="preview" id="iconPreview"></div>
+                <div class="note">يجب أن تكون الأيقونة مربعة. للحصول على أفضل النتائج، استخدم صورة بدقة 512x512 بكسل.</div>
+            </div>
+
+            <div class="form-group">
+                <label>اسم الحزمة</label>
+                <input type="text" id="packageName" required>
+                <div class="note">مثال: com.example.app</div>
+            </div>
+
+            <div class="form-group">
+                <label>اسم التطبيق</label>
+                <input type="text" id="appName" required>
+            </div>
+
+            <div class="form-group">
+                <label>رابط التحميل المباشر (apk)</label>
+                <input type="url" id="downloadLink" required>
+                <div class="note">يجب أن ينتهي رابط التحميل بامتداد .apk. تأكد من أن الرابط يعمل بشكل صحيح.</div>
+            </div>
+
+            <div class="form-group">
+                <label>رقم الإصدار</label>
+                <input type="text" id="version" required class="version-input" pattern="[0-9.]+" title="يجب إدخال أرقام فقط">
+                <div class="note">مثال: 1.0.0 (مسموح بالأرقام والنقاط فقط)</div>
+            </div>
+
+            <div class="form-group">
+                <label>تاريخ الإصدار</label>
+                <input type="date" id="releaseDate" required>
+            </div>
+
+            <div class="form-group">
+                <label>اسم المطور / الأستوديو</label>
+                <input type="text" id="developer" required>
+            </div>
+
+            <div class="form-group">
+                <label>كلمة السر للتعديل لاحقاً</label>
+                <input type="text" id="appPassword" required>
+                <div class="note">ستحتاج هذه الكلمة إذا أردت تعديل التطبيق لاحقاً</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">البيانات العامة</div>
+            
+            <div class="form-group">
+                <label>لقطات الشاشة</label>
+                <div class="file-input-container">
+                    <div class="file-input-button" id="screenshotsButton">اختر لقطات الشاشة</div>
+                    <input type="file" id="screenshotsFile" accept="image/*" multiple>
+                </div>
+                <div class="max-files-warning" id="maxFilesWarning">لقد وصلت إلى الحد الأقصى للصور المرفوعة (10). يمكنك إضافة المزيد باستخدام الروابط المباشرة.</div>
+                <div class="input-group">
+                    <input type="url" id="screenshotUrl" placeholder="أدخل رابط الصورة">
+                    <button type="button" id="addScreenshotUrl">إضافة</button>
+                </div>
+                <div class="preview" id="screenshotsPreview"></div>
+                <div class="note">الحد الأدنى 3 صور والحد الأقصى 15 صورة. نوصي باستخدام موقع top4top.net لرفع الصور واستخدام الرابط المباشر.</div>
+            </div>
+
+            <div class="form-group">
+                <label>وصف عام</label>
+                <textarea id="shortDesc" maxlength="50" required></textarea>
+                <div class="counter" id="shortDescCounter">0/50</div>
+                <div class="note">يجب أن يحتوي الوصف العام على الأقل على 10 أحرف</div>
+            </div>
+
+            <div class="form-group">
+                <label>وصف مفصل</label>
+                <textarea id="longDesc" maxlength="900" required></textarea>
+                <div class="counter" id="longDescCounter">0/900</div>
+                <div class="note">يجب أن يحتوي الوصف المفصل على الأقل على 100 حرف</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">البيانات الإضافية</div>
+            
+            <div class="form-group">
+                <label>روابط التواصل الاجتماعي</label>
+                <div class="input-group">
+                    <input type="url" id="socialLinkInput" placeholder="أدخل رابط التواصل الاجتماعي">
+                    <button type="button" id="addSocialLink">إضافة</button>
+                </div>
+                <div id="socialLinksContainer"></div>
+                <div class="note">الحد الأقصى 4 روابط (اختياري)</div>
+            </div>
+
+            <div class="form-group">
+                <label>معلومات إضافية</label>
+                <textarea id="extraInfo" maxlength="200" placeholder="الإرشادات، النصائح، التعليمات، أو أي معلومات إضافية تريد مشاركتها مع المستخدمين"></textarea>
+                <div class="counter" id="extraInfoCounter">0/200</div>
+                <div class="note">هذه الخانة مخصصة للإرشادات والنصائح والتعليمات التي تريد مشاركتها مع المستخدمين.</div>
+            </div>
+        </div>
+
+        <a href="#" id="downloadPageLink" class="download-link" style="display: none;">فتح صفحة التحميل</a>
+        
+        <div class="buttons-container">
+            <button type="submit">رفع التطبيق</button>
+            <button type="button" class="edit-button" onclick="window.open('https://tamaa-pro.github.io/azro/edit_app', '_blank')">تعديل تطبيق</button>
+        </div>
+        
+        <div id="status"></div>
+    </form>
+
+    <div class="footer">Powered by TAMAA PRO STUDIO</div>
+
+    <script>
+        const cloudName = "dph9pk34v";
+        const uploadPreset = "application_images";
+        const jsonBinUrl = "https://api.jsonbin.io/v3/b/68b5a02ed0ea881f406e0b94";
+        const apiKey = "$2a$10$F5TR7pSKPRRNAeBzsdxQ4.NYog8xHGUi0hektkor0q/QWFVXzba3q";
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const releaseDateInput = document.getElementById('releaseDate');
+            const today = new Date();
+            const maxDate = today.toISOString().split('T')[0];
+            const minDate = '2020-01-01';
+            
+            releaseDateInput.setAttribute('max', maxDate);
+            releaseDateInput.setAttribute('min', minDate);
+            
+            let uploadedFilesCount = 0;
+            const maxUploadedFiles = 10;
+            const maxFilesWarning = document.getElementById('maxFilesWarning');
+            const screenshotsButton = document.getElementById('screenshotsButton');
+            
+            function updateCounter(id, max) {
+                const el = document.getElementById(id);
+                el.addEventListener("input", () => {
+                    document.getElementById(id + "Counter").textContent = el.value.length + "/" + max;
+                });
+            }
+            updateCounter("shortDesc", 50);
+            updateCounter("longDesc", 900);
+            updateCounter("extraInfo", 200);
+
+            function previewImage(input, container) {
+                const c = document.getElementById(container);
+                if (input.files) {
+                    const files = Array.from(input.files);
+                    
+                    if (uploadedFilesCount + files.length > maxUploadedFiles) {
+                        const allowedFiles = maxUploadedFiles - uploadedFilesCount;
+                        maxFilesWarning.textContent = `يمكنك رفع ${allowedFiles} ملف${allowedFiles > 1 ? 'ات' : ''} فقط. يمكنك إضافة المزيد باستخدام الروابط المباشرة.`;
+                        maxFilesWarning.style.display = 'block';
+                        return;
+                    }
+                    
+                    files.forEach(f => {
+                        uploadedFilesCount++;
+                        if (uploadedFilesCount >= maxUploadedFiles) {
+                            screenshotsButton.style.opacity = '0.5';
+                            screenshotsButton.style.cursor = 'not-allowed';
+                            maxFilesWarning.style.display = 'block';
+                        }
+                        
+                        const r = new FileReader();
+                        r.onload = e => {
+                            const img = document.createElement("img");
+                            img.src = e.target.result;
+                            
+                            const containerDiv = document.createElement("div");
+                            containerDiv.className = "screenshot-item";
+                            
+                            const removeBtn = document.createElement("button");
+                            removeBtn.className = "remove-screenshot";
+                            removeBtn.textContent = "×";
+                            removeBtn.onclick = function() {
+                                containerDiv.remove();
+                                uploadedFilesCount--;
+                                if (uploadedFilesCount < maxUploadedFiles) {
+                                    screenshotsButton.style.opacity = '1';
+                                    screenshotsButton.style.cursor = 'pointer';
+                                    maxFilesWarning.style.display = 'none';
+                                }
+                            };
+                            
+                            containerDiv.appendChild(img);
+                            containerDiv.appendChild(removeBtn);
+                            c.appendChild(containerDiv);
+                        };
+                        r.readAsDataURL(f);
+                    });
+                }
+            }
+            
+            document.getElementById("iconFile").addEventListener("change", e => {
+                const c = document.getElementById("iconPreview");
+                c.innerHTML = "";
+                previewImage(e.target, "iconPreview");
+            });
+            
+            document.getElementById("screenshotsFile").addEventListener("change", e => {
+                previewImage(e.target, "screenshotsPreview");
+            });
+
+            document.getElementById("addIconUrl").addEventListener("click", function() {
+                const url = document.getElementById("iconUrl").value.trim();
+                if (url) {
+                    const preview = document.getElementById("iconPreview");
+                    preview.innerHTML = "";
+                    const img = document.createElement("img");
+                    img.src = url;
+                    
+                    const containerDiv = document.createElement("div");
+                    containerDiv.className = "screenshot-item";
+                    
+                    const removeBtn = document.createElement("button");
+                    removeBtn.className = "remove-screenshot";
+                    removeBtn.textContent = "×";
+                    removeBtn.onclick = function() {
+                        containerDiv.remove();
+                        document.getElementById("iconUrl").value = "";
+                    };
+                    
+                    containerDiv.appendChild(img);
+                    containerDiv.appendChild(removeBtn);
+                    preview.appendChild(containerDiv);
+                    
+                    document.getElementById("iconUrl").value = "";
+                }
+            });
+
+            document.getElementById("addScreenshotUrl").addEventListener("click", function() {
+                const url = document.getElementById("screenshotUrl").value.trim();
+                if (url) {
+                    const preview = document.getElementById("screenshotsPreview");
+                    const img = document.createElement("img");
+                    img.src = url;
+                    
+                    const containerDiv = document.createElement("div");
+                    containerDiv.className = "screenshot-item";
+                    
+                    const removeBtn = document.createElement("button");
+                    removeBtn.className = "remove-screenshot";
+                    removeBtn.textContent = "×";
+                    removeBtn.onclick = function() {
+                        containerDiv.remove();
+                    };
+                    
+                    containerDiv.appendChild(img);
+                    containerDiv.appendChild(removeBtn);
+                    preview.appendChild(containerDiv);
+                    
+                    document.getElementById("screenshotUrl").value = "";
+                }
+            });
+
+            document.getElementById("addSocialLink").addEventListener("click", function() {
+                const url = document.getElementById("socialLinkInput").value.trim();
+                if (url) {
+                    const container = document.getElementById("socialLinksContainer");
+                    const socialLinks = container.querySelectorAll('.social-link-item');
+                    
+                    if (socialLinks.length >= 4) {
+                        alert('لا يمكن إضافة أكثر من 4 روابط تواصل اجتماعي');
+                        return;
+                    }
+                    
+                    const linkDiv = document.createElement("div");
+                    linkDiv.className = "social-link-item";
+                    
+                    const input = document.createElement("input");
+                    input.type = "url";
+                    input.value = url;
+                    input.readOnly = true;
+                    
+                    const removeBtn = document.createElement("button");
+                    removeBtn.className = "remove-social-link";
+                    removeBtn.textContent = "حذف";
+                    removeBtn.onclick = function() {
+                        linkDiv.remove();
+                    };
+                    
+                    linkDiv.appendChild(input);
+                    linkDiv.appendChild(removeBtn);
+                    container.appendChild(linkDiv);
+                    
+                    document.getElementById("socialLinkInput").value = "";
+                }
+            });
+
+            document.getElementById("version").addEventListener("input", function(e) {
+                this.value = this.value.replace(/[^0-9.]/g, '');
+            });
+
+            async function uploadToCloudinary(file) {
+                const form = new FormData();
+                form.append("file", file);
+                form.append("upload_preset", uploadPreset);
+                const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+                    method: "POST",
+                    body: form
+                });
+                const data = await res.json();
+                return data.secure_url;
+            }
+
+            async function checkPackageExists(packageName) {
+                try {
+                    const res = await fetch(jsonBinUrl, {
+                        headers: {
+                            "X-Master-Key": apiKey
+                        }
+                    });
+                    const data = await res.json();
+                    return data.record.applications.some(app => app.package === packageName);
+                } catch (error) {
+                    return false;
+                }
+            }
+
+            document.getElementById("appForm").addEventListener("submit", async e => {
+                e.preventDefault();
+                const status = document.getElementById("status");
+                status.textContent = "جاري الرفع...";
+                status.className = "loading";
+                
+                const downloadLink = document.getElementById("downloadPageLink");
+                downloadLink.style.display = "none";
+                
+                try {
+                    const today = new Date().toISOString().split("T")[0];
+                    const releaseDate = document.getElementById("releaseDate").value;
+                    
+                    if (releaseDate > today) {
+                        throw new Error("تاريخ الإصدار لا يمكن أن يكون مستقبلي");
+                    }
+                    
+                    if (releaseDate < '2020-01-01') {
+                        throw new Error("تاريخ الإصدار يجب أن يكون بعد 1 يناير 2020");
+                    }
+
+                    const shortDesc = document.getElementById("shortDesc").value;
+                    if (shortDesc.length < 10) {
+                        throw new Error("الوصف العام يجب أن يحتوي على الأقل على 10 أحرف");
+                    }
+
+                    const longDesc = document.getElementById("longDesc").value;
+                    if (longDesc.length < 100) {
+                        throw new Error("الوصف المفصل يجب أن يحتوي على الأقل على 100 حرف");
+                    }
+
+                    const packageName = document.getElementById("packageName").value;
+                    const packageExists = await checkPackageExists(packageName);
+                    
+                    if (packageExists) {
+                        throw new Error("اسم الحزمة موجود بالفعل في قاعدة البيانات");
+                    }
+
+                    let iconLink = document.getElementById("iconUrl").value;
+                    if (!iconLink && document.getElementById("iconFile").files[0]) {
+                        iconLink = await uploadToCloudinary(document.getElementById("iconFile").files[0]);
+                    }
+
+                    let screenshots = [];
+                    const screenshotElements = document.getElementById("screenshotsPreview").querySelectorAll("img");
+                    for (const img of screenshotElements) {
+                        screenshots.push(img.src);
+                    }
+                    
+                    if (screenshots.length < 3 || screenshots.length > 15) {
+                        throw new Error("عدد لقطات الشاشة يجب أن يكون بين 3 و 15");
+                    }
+
+                    let socials = [];
+                    const socialLinks = document.getElementById("socialLinksContainer").querySelectorAll('input');
+                    socialLinks.forEach(link => {
+                        if (link.value.trim() !== '') {
+                            socials.push(link.value.trim());
+                        }
+                    });
+                    
+                    if (socials.length > 4) {
+                        throw new Error("عدد روابط التواصل لا يتجاوز 4");
+                    }
+
+                    const newApp = {
+                        icon: iconLink,
+                        package: packageName,
+                        name: document.getElementById("appName").value,
+                        download: document.getElementById("downloadLink").value,
+                        version: document.getElementById("version").value,
+                        releaseDate: releaseDate,
+                        developer: document.getElementById("developer").value,
+                        password: document.getElementById("appPassword").value,
+                        screenshots: screenshots,
+                        shortDesc: shortDesc,
+                        longDesc: longDesc,
+                        social: socials,
+                        extraInfo: document.getElementById("extraInfo").value,
+                        uploadDate: today
+                    };
+
+                    const res = await fetch(jsonBinUrl, {
+                        headers: {
+                            "X-Master-Key": apiKey
+                        }
+                    });
+                    const current = await res.json();
+                    const updated = {
+                        applications: [...current.record.applications, newApp]
+                    };
+                    
+                    await fetch(jsonBinUrl, {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-Master-Key": apiKey
+                        },
+                        body: JSON.stringify(updated)
+                    });
+                    
+                    status.textContent = "✅ تم رفع التطبيق بنجاح";
+                    status.className = "success";
+                    
+                    const packageForUrl = packageName.replace(/\./g, '-');
+                    downloadLink.href = `https://tamaa-pro.github.io/azro/app_download?${packageForUrl}`;
+                    downloadLink.style.display = "block";
+                    
+                } catch (err) {
+                    status.textContent = "❌ خطأ: " + err.message;
+                    status.className = "error";
+                }
+            });
+        });
+    </script>
+</body>
+</html>
