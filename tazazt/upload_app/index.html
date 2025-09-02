@@ -755,8 +755,7 @@
                     status.className = "success";
                     await addAppToDownloadsCounter(packageName);
                     
-                    const packageForUrl = packageName.replace(/\./g, '-');
-                    downloadLink.href = `https://tamaa-pro.github.io/azro/tazazt/app_download?${packageForUrl}`;
+                    downloadLink.href = `https://tamaa-pro.github.io/azro/tazazt/app_download?${packageName}`;
                     downloadLink.style.display = "block";
                     
                 } catch (err) {
