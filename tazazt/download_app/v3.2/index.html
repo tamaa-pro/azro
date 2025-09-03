@@ -419,7 +419,6 @@ document.getElementById("downloadBtn").addEventListener("click", async function(
     const btn = this;
     const textSpan = btn.querySelector('.text');
     textSpan.textContent = 'جاري التحميل...';
-    btn.classList.add('loading');
     
     const newCount = await updateDownloads(pkg);
     document.querySelector('.app-meta span:first-child').textContent = `التحميلات: ${newCount}`;
