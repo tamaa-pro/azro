@@ -472,7 +472,7 @@
         let currentApp = null;
         let uploadedFilesCount = 0;
         const maxUploadedFiles = 10;
-        let appIconUrl = ''; // متغير لتخزين رابط الأيقونة
+        let appIconUrl = '';
 
         document.addEventListener('DOMContentLoaded', function() {
             const authForm = document.getElementById('authForm');
@@ -502,7 +502,7 @@
                     }
                     
                     currentApp = appData;
-                    appIconUrl = appData.icon; // تعيين رابط الأيقونة الحالي
+                    appIconUrl = appData.icon;
                     loadAppData(appData);
                     
                     authContainer.style.display = "none";
@@ -591,7 +591,7 @@
                 const c = document.getElementById("iconPreview");
                 c.innerHTML = "";
                 previewImage(e.target, "iconPreview");
-                appIconUrl = ''; // إعادة تعيين رابط الأيقونة عند اختيار ملف
+                appIconUrl = '';
             });
             
             document.getElementById("screenshotsFile").addEventListener("change", e => {
@@ -621,8 +621,7 @@
                     containerDiv.appendChild(img);
                     containerDiv.appendChild(removeBtn);
                     preview.appendChild(containerDiv);
-                    
-                    // حفظ رابط الأيقونة في المتغير
+                
                     appIconUrl = url;
                     document.getElementById("iconUrl").value = "";
                 }
@@ -840,11 +839,11 @@
                         throw new Error("الوصف المفصل يجب أن يحتوي على الأقل على 100 حرف");
                     }
 
-                    let iconLink = appIconUrl; // استخدام رابط الأيقونة المخزن
+                    let iconLink = appIconUrl;
                     if (!iconLink && document.getElementById("iconFile").files[0]) {
                         iconLink = await uploadToCloudinary(document.getElementById("iconFile").files[0]);
                     } else if (!iconLink) {
-                        iconLink = currentApp.icon; // استخدام الرابط الأصلي إذا لم يتم التعديل
+                        iconLink = currentApp.icon;
                     }
 
                     let screenshots = [];
@@ -910,7 +909,7 @@
                     status.className = "success";
                     
                     currentApp = updatedApp;
-                    appIconUrl = iconLink; // تحديث رابط الأيقونة الحالي
+                    appIconUrl = iconLink;
                     
                 } catch (err) {
                     status.textContent = "❌ خطأ: " + err.message;
