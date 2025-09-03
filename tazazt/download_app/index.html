@@ -120,55 +120,13 @@ document.getElementById("downloadBtn").addEventListener("click", async function(
     setTimeout(()=>{ window.location.href = app.download; },1000);
 });
 
-document.addEventListener('DOMContentLoaded', () => {
-    // منع النسخ خارج حقول الإدخال
-    document.addEventListener('copy', e => {
-        const tag = e.target.tagName.toLowerCase();
-        if(tag !== 'input' && tag !== 'textarea') e.preventDefault();
-    });
-    document.addEventListener('cut', e => {
-        const tag = e.target.tagName.toLowerCase();
-        if(tag !== 'input' && tag !== 'textarea') e.preventDefault();
-    });
-    document.addEventListener('contextmenu', e => {
-        const tag = e.target.tagName.toLowerCase();
-        if(tag !== 'input' && tag !== 'textarea') e.preventDefault();
-    });
-    document.addEventListener('selectstart', e => {
-        const tag = e.target.tagName.toLowerCase();
-        if(tag !== 'input' && tag !== 'textarea') e.preventDefault();
-    });
 
-    // منع التكبير/التصغير (Pinch و Double-tap)
-    document.addEventListener('gesturestart', e => e.preventDefault());
-    document.addEventListener('gesturechange', e => e.preventDefault());
-    document.addEventListener('gestureend', e => e.preventDefault());
-
-    // منع التكبير/التصغير بالكيبورد أو الماوس
-    document.addEventListener('keydown', e => {
-        if((e.ctrlKey || e.metaKey) && (e.key === '+' || e.key === '-' || e.key === '=' || e.key === '0')){
-            e.preventDefault();
-        }
-    });
-    document.addEventListener('wheel', e => {
-        if(e.ctrlKey) e.preventDefault();
-    }, { passive: false });
-
-    // تعطيل Double-tap zoom في الهواتف
-    let lastTouchEnd = 0;
-    document.addEventListener('touchend', e => {
-        const now = Date.now();
-        if(now - lastTouchEnd <= 300) e.preventDefault();
-        lastTouchEnd = now;
-    }, { passive: false });
-
-    // السماح فقط بالتمرير العمودي
-    document.addEventListener('touchmove', e => {
-        if(Math.abs(e.touches[0].clientX - (e.touches[0].pageX || 0)) > 10){
-            e.preventDefault();
-        }
-    }, { passive: false });
-});
+</script>
+<script>
+document.addEventListener('wheel', function(e) {if (e.ctrlKey) e.preventDefault();}, { passive: false });document.addEventListener('keydown', function(e) {if ((e.ctrlKey && (e.key === '+' || e.key === '-' || e.key === '=')) || e.key === 'Meta') {e.preventDefault();}});document.addEventListener('contextmenu', e => e.preventDefault());document.addEventListener('selectstart', function(e) {e.preventDefault();});document.addEventListener('copy', function(e) {e.preventDefault();});
+document.addEventListener('keydown', function(e) {if ((e.ctrlKey || e.metaKey) && 
+(e.key === '+' || e.key === '-' || e.key === '0' || e.keyCode === 187 || e.keyCode === 189 || e.keyCode === 48)) {e.preventDefault();}});document.addEventListener('wheel', function(e) {if (e.ctrlKey) {e.preventDefault();}}, { passive: false });let lastTouchEnd = 0;document.addEventListener('touchstart', function(e) {if (e.touches.length > 1) {e.preventDefault();}});document.addEventListener('touchend', function(e) {const now = Date.now();if (now - lastTouchEnd <= 300) {e.preventDefault();}
+lastTouchEnd = now;}, { passive: false });document.addEventListener('touchmove', function(e) {if (e.touches.length > 1) {e.preventDefault();}}, { passive: false });document.addEventListener('dblclick', function(e) {e.preventDefault();}, { passive: false });const viewportMeta = document.querySelector('meta[name="viewport"]');viewportMeta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
 </script>
 </body>
 </html>
