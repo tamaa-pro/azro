@@ -81,11 +81,11 @@ async function updateDownloads(pkg){
     }catch(error){return 0}
 }
 async function loadApp(){
-const pkg=getPackageFromUrl();if(!pkg){document.getElementById("appContent").innerHTML=`<div class="error-message"><i class="fas fa-exclamation-circle"></i><h2>لم يتم تحديد التطبيق</h2><p>يرجى التأكد من الرابط المستخدم للوصول إلى هذه الصفحة</p><a href="https://tamaa-pro.github.io/azro/tazazt/app_menu" class="app-menu-btn">فتح قائمة التطبيقات المرفوعة</a></div>`;return}
+const pkg=getPackageFromUrl();if(!pkg){document.getElementById("appContent").innerHTML=`<div class="error-message"><i class="fas fa-exclamation-circle"></i><h2>لم يتم تحديد التطبيق</h2><p>يرجى التأكد من الرابط المستخدم للوصول إلى هذه الصفحة</p><a href="https://tamaa-pro.github.io/azro/tazazt/applications_menu" class="app-menu-btn">فتح قائمة التطبيقات المرفوعة</a></div>`;return}
 try{
 const data=await fetchBin(mainBin);const apps=data.record.applications;
 const app=apps.find(a=>a.package===pkg);
-if(!app){document.getElementById("appContent").innerHTML=`<div class="error-message"><i class="fas fa-exclamation-triangle"></i><h2>التطبيق غير موجود</h2><p>قد يكون التطبيق قد تم إزالته أو أن الرابط غير صحيح</p><a href="https://tamaa-pro.github.io/azro/tazazt/app_menu" class="app-menu-btn">فتح قائمة التطبيقات المرفوعة</a></div>`;return}
+if(!app){document.getElementById("appContent").innerHTML=`<div class="error-message"><i class="fas fa-exclamation-triangle"></i><h2>التطبيق غير موجود</h2><p>قد يكون التطبيق قد تم إزالته أو أن الرابط غير صحيح</p><a href="https://tamaa-pro.github.io/azro/tazazt/applications_menu" class="app-menu-btn">فتح قائمة التطبيقات المرفوعة</a></div>`;return}
 let downloads=0;
 try{
     const dData=await fetchBin(downloadsBin);
