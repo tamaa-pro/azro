@@ -107,7 +107,7 @@ body {
     font-weight: bold;
     text-decoration: none;
     margin: 20px 0;
-    transition: all 0.3s;
+    transition: background-color 0.3s;
     border: none;
     cursor: pointer;
     gap: 10px;
@@ -115,10 +115,6 @@ body {
 
 .download-btn:hover {
     background-color: var(--accent-hover);
-}
-
-.download-btn:active {
-    transform: scale(1.02);
 }
 
 .download-btn .loading {
@@ -253,7 +249,6 @@ body {
 
 .app-menu-btn {
     display: block;
-    width: 100%;
     padding: 15px;
     background-color: var(--accent);
     color: white;
@@ -265,6 +260,8 @@ body {
     transition: background-color 0.3s;
     border: none;
     cursor: pointer;
+    width: fit-content;
+    margin: 0 auto;
 }
 
 .app-menu-btn:hover {
@@ -352,7 +349,6 @@ if(!app){
 
 const dData=await fetchBin(downloadsBin);let downloads=dData.record.applications_downloads[pkg]||0;
 
-// إنشاء محتوى الصفحة
 let content = `
 <div class="app-card">
     <div class="app-header">
@@ -376,7 +372,6 @@ let content = `
         <div class="loading"></div>
     </button>`;
 
-// إضافة لقطات الشاشة
 if(app.screenshots && app.screenshots.length > 0) {
     content += `
     <h3 class="section-title">لقطات الشاشة</h3>
@@ -387,14 +382,11 @@ if(app.screenshots && app.screenshots.length > 0) {
     </div>`;
 }
 
-// إضافة الوصف
 content += `
     <div class="description">${app.longDesc}</div>`;
 
-// إضافة فاصل
 content += `<div class="divider"></div>`;
 
-// إضافة ملاحظات المطور إذا كانت موجودة
 if(app.extraInfo) {
     content += `
     <div class="notes-box">
@@ -403,7 +395,6 @@ if(app.extraInfo) {
     </div>`;
 }
 
-// إضافة روابط التواصل إذا كانت موجودة
 if(app.social && app.social.length > 0) {
     content += `
     <div class="social-box">
@@ -424,9 +415,10 @@ content += `</div>`;
 
 document.getElementById("appContent").innerHTML = content;
 
-// إضافة حدث لزر التحميل
 document.getElementById("downloadBtn").addEventListener("click", async function(){
     const btn = this;
+    const textSpan = btn.querySelector('.text');
+    textSpan.textContent = 'جاري التحميل...';
     btn.classList.add('loading');
     
     const newCount = await updateDownloads(pkg);
