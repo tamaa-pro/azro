@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>تحميل التطبيق</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="icon" href="https://k.top4top.io/p_35326d4d31.jpg" type="image/png">
 <style>
 :root {
     --bg-primary: #121212;
@@ -64,19 +66,37 @@ body {
     font-size: 14px;
 }
 
+.meta-scroll-container {
+    margin-bottom: 20px;
+    overflow-x: auto;
+    white-space: nowrap;
+    padding: 10px 0;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.meta-scroll-container::-webkit-scrollbar {
+    display: none;
+}
+
 .app-meta {
-    display: flex;
-    justify-content: space-between;
+    display: inline-flex;
+    gap: 20px;
     background: var(--bg-tertiary);
     padding: 10px 15px;
     border-radius: 8px;
-    margin-bottom: 20px;
     font-size: 14px;
     color: var(--text-secondary);
 }
 
+.app-meta span {
+    white-space: nowrap;
+}
+
 .download-btn {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 100%;
     padding: 15px;
     background-color: var(--accent);
@@ -90,64 +110,61 @@ body {
     transition: background-color 0.3s;
     border: none;
     cursor: pointer;
+    gap: 10px;
 }
 
 .download-btn:hover {
     background-color: var(--accent-hover);
 }
 
-.screenshots-container {
-    position: relative;
-    margin: 20px 0;
-    overflow: hidden;
+.download-btn .loading {
+    display: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255,255,255,.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
 }
 
-.screenshots-scroll {
-    display: flex;
+.download-btn.loading .text {
+    display: none;
+}
+
+.download-btn.loading .loading {
+    display: block;
+}
+
+.section-title {
+    font-size: 18px;
+    color: var(--accent);
+    margin: 25px 0 15px 0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--bg-tertiary);
+}
+
+.screenshots-container {
+    margin: 20px 0;
     overflow-x: auto;
-    gap: 15px;
     padding: 10px 0;
-    scroll-behavior: smooth;
     -ms-overflow-style: none;
     scrollbar-width: none;
 }
 
-.screenshots-scroll::-webkit-scrollbar {
+.screenshots-container::-webkit-scrollbar {
     display: none;
 }
 
-.screenshot {
-    width: 200px;
-    height: 350px;
-    border-radius: 8px;
-    object-fit: cover;
-    flex-shrink: 0;
-}
-
-.scroll-btn {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(0, 0, 0, 0.5);
-    border: none;
-    color: white;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    cursor: pointer;
-    z-index: 10;
+.screenshots-scroll {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
+    gap: 15px;
 }
 
-.scroll-left {
-    left: 10px;
-}
-
-.scroll-right {
-    right: 10px;
+.screenshot {
+    max-height: 300px;
+    border-radius: 8px;
+    object-fit: contain;
+    flex-shrink: 0;
 }
 
 .description {
@@ -158,65 +175,30 @@ body {
     border-radius: 8px;
 }
 
-.divider {
-    height: 1px;
+.social-box, .notes-box {
     background: var(--bg-tertiary);
-    margin: 25px 0;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 20px;
 }
 
-.notes-btn {
-    display: block;
-    width: 100%;
-    padding: 15px;
-    background-color: var(--bg-tertiary);
-    color: var(--text-primary);
-    text-align: center;
-    border-radius: 8px;
+.social-title, .notes-title {
     font-size: 16px;
-    font-weight: bold;
-    border: none;
-    cursor: pointer;
-    transition: all 0.3s;
-    margin-bottom: 15px;
-}
-
-.notes-btn:hover {
-    background-color: #333;
-}
-
-.notes-content {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.5s ease;
-    background: var(--bg-tertiary);
-    border-radius: 8px;
-    margin-bottom: 15px;
-}
-
-.notes-content.expanded {
-    max-height: 500px;
-}
-
-.notes-text {
-    padding: 15px;
-    margin: 0;
-}
-
-.social-box {
-    background: var(--bg-tertiary);
-    padding: 15px;
-    border-radius: 8px;
-    margin-top: 15px;
+    color: var(--accent);
+    margin: 0 0 15px 0;
 }
 
 .social-links {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     gap: 10px;
 }
 
 .social-link {
-    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 15px;
     background-color: rgba(255, 255, 255, 0.1);
     border-radius: 8px;
     text-decoration: none;
@@ -227,6 +209,11 @@ body {
 
 .social-link:hover {
     background-color: rgba(255, 255, 255, 0.2);
+}
+
+.social-icon {
+    width: 20px;
+    text-align: center;
 }
 
 .error-message {
@@ -300,7 +287,8 @@ if(!app){document.getElementById("appContent").innerHTML="<p>❌ التطبيق 
 
 const dData=await fetchBin(downloadsBin);let downloads=dData.record.applications_downloads[pkg]||0;
 
-document.getElementById("appContent").innerHTML=`
+// إنشاء محتوى الصفحة
+let content = `
 <div class="app-card">
     <div class="app-header">
         <img src="${app.icon}" alt="icon">
@@ -310,77 +298,93 @@ document.getElementById("appContent").innerHTML=`
         </div>
     </div>
     
-    <div class="app-meta">
-        <span>التحميلات: ${downloads}</span>
-        <span>الإصدار: ${app.version}</span>
-        <span>التاريخ: ${app.releaseDate}</span>
+    <div class="meta-scroll-container">
+        <div class="app-meta">
+            <span>التحميلات: ${downloads}</span>
+            <span>الإصدار: ${app.version}</span>
+            <span>التاريخ: ${app.releaseDate}</span>
+        </div>
     </div>
     
-    <button class="download-btn" id="downloadBtn">⬇ تحميل التطبيق</button>
-    
+    <button class="download-btn" id="downloadBtn">
+        <span class="text">تحميل التطبيق</span>
+        <div class="loading"></div>
+    </button>`;
+
+// إضافة لقطات الشاشة
+if(app.screenshots && app.screenshots.length > 0) {
+    content += `
+    <h3 class="section-title">لقطات الشاشة</h3>
     <div class="screenshots-container">
-        <button class="scroll-btn scroll-left">←</button>
         <div class="screenshots-scroll">
             ${app.screenshots.map(s=>`<img src="${s}" class="screenshot">`).join("")}
         </div>
-        <button class="scroll-btn scroll-right">→</button>
-    </div>
-    
-    <div class="description">${app.longDesc}</div>
-    
-    <div class="divider"></div>
-    
-    <button class="notes-btn" id="notesBtn">ملاحظات المطور</button>
-    <div class="notes-content" id="notesContent">
-        <p class="notes-text">${app.extraInfo || 'لا توجد ملاحظات'}</p>
-    </div>
-    
+    </div>`;
+}
+
+// إضافة الوصف
+content += `
+    <div class="description">${app.longDesc}</div>`;
+
+// إضافة ملاحظات المطور إذا كانت موجودة
+if(app.extraInfo) {
+    content += `
+    <div class="notes-box">
+        <h3 class="notes-title">ملاحظات المطور</h3>
+        <p>${app.extraInfo}</p>
+    </div>`;
+}
+
+// إضافة روابط التواصل إذا كانت موجودة
+if(app.social && app.social.length > 0) {
+    content += `
     <div class="social-box">
+        <h3 class="social-title">وسائل التواصل</h3>
         <div class="social-links">
-            ${app.social&&app.social.length?app.social.map(s=>`<a href="${s}" target="_blank" class="social-link">${getSocialName(s)}</a>`).join(""):'<span>لا توجد روابط تواصل</span>'}
+            ${app.social.map(s=>{
+                const socialInfo = getSocialInfo(s);
+                return `<a href="${s}" target="_blank" class="social-link">
+                    <span class="social-icon">${socialInfo.icon}</span>
+                    <span>${socialInfo.name}</span>
+                </a>`;
+            }).join("")}
         </div>
-    </div>
-</div>
-`;
+    </div>`;
+}
 
-// إضافة أحداث التمرير للقطات الشاشة
-const scrollLeft = document.querySelector('.scroll-left');
-const scrollRight = document.querySelector('.scroll-right');
-const screenshotsScroll = document.querySelector('.screenshots-scroll');
+content += `</div>`;
 
-scrollLeft.addEventListener('click', () => {
-    screenshotsScroll.scrollBy({ left: -250, behavior: 'smooth' });
+document.getElementById("appContent").innerHTML = content;
+
+// إضافة حدث لزر التحميل
+document.getElementById("downloadBtn").addEventListener("click", async function(){
+    const btn = this;
+    btn.classList.add('loading');
+    
+    const newCount = await updateDownloads(pkg);
+    document.querySelector('.app-meta span:first-child').textContent = `التحميلات: ${newCount}`;
+    
+    setTimeout(() => {
+        window.location.href = app.download;
+    }, 1000);
 });
 
-scrollRight.addEventListener('click', () => {
-    screenshotsScroll.scrollBy({ left: 250, behavior: 'smooth' });
-});
-
-// إضافة حدث لزر ملاحظات المطور
-const notesBtn = document.getElementById('notesBtn');
-const notesContent = document.getElementById('notesContent');
-
-notesBtn.addEventListener('click', () => {
-    notesContent.classList.toggle('expanded');
-    notesBtn.textContent = notesContent.classList.contains('expanded') ? 'إخفاء الملاحظات' : 'ملاحظات المطور';
-});
-
-document.getElementById("downloadBtn").addEventListener("click",async()=>{
-const newCount=await updateDownloads(pkg);
-document.querySelector('.app-meta span:first-child').textContent = `التحميلات: ${newCount}`;
-window.location.href=app.download;
-});
 }catch(err){document.getElementById("appContent").innerHTML="<p>❌ خطأ في جلب البيانات</p>"}
 }
 
-function getSocialName(url){
-    if(url.includes('facebook.com')) return 'فيسبوك';
-    if(url.includes('twitter.com')) return 'تويتر';
-    if(url.includes('instagram.com')) return 'إنستغرام';
-    if(url.includes('youtube.com')) return 'يوتيوب';
-    if(url.includes('t.me')) return 'تلغرام';
-    if(url.includes('whatsapp.com')) return 'واتساب';
-    return 'رابط التواصل';
+function getSocialInfo(url){
+    if(url.includes('facebook.com')) return {icon: '<i class="fab fa-facebook"></i>', name: 'فيسبوك'};
+    if(url.includes('twitter.com') || url.includes('x.com')) return {icon: '<i class="fab fa-twitter"></i>', name: 'تويتر'};
+    if(url.includes('instagram.com')) return {icon: '<i class="fab fa-instagram"></i>', name: 'إنستغرام'};
+    if(url.includes('youtube.com')) return {icon: '<i class="fab fa-youtube"></i>', name: 'يوتيوب'};
+    if(url.includes('t.me')) return {icon: '<i class="fab fa-telegram"></i>', name: 'تلغرام'};
+    if(url.includes('whatsapp.com')) return {icon: '<i class="fab fa-whatsapp"></i>', name: 'واتساب'};
+    if(url.includes('linkedin.com')) return {icon: '<i class="fab fa-linkedin"></i>', name: 'لينكدإن'};
+    if(url.includes('github.com')) return {icon: '<i class="fab fa-github"></i>', name: 'جيت هاب'};
+    if(url.includes('discord.com') || url.includes('discord.gg')) return {icon: '<i class="fab fa-discord"></i>', name: 'ديسكورد'};
+    if(url.includes('tiktok.com')) return {icon: '<i class="fab fa-tiktok"></i>', name: 'تيك توك'};
+    if(url.includes('snapchat.com')) return {icon: '<i class="fab fa-snapchat"></i>', name: 'سناب شات'};
+    return {icon: '<i class="fas fa-globe"></i>', name: 'موقع ويب'};
 }
 
 loadApp();
