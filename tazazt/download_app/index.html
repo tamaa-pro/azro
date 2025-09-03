@@ -104,22 +104,51 @@ document.getElementById("appContent").innerHTML=content;
 document.getElementById("downloadBtn").addEventListener("click",async function(){const btn=this;const textSpan=btn.querySelector('.text');textSpan.innerHTML='<i class="fas fa-spinner fa-spin"></i> جاري التحميل...';const newCount=await updateDownloads(pkg);document.querySelector('.app-meta span:first-child').textContent=`التحميلات: ${newCount}`;setTimeout(()=>{window.location.href=app.download},1000)})}catch(err){document.getElementById("appContent").innerHTML=`<div class="error-message"><i class="fas fa-exclamation-triangle"></i><h2>خطأ في جلب البيانات</h2><p>حدث خطأ أثناء تحميل معلومات التطبيق</p></div>`}}
 function getSocialInfo(url){if(url.includes('facebook.com'))return{icon:'<i class="fab fa-facebook"></i>',name:'فيسبوك'};if(url.includes('twitter.com')||url.includes('x.com'))return{icon:'<i class="fab fa-twitter"></i>',name:'تويتر'};if(url.includes('instagram.com'))return{icon:'<i class="fab fa-instagram"></i>',name:'إنستغرام'};if(url.includes('youtube.com'))return{icon:'<i class="fab fa-youtube"></i>',name:'يوتيوب'};if(url.includes('t.me'))return{icon:'<i class="fab fa-telegram"></i>',name:'تلغرام'};if(url.includes('whatsapp.com'))return{icon:'<i class="fab fa-whatsapp"></i>',name:'واتساب'};if(url.includes('linkedin.com'))return{icon:'<i class="fab fa-linkedin"></i>',name:'لينكدإن'};if(url.includes('github.com'))return{icon:'<i class="fab fa-github"></i>',name:'جيت هاب'};if(url.includes('discord.com')||url.includes('discord.gg'))return{icon:'<i class="fab fa-discord"></i>',name:'ديسكورد'};if(url.includes('tiktok.com'))return{icon:'<i class="fab fa-tiktok"></i>',name:'تيك توك'};if(url.includes('snapchat.com'))return{icon:'<i class="fab fa-snapchat"></i>',name:'سناب شات'};return{icon:'<i class="fas fa-globe"></i>',name:'موقع ويب'}}
 loadApp();
+</script>
+<script>
 
-
-document.getElementById("downloadBtn").addEventListener("click", async function(){
-    const btn = this;
-    const textSpan = btn.querySelector('.text');
-    textSpan.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التحميل...';
+// دالة لتعطيل زر التحميل بعد النقر عليه
+function setupDownloadButton() {
+    const downloadButton = document.querySelector('.download-btn');
+    const downloadLink = downloadButton.getAttribute('href');
     
-    btn.disabled = true;
-    btn.style.opacity = "0.6";
-    btn.style.cursor = "not-allowed";
+    // التحقق إذا كان الزر قد تم النقر عليه مسبقاً
+    const isClicked = sessionStorage.getItem(`downloaded_${downloadLink}`);
+    
+    if (isClicked) {
+        disableDownloadButton(downloadButton);
+    }
+    
+    downloadButton.addEventListener('click', function(e) {
+        // منع السلوك الافتراضي للرابط
+        e.preventDefault();
+        
+        // تعطيل الزر لمنع النقر المتكرر
+        disableDownloadButton(downloadButton);
+        
+        // تسجيل أن الزر تم النقر عليه في sessionStorage
+        sessionStorage.setItem(`downloaded_${downloadLink}`, 'true');
+        
+        // الانتقال إلى رابط التحميل بعد تأخير بسيط
+        setTimeout(() => {
+            window.location.href = downloadLink;
+        }, 500);
+    });
+}
 
-    const newCount = await updateDownloads(pkg);
-    document.querySelector('.app-meta span:first-child').textContent = `التحميلات: ${newCount}`;
-    setTimeout(()=>{ window.location.href = app.download; },1000);
+// دالة لتعطيل زر التحميل
+function disableDownloadButton(button) {
+    button.style.opacity = '0.7';
+    button.style.cursor = 'not-allowed';
+    button.style.pointerEvents = 'none';
+    button.textContent = 'جاري التحميل...';
+}
+
+// استدعاء الدالة عند تحميل الصفحة
+document.addEventListener('DOMContentLoaded', function() {
+    // الانتظار حتى يتم تحميل بيانات التطبيق
+    setTimeout(setupDownloadButton, 1000);
 });
-
 
 </script>
 <script>
