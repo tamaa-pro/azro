@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>رفع تطبيق</title>
+<style>
+body{background:#111;color:#eee;font-family:sans-serif;margin:0;padding:20px}
+h1{text-align:center;margin-bottom:20px}
+form{max-width:900px;margin:auto;display:grid;gap:15px}
+label{font-weight:bold;margin-bottom:5px;display:block}
+input,textarea,button{width:100%;padding:10px;border:none;border-radius:8px;font-size:14px}
+input,textarea{background:#222;color:#eee}
+button{background:#4caf50;color:#fff;cursor:pointer}
+button:hover{background:#45a049}
+.note{background:#222;padding:5px 10px;font-size:12px;color:#aaa;border-radius:6px;margin-top:5px}
+.preview{margin-top:10px;display:flex;gap:10px;flex-wrap:wrap}
+.preview img{max-height:100px;border-radius:8px;border:1px solid #444}
+.counter{text-align:right;font-size:12px;color:#aaa;margin-top:3px}
+</style>
+</head>
+<body>
+<h1>رفع تطبيق جديد</h1>
+<form id="appForm">
+<label>أيقونة التطبيق</label>
+<input type="file" id="iconFile" accept="image/*">
+<input type="url" id="iconUrl" placeholder="أو أدخل رابط الصورة">
+<div class="preview" id="iconPreview"></div>
+<div class="note">يجب أن تكون الأيقونة مربعة</div>
+
+<label>اسم الحزمة</label>
+<input type="text" id="packageName" required>
+
+<label>اسم التطبيق</label>
+<input type="text" id="appName" required>
+
+<label>رابط التحميل المباشر (apk)</label>
+<input type="url" id="downloadLink" required>
+
+<label>رقم الإصدار</label>
+<input type="text" id="version" required>
+
+<label>تاريخ الإصدار</label>
+<input type="date" id="releaseDate" min="2020-01-01" required>
+
+<label>اسم المطور / الأستوديو</label>
+<input type="text" id="developer" required>
+
+<label>لقطات الشاشة</label>
+<input type="file" id="screenshotsFile" accept="image/*" multiple>
+<textarea id="screenshotsUrls" placeholder="أدخل روابط مباشرة (سطر لكل رابط)"></textarea>
+<div class="preview" id="screenshotsPreview"></div>
+<div class="note">الحد الأدنى 3 صور والحد الأقصى 15 صورة</div>
+
+<label>وصف عام</label>
+<textarea id="shortDesc" maxlength="50"></textarea>
+<div class="counter" id="shortDescCounter">0/50</div>
+
+<label>وصف مفصل</label>
+<textarea id="longDesc" maxlength="900"></textarea>
+<div class="counter" id="longDescCounter">0/900</div>
+
+<label>روابط التواصل الاجتماعي</label>
+<textarea id="socialLinks" placeholder="رابط في كل سطر (حتى 4)"></textarea>
+
+<label>معلومات إضافية</label>
+<textarea id="extraInfo" maxlength="200"></textarea>
+<div class="counter" id="extraInfoCounter">0/200</div>
+
+<button type="submit">رفع التطبيق</button>
+<div id="status"></div>
+</form>
+
+<script>
+const cloudName="dph9pk34v";
+const uploadPreset="application_images";
+const jsonBinUrl="https://api.jsonbin.io/v3/b/68b5a02ed0ea881f406e0b94";
+const downloadsBinUrl="https://api.jsonbin.io/v3/b/68b73b75d0ea881f406fa775";
+const apiKey="$2a$10$F5TR7pSKPRRNAeBzsdxQ4.NYog8xHGUi0hektkor0q/QWFVXzba3q";
+
+function updateCounter(id,max){const el=document.getElementById(id);el.addEventListener("input",()=>{document.getElementById(id+"Counter").textContent=el.value.length+"/"+max})}
+updateCounter("shortDesc",50);
+updateCounter("longDesc",900);
+updateCounter("extraInfo",200);
+
+function previewImage(input,container){const c=document.getElementById(container);c.innerHTML="";if(input.files){[...input.files].forEach(f=>{const r=new FileReader();r.onload=e=>{const img=document.createElement("img");img.src=e.target.result;c.appendChild(img)};r.readAsDataURL(f)})}}
+document.getElementById("iconFile").addEventListener("change",e=>previewImage(e.target,"iconPreview"));
+document.getElementById("screenshotsFile").addEventListener("change",e=>previewImage(e.target,"screenshotsPreview"));
+
+async function uploadToCloudinary(file){const form=new FormData();form.append("file",file);form.append("upload_preset",uploadPreset);const res=await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,{method:"POST",body:form});const data=await res.json();return data.secure_url}
+
+async function addAppToDownloadsCounter(packageName){
+    try{
+        const res=await fetch(downloadsBinUrl,{headers:{"X-Master-Key":apiKey}});
+        const data=await res.json();
+        let arr=data.record.applications_downloads||[];
+        let record=arr.find(obj=>packageName in obj);
+        if(!record){
+            arr.push({[packageName]:"0"});
+            await fetch(downloadsBinUrl,{method:"PUT",headers:{"Content-Type":"application/json","X-Master-Key":apiKey},body:JSON.stringify({applications_downloads:arr})});
+        }
+    }catch(error){
+        console.error("خطأ في إضافة التطبيق إلى عداد التحميلات:",error);
+    }
+}
+
+document.getElementById("appForm").addEventListener("submit",async e=>{
+e.preventDefault();
+const status=document.getElementById("status");status.textContent="جاري الرفع...";
+try{
+const today=new Date().toISOString().split("T")[0];
+if(document.getElementById("releaseDate").value>today)throw new Error("تاريخ الإصدار لا يمكن أن يكون مستقبلي");
+
+let iconLink=document.getElementById("iconUrl").value;
+if(!iconLink&&document.getElementById("iconFile").files[0])iconLink=await uploadToCloudinary(document.getElementById("iconFile").files[0]);
+
+let screenshots=[...document.getElementById("screenshotsUrls").value.split("\n").filter(x=>x.trim()!=="")];
+for(const f of document.getElementById("screenshotsFile").files){screenshots.push(await uploadToCloudinary(f))}
+if(screenshots.length<3||screenshots.length>15)throw new Error("عدد لقطات الشاشة يجب أن يكون بين 3 و 15");
+
+let socials=document.getElementById("socialLinks").value.split("\n").filter(x=>x.trim()!=="");
+if(socials.length>4)throw new Error("عدد روابط التواصل لا يتجاوز 4");
+
+const newApp={
+icon:iconLink,
+package:document.getElementById("packageName").value,
+name:document.getElementById("appName").value,
+download:document.getElementById("downloadLink").value,
+version:document.getElementById("version").value,
+releaseDate:document.getElementById("releaseDate").value,
+developer:document.getElementById("developer").value,
+screenshots:screenshots,
+shortDesc:document.getElementById("shortDesc").value,
+longDesc:document.getElementById("longDesc").value,
+social:socials,
+extraInfo:document.getElementById("extraInfo").value,
+uploadDate:today
+};
+
+const res=await fetch(jsonBinUrl,{headers:{"X-Master-Key":apiKey}});
+const current=await res.json();
+const updated={applications:[...current.record.applications,newApp]};
+await fetch(jsonBinUrl,{method:"PUT",headers:{"Content-Type":"application/json","X-Master-Key":apiKey},body:JSON.stringify(updated)});
+
+await addAppToDownloadsCounter(newApp.package);
+
+status.textContent="✅ تم رفع التطبيق بنجاح";
+}catch(err){status.textContent="❌ خطأ: "+err.message}
+});
+</script>
+</body>
+</html>
