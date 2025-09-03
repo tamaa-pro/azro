@@ -320,7 +320,33 @@ function getPackageFromUrl(){const q=window.location.search;return q.startsWith(
 
 async function fetchBin(url){const res=await fetch(url,{headers:{"X-Master-Key":apiKey}});return res.json()}
 
-async function updateDownloads(pkg){const d=await fetchBin(downloadsBin);let record=d.record.applications_downloads;if(!record[pkg]&&record[pkg]!==0)record[pkg]=0;record[pkg]++;await fetch(downloadsBin,{method:"PUT",headers:{"Content-Type":"application/json","X-Master-Key":apiKey},body:JSON.stringify({applications_downloads:record})});return record[pkg]}
+async function updateDownloads(pkg){
+    try {
+        const d = await fetchBin(downloadsBin);
+        let record = d.record.applications_downloads;
+        
+        if (!record[pkg] && record[pkg] !== 0) {
+            record[pkg] = 0;
+        }
+        
+        record[pkg]++;
+        
+        const updateResponse = await fetch(downloadsBin, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "X-Master-Key": apiKey
+            },
+            body: JSON.stringify({applications_downloads: record})
+        });
+        
+        const updateData = await updateResponse.json();
+        return updateData.record.applications_downloads[pkg];
+    } catch (error) {
+        console.error("Error updating downloads:", error);
+        return 0;
+    }
+}
 
 async function loadApp(){
 const pkg=getPackageFromUrl();if(!pkg){
@@ -347,7 +373,15 @@ if(!app){
     return;
 }
 
-const dData=await fetchBin(downloadsBin);let downloads=dData.record.applications_downloads[pkg]||0;
+let downloads = 0;
+try {
+    const dData = await fetchBin(downloadsBin);
+    if (dData.record.applications_downloads && dData.record.applications_downloads[pkg] !== undefined) {
+        downloads = parseInt(dData.record.applications_downloads[pkg]) || 0;
+    }
+} catch (error) {
+    downloads = 0;
+}
 
 let content = `
 <div class="app-card">
@@ -418,7 +452,7 @@ document.getElementById("appContent").innerHTML = content;
 document.getElementById("downloadBtn").addEventListener("click", async function(){
     const btn = this;
     const textSpan = btn.querySelector('.text');
-    textSpan.textContent = 'جاري التحميل...';
+    textSpan.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التحميل...';
     
     const newCount = await updateDownloads(pkg);
     document.querySelector('.app-meta span:first-child').textContent = `التحميلات: ${newCount}`;
@@ -428,7 +462,14 @@ document.getElementById("downloadBtn").addEventListener("click", async function(
     }, 1000);
 });
 
-}catch(err){document.getElementById("appContent").innerHTML="<p>❌ خطأ في جلب البيانات</p>"}
+}catch(err){
+    document.getElementById("appContent").innerHTML=`
+        <div class="error-message">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h2>خطأ في جلب البيانات</h2>
+            <p>حدث خطأ أثناء تحميل معلومات التطبيق</p>
+        </div>`;
+}
 }
 
 function getSocialInfo(url){
