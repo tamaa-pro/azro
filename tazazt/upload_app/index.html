@@ -428,7 +428,7 @@
         
         <div class="buttons-container">
             <button type="submit">رفع التطبيق</button>
-            <button type="button" class="edit-button" onclick="window.open('https://tamaa-pro.github.io/azro/edit_app', '_blank')">تعديل تطبيق</button>
+            <button type="button" class="edit-button" onclick="window.open('https://tamaa-pro.github.io/azro/tazazt/edit_app', '_self')">تعديل تطبيق</button>
         </div>
         
         <div id="status"></div>
@@ -457,7 +457,7 @@
             const maxFilesWarning = document.getElementById('maxFilesWarning');
             const screenshotsButton = document.getElementById('screenshotsButton');
             
-            // متغير لتخزين رابط الأيقونة
+            
             let appIconUrl = '';
             
             function updateCounter(id, max) {
@@ -524,7 +524,7 @@
                 const c = document.getElementById("iconPreview");
                 c.innerHTML = "";
                 previewImage(e.target, "iconPreview");
-                appIconUrl = ''; // إعادة تعيين رابط الأيقونة عند اختيار ملف
+                appIconUrl = ''; 
             });
             
             document.getElementById("screenshotsFile").addEventListener("change", e => {
@@ -555,7 +555,6 @@
                     containerDiv.appendChild(removeBtn);
                     preview.appendChild(containerDiv);
                     
-                    // حفظ رابط الأيقونة في المتغير
                     appIconUrl = url;
                     document.getElementById("iconUrl").value = "";
                 }
@@ -805,7 +804,7 @@
         const data = await res.json();
         const downloadsData = data.record.applications_downloads || {};
         
-        if (!(packageName in downloadsData)) { // ✅ تحقق صحيح
+        if (!(packageName in downloadsData)) {
             downloadsData[packageName] = 0;
             
             await fetch(downloadsBinUrl, {
