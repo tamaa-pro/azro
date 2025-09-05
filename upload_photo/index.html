@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>رفع صورة</title>
+<style>
+body{background:#111;color:#eee;font-family:sans-serif;display:flex;flex-direction:column;align-items:center;padding:40px}
+.container{width:100%;max-width:400px;text-align:center}
+input,button{margin:10px 0;padding:10px;border:none;border-radius:8px;font-size:14px}
+button{background:#0a84ff;color:#fff;cursor:pointer;transition:.3s}
+button:hover{background:#0060d4}
+img{max-width:100%;margin-top:10px;border-radius:12px}
+#linkBox{margin-top:15px;padding:10px;background:#222;border-radius:8px;word-break:break-all}
+.toast{position:fixed;bottom:-60px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:12px 20px;border-radius:10px;opacity:0;transition:all .5s}
+.toast.show{bottom:30px;opacity:1}
+</style>
+</head>
+<body>
+<div class="container">
+  <h2>رفع صورة إلى Top4Top</h2>
+  <input type="file" id="fileInput" accept="image/*">
+  <img id="preview" style="display:none">
+  <button onclick="upload()">رفع</button>
+  <div id="linkBox"></div>
+</div>
+<div id="toast" class="toast"></div>
+<script>
+const workerURL="https://top4top-api.tamaa-production-studios.workers.dev";
+function showToast(msg,ok=true){let t=document.getElementById("toast");t.innerText=msg;t.style.background=ok?"#28a745":"#d33";t.classList.add("show");setTimeout(()=>t.classList.remove("show"),3000);}
+document.getElementById("fileInput").addEventListener("change",e=>{
+  const f=e.target.files[0];
+  if(f){let r=new FileReader();r.onload=ev=>{let p=document.getElementById("preview");p.src=ev.target.result;p.style.display="block"};r.readAsDataURL(f);}
+});
+async function upload(){
+  const f=document.getElementById("fileInput").files[0];
+  if(!f){showToast("اختر صورة أولا!",false);return;}
+  const form=new FormData();form.append("file",f);form.append("token",crypto.randomUUID());
+  try{
+    let res=await fetch(workerURL,{method:"POST",body:form});
+    if(!res.ok)throw new Error("فشل الرفع");
+    let d=await res.json();
+    if(d.url){document.getElementById("linkBox").innerText=d.url;showToast("تم الرفع بنجاح ✅");}
+    else showToast("تعذر استخراج الرابط",false);
+  }catch(e){showToast("خطأ أثناء الرفع",false);}
+}
+</script>
+</body>
+</html>
