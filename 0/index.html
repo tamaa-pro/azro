@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>رفع إلى Top4Top</title>
+</head>
+<body style="background:#111;color:#eee;font-family:sans-serif">
+  <h2>رفع الملفات إلى Top4Top</h2>
+  <input type="file" id="fileInput" multiple>
+  <button id="uploadBtn">رفع الآن</button>
+
+  <pre id="result"></pre>
+
+<script>
+document.getElementById("uploadBtn").onclick = async () => {
+  let files = document.getElementById("fileInput").files;
+  if (!files.length) {
+    alert("اختر ملف واحد على الأقل");
+    return;
+  }
+
+  let form = new FormData();
+  // نضيف الملفات بأسمائهم كما في الكود الأصلي (file_0_, file_1_, ...)
+  for (let i = 0; i < files.length; i++) {
+    form.append("file_" + i + "_", files[i]);
+  }
+  // لازم نحاكي زر الرفع
+  form.append("submitr", "[ رفع الملفات ]");
+
+  try {
+    let res = await fetch("https://up.top4top.io/index.php", {
+      method: "POST",
+      body: form
+    });
+    let text = await res.text();
+    document.getElementById("result").textContent = text;
+    // هنا سيظهر لك كود HTML يحتوي روابط التحميل
+  } catch (e) {
+    document.getElementById("result").textContent = "خطأ: " + e;
+  }
+};
+</script>
+</body>
+</html>
