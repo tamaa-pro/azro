@@ -397,8 +397,8 @@
 
             <div class="form-group">
                 <label>وصف مفصل</label>
-                <textarea id="longDesc" maxlength="900" required></textarea>
-                <div class="counter" id="longDescCounter">0/900</div>
+                <textarea id="longDesc" maxlength="1000" required></textarea>
+                <div class="counter" id="longDescCounter">0/1000</div>
                 <div class="note">يجب أن يحتوي الوصف المفصل على الأقل على 100 حرف</div>
             </div>
         </div>
@@ -467,7 +467,7 @@
                 });
             }
             updateCounter("shortDesc", 50);
-            updateCounter("longDesc", 900);
+            updateCounter("longDesc", 1000);
             updateCounter("extraInfo", 200);
 
             function previewImage(input, container) {
