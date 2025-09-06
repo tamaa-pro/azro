@@ -20,21 +20,18 @@ document.getElementById("uploadBtn").onclick = async () => {
   }
 
   let form = new FormData();
-  // نضيف الملفات بأسمائهم كما في الكود الأصلي (file_0_, file_1_, ...)
   for (let i = 0; i < files.length; i++) {
     form.append("file_" + i + "_", files[i]);
   }
-  // لازم نحاكي زر الرفع
   form.append("submitr", "[ رفع الملفات ]");
 
   try {
-    let res = await fetch("https://up.top4top.io/index.php", {
+    let res = await fetch("https://corsproxy.io/?" + encodeURIComponent("https://up.top4top.io/index.php"), {
       method: "POST",
       body: form
     });
     let text = await res.text();
     document.getElementById("result").textContent = text;
-    // هنا سيظهر لك كود HTML يحتوي روابط التحميل
   } catch (e) {
     document.getElementById("result").textContent = "خطأ: " + e;
   }
