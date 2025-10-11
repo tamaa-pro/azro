@@ -11,7 +11,7 @@
 body{background:var(--bg-primary);color:var(--text-primary);font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;margin:0;padding:20px}
 .container{max-width:900px;margin:auto;display:flex;flex-direction:column;gap:20px}
 
-/* شريط التنقل الجديد */
+
 .navbar {
     background: var(--bg-secondary);
     border-radius: 10px;
@@ -71,7 +71,7 @@ body{background:var(--bg-primary);color:var(--text-primary);font-family:'Segoe U
     background: var(--accent-hover);
 }
 
-/* بقية الأنماط كما هي */
+
 .card{background:var(--bg-secondary);border-radius:10px;padding:15px;cursor:pointer;transition:background .3s;margin-bottom:15px}
 .card:hover{background:#2a2a2a}
 .card-top{display:flex;align-items:center;gap:15px;margin-bottom:10px}
@@ -86,7 +86,7 @@ body{background:var(--bg-primary);color:var(--text-primary);font-family:'Segoe U
 </head>
 <body>
 <div class="container">
-    <!-- شريط التنقل الجديد -->
+    
     <div class="navbar">
         <input type="text" class="search-input" id="searchInput" placeholder="ابحث عن تطبيق...">
         <button class="nav-button" id="sortButton" title="عكس ترتيب التطبيقات">
@@ -128,14 +128,11 @@ async function loadApps(){
 }
 
 function renderApps() {
-    // ترتيب التطبيقات حسب التاريخ
+
     const sortedApps = [...allApps].sort((a, b) => {
         const dateA = new Date(a.uploadDate);
         const dateB = new Date(b.uploadDate);
-        return isNewestFirst ? dateB - dateA : dateA - dateB;
-    });
-    
-    // البحث إذا كان هناك نص في خانة البحث
+        return isNewestFirst ? dateB - dateA : dateA - dateB; });
     const searchTerm = document.getElementById("searchInput").value.toLowerCase();
     const filteredApps = sortedApps.filter(app => 
         app.name.toLowerCase().includes(searchTerm) || 
@@ -166,7 +163,7 @@ function renderApps() {
 
 function openApp(pkg){window.location.href=`https://tamaa-pro.github.io/azro/tazazt/download_app?${pkg}`}
 
-// إضافة مستمعي الأحداث
+
 document.getElementById('sortButton').addEventListener('click', function() {
     isNewestFirst = !isNewestFirst;
     this.innerHTML = isNewestFirst ? 
@@ -178,8 +175,8 @@ document.getElementById('sortButton').addEventListener('click', function() {
 document.getElementById('searchInput').addEventListener('input', renderApps);
 
 document.getElementById('addAppButton').addEventListener('click', function() {
-    // رابط مؤقت - يمكن تغييره لاحقًا
-    window.location.href = "https://example.com/add-app";
+    
+    window.location.href = "https://tamaa-pro.github.io/tazazt/upload_app";
 });
 
 loadApps();
