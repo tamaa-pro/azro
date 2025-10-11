@@ -8,7 +8,7 @@
 <link rel="icon" href="https://k.top4top.io/p_35326d4d31.jpg" type="image/png">
 <style>
 :root{--bg-primary:#121212;--bg-secondary:#1e1e1e;--bg-tertiary:#252525;--text-primary:#e0e0e0;--text-secondary:#a0a0a0;--accent:#4CAF50;--accent-hover:#3e8e41;--error:#ff4d4d}
-body{background:var(--bg-primary);color:var(--text-primary);font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;margin:0;padding:20px;line-height:1.6}
+body{background:var(--bg-primary);color:var(--text-primary);font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;margin:0;padding:10px;line-height:1.6}
 .container{max-width:900px;margin:auto}
 .app-card{background:var(--bg-secondary);border-radius:10px;padding:25px;margin-bottom:20px}
 .app-header{display:flex;align-items:center;gap:20px;margin-bottom:15px}
@@ -104,17 +104,17 @@ if(app.screenshots&&app.screenshots.length>0){content+=`<h3 class="section-title
 content+=`<div class="description">${app.longDesc}</div><div class="divider"></div>`;
 if(app.extraInfo){content+=`<div class="notes-box"><h3 class="notes-title">ملاحظات المطور</h3><p>${app.extraInfo}</p></div>`}
 if(app.social&&app.social.length>0){content+=`<div class="social-box"><h3 class="social-title">وسائل التواصل</h3><div class="social-links">${app.social.map(s=>{const socialInfo=getSocialInfo(s);return `<a href="${s}" target="_self" class="social-link"><span class="social-icon">${socialInfo.icon}</span><span>${socialInfo.name}</span></a>`}).join("")}</div></div>`}
-// إضافة بطاقة مشاركة الرابط
+
 content+=`<div class="share-box"><h3 class="share-title">مشاركة التطبيق</h3><div class="share-buttons"><button class="share-btn copy" id="copyLinkBtn"><i class="fas fa-copy"></i> نسخ الرابط</button><button class="share-btn share" id="shareLinkBtn"><i class="fas fa-share-alt"></i> مشاركة</button></div></div>`;
 content+=`</div>`;
 document.getElementById("appContent").innerHTML=content;
 document.getElementById("downloadBtn").addEventListener("click",async function(){const btn=this;const textSpan=btn.querySelector('.text');textSpan.innerHTML='<i class="fas fa-spinner fa-spin"></i> جاري التحميل...';const newCount=await updateDownloads(pkg);document.querySelector('.app-meta span:first-child').textContent=`التحميلات: ${newCount}`;setTimeout(()=>{window.location.href=app.download},1000)});
-// إضافة مستمعي الأحداث لأزرار المشاركة
+
 document.getElementById('copyLinkBtn').addEventListener('click', copyPageLink);
 document.getElementById('shareLinkBtn').addEventListener('click', sharePageLink);
 }catch(err){document.getElementById("appContent").innerHTML=`<div class="error-message"><i class="fas fa-exclamation-triangle"></i><h2>خطأ في جلب البيانات</h2><p>حدث خطأ أثناء تحميل معلومات التطبيق</p></div>`}}
 function getSocialInfo(url){if(url.includes('facebook.com'))return{icon:'<i class="fab fa-facebook"></i>',name:'فيسبوك'};if(url.includes('twitter.com')||url.includes('x.com'))return{icon:'<i class="fab fa-twitter"></i>',name:'تويتر'};if(url.includes('instagram.com'))return{icon:'<i class="fab fa-instagram"></i>',name:'إنستغرام'};if(url.includes('youtube.com'))return{icon:'<i class="fab fa-youtube"></i>',name:'يوتيوب'};if(url.includes('t.me'))return{icon:'<i class="fab fa-telegram"></i>',name:'تلغرام'};if(url.includes('whatsapp.com'))return{icon:'<i class="fab fa-whatsapp"></i>',name:'واتساب'};if(url.includes('linkedin.com'))return{icon:'<i class="fab fa-linkedin"></i>',name:'لينكدإن'};if(url.includes('github.com'))return{icon:'<i class="fab fa-github"></i>',name:'جيت هاب'};if(url.includes('discord.com')||url.includes('discord.gg'))return{icon:'<i class="fab fa-discord"></i>',name:'ديسكورد'};if(url.includes('tiktok.com'))return{icon:'<i class="fab fa-tiktok"></i>',name:'تيك توك'};if(url.includes('snapchat.com'))return{icon:'<i class="fab fa-snapchat"></i>',name:'سناب شات'};return{icon:'<i class="fas fa-globe"></i>',name:'موقع ويب'}}
-// دالة نسخ الرابط إلى الحافظة
+
 function copyPageLink() {
     const pageUrl = window.location.href;
     navigator.clipboard.writeText(pageUrl).then(() => {
@@ -130,7 +130,7 @@ function copyPageLink() {
         alert('تعذر نسخ الرابط: ' + err);
     });
 }
-// دالة مشاركة الرابط
+
 function sharePageLink() {
     const pageUrl = window.location.href;
     const pageTitle = document.querySelector('.app-title')?.textContent || 'تطبيق';
@@ -143,7 +143,7 @@ function sharePageLink() {
             console.log('خطأ في المشاركة:', err);
         });
     } else {
-        // بديل للمتصفحات التي لا تدعم Web Share API
+        
         copyPageLink();
         const btn = document.getElementById('shareLinkBtn');
         const originalText = btn.innerHTML;
