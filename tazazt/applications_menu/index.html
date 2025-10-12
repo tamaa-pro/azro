@@ -32,7 +32,7 @@ body{background:var(--bg-primary);color:var(--text-primary);font-family:'Segoe U
 .skeleton{position:relative;overflow:hidden;background-color:#2a2a2a;border-radius:8px}
 .skeleton::after{content:"";position:absolute;top:0;left:-150px;height:100%;width:150px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent);animation:shimmer 1.2s infinite}
 @keyframes shimmer{100%{transform:translateX(100%)}}
-.skeleton-card {background: var(--bg-secondary);border-radius: 10px;padding: 10px;margin-bottom: 15px;height: 140px;}
+.skeleton-card {background: var(--bg-secondary);border-radius: 10px;padding: 10px;margin-bottom: 15px;height: 150px;}
 .skeleton-line{height:12px;width:100%;margin:8px 5px}
 .skeleton-img{width:64px;height:64px;border-radius:12px;margin-right:2px;flex-shrink:0}
 .skeleton-top{display:flex;align-items:center;margin-bottom:10px}
@@ -40,12 +40,12 @@ body{background:var(--bg-primary);color:var(--text-primary);font-family:'Segoe U
 </head>
 <body>
 <div class="container">
-    <div class="navbar">
-        <input type="text" class="search-input" id="searchInput" placeholder="ابحث عن تطبيق...">
-        <button class="nav-button" id="sortButton" title="عكس ترتيب التطبيقات"><i class="fas fa-sort-amount-down"></i></button>
-        <button class="nav-button add-app" id="addAppButton" title="إضافة تطبيق جديد"><i class="fas fa-plus"></i></button>
-    </div>
-    <div id="appsList"></div>
+<div class="navbar">
+<input type="text" class="search-input" id="searchInput" placeholder="ابحث عن تطبيق...">
+<button class="nav-button" id="sortButton" title="عكس ترتيب التطبيقات"><i class="fas fa-sort-amount-down"></i></button>
+<button class="nav-button add-app" id="addAppButton" title="إضافة تطبيق جديد"><i class="fas fa-plus"></i></button>
+</div>
+<div id="appsList"></div>
 </div>
 <div class="footer">Powered by TAMAA PRO STUDIO</div>
 
@@ -59,15 +59,15 @@ let skeletonHTML="";
 for(let i=0;i<5;i++){
 skeletonHTML+=`
 <div class="skeleton-card">
-  <div class="skeleton-top">
-    <div class="skeleton skeleton-img"></div>
-    <div style="flex:1">
-      <div class="skeleton skeleton-line" style="width:60%;height:16px"></div>
-      <div class="skeleton skeleton-line" style="width:40%"></div>
-    </div>
-  </div>
-  <div class="skeleton skeleton-line" style="width:90%"></div>
-  <div class="skeleton skeleton-line" style="width:50%"></div>
+<div class="skeleton-top">
+<div class="skeleton skeleton-img"></div>
+<div style="flex:1">
+<div class="skeleton skeleton-line" style="width:60%;height:16px"></div>
+<div class="skeleton skeleton-line" style="width:40%"></div>
+</div>
+</div>
+<div class="skeleton skeleton-line" style="width:90%"></div>
+<div class="skeleton skeleton-line" style="width:50%"></div>
 </div>`;
 }
 document.getElementById("appsList").innerHTML=skeletonHTML;
@@ -101,15 +101,15 @@ const filtered=sorted.filter(app=>app.name.toLowerCase().includes(search)||app.d
 if(filtered.length===0){document.getElementById("appsList").innerHTML="<p>لا توجد تطبيقات تطابق بحثك</p>";return;}
 const html=filtered.map(app=>`
 <div class="card" onclick="openApp('${app.package}')">
-  <div class="card-top">
-    <img src="${app.icon}" alt="icon">
-    <div class="card-info">
-      <h2>${app.name}</h2>
-      <p>${app.developer}</p>
-    </div>
-  </div>
-  <div class="card-desc">${app.shortDesc}</div>
-  <div class="card-date">تاريخ الرفع: ${app.uploadDate}</div>
+<div class="card-top">
+<img src="${app.icon}" alt="icon">
+<div class="card-info">
+<h2>${app.name}</h2>
+<p>${app.developer}</p>
+</div>
+</div>
+<div class="card-desc">${app.shortDesc}</div>
+<div class="card-date">تاريخ الرفع: ${app.uploadDate}</div>
 </div>`).join("");
 document.getElementById("appsList").innerHTML=html;
 }
