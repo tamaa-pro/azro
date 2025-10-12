@@ -26,18 +26,15 @@ body{background:var(--bg-primary);color:var(--text-primary);font-family:'Segoe U
 .card-info p{margin:3px 0 0 0;font-size:14px;color:var(--text-secondary)}
 .card-desc{background:var(--bg-tertiary);padding:10px;border-radius:8px;font-size:14px;color:var(--text-primary);margin-bottom:8px}
 .card-date{font-size:12px;color:var(--text-secondary)}
-.loading{text-align:center;padding:45px}
 .footer{text-align:center;margin-top:40px;padding:15px;color:var(--text-secondary);font-size:14px}
 
-/* ===== Skeleton loading effect ===== */
-.skeleton-card{background:var(--bg-secondary);border-radius:10px;padding:10px;margin-bottom:15px;overflow:hidden}
-.skeleton-anim{background:linear-gradient(90deg,#2a2a2a 25%,#333 50%,#2a2a2a 75%);background-size:200% 100%;animation:shimmer 1.5s infinite}
-@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-.skeleton-img{width:64px;height:64px;border-radius:12px;margin-right:10px;flex-shrink:0}
-.skeleton-line{height:14px;border-radius:4px;margin:6px 0}
-.skeleton-line.short{width:30%}
-.skeleton-line.medium{width:60%}
-.skeleton-line.long{width:90%}
+/* Skeleton loading */
+.skeleton{position:relative;overflow:hidden;background-color:#2a2a2a;border-radius:8px}
+.skeleton::after{content:"";position:absolute;top:0;left:-150px;height:100%;width:150px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent);animation:shimmer 1.2s infinite}
+@keyframes shimmer{100%{transform:translateX(100%)}}
+.skeleton-card{background:var(--bg-secondary);border-radius:10px;padding:10px;margin-bottom:15px}
+.skeleton-line{height:12px;width:100%;margin:8px 0}
+.skeleton-img{width:64px;height:64px;border-radius:12px;margin-right:15px;flex-shrink:0}
 .skeleton-top{display:flex;align-items:center;margin-bottom:10px}
 </style>
 </head>
@@ -45,14 +42,9 @@ body{background:var(--bg-primary);color:var(--text-primary);font-family:'Segoe U
 <div class="container">
     <div class="navbar">
         <input type="text" class="search-input" id="searchInput" placeholder="ابحث عن تطبيق...">
-        <button class="nav-button" id="sortButton" title="عكس ترتيب التطبيقات">
-            <i class="fas fa-sort-amount-down"></i>
-        </button>
-        <button class="nav-button add-app" id="addAppButton" title="إضافة تطبيق جديد">
-            <i class="fas fa-plus"></i>
-        </button>
+        <button class="nav-button" id="sortButton" title="عكس ترتيب التطبيقات"><i class="fas fa-sort-amount-down"></i></button>
+        <button class="nav-button add-app" id="addAppButton" title="إضافة تطبيق جديد"><i class="fas fa-plus"></i></button>
     </div>
-
     <div id="appsList"></div>
 </div>
 <div class="footer">Powered by TAMAA PRO STUDIO</div>
@@ -62,32 +54,29 @@ const jsonBinUrl="https://api.jsonbin.io/v3/b/68b5a02ed0ea881f406e0b94";
 const apiKey="$2a$10$F5TR7pSKPRRNAeBzsdxQ4.NYog8xHGUi0hektkor0q/QWFVXzba3q";
 let allApps=[];let isNewestFirst=true;
 
-function showSkeleton(){
-let html="";
-for(let i=0;i<6;i++){
-html+=`
+function showSkeletons(){
+let skeletonHTML="";
+for(let i=0;i<5;i++){
+skeletonHTML+=`
 <div class="skeleton-card">
   <div class="skeleton-top">
-    <div class="skeleton-img skeleton-anim"></div>
+    <div class="skeleton skeleton-img"></div>
     <div style="flex:1">
-      <div class="skeleton-line long skeleton-anim"></div>
-      <div class="skeleton-line medium skeleton-anim"></div>
+      <div class="skeleton skeleton-line" style="width:60%;height:16px"></div>
+      <div class="skeleton skeleton-line" style="width:40%"></div>
     </div>
   </div>
-  <div class="skeleton-line long skeleton-anim"></div>
-  <div class="skeleton-line short skeleton-anim"></div>
+  <div class="skeleton skeleton-line" style="width:90%"></div>
+  <div class="skeleton skeleton-line" style="width:50%"></div>
 </div>`;
 }
-document.getElementById("appsList").innerHTML=html;
+document.getElementById("appsList").innerHTML=skeletonHTML;
 }
 
-async function fetchApps(){
-const res=await fetch(jsonBinUrl,{headers:{"X-Master-Key":apiKey}});
-return res.json();
-}
+async function fetchApps(){const res=await fetch(jsonBinUrl,{headers:{"X-Master-Key":apiKey}});return res.json();}
 
 async function loadApps(){
-showSkeleton();
+showSkeletons();
 try{
 const data=await fetchApps();
 allApps=data.record.applications;
@@ -96,48 +85,61 @@ document.getElementById("appsList").innerHTML="<p>لا توجد تطبيقات �
 return;
 }
 renderApps();
-}catch(err){
+}catch(e){
 document.getElementById("appsList").innerHTML="<p>❌ خطأ في تحميل التطبيقات</p>";
 }
 }
 
 function renderApps(){
-const sortedApps=[...allApps].sort((a,b)=>{
-const A=new Date(a.uploadDate),B=new Date(b.uploadDate);
-return isNewestFirst?B-A:A-B;});
-const term=document.getElementById("searchInput").value.toLowerCase();
-const filtered=sortedApps.filter(a=>a.name.toLowerCase().includes(term)||a.developer.toLowerCase().includes(term)||a.shortDesc.toLowerCase().includes(term));
-if(filtered.length===0){
-document.getElementById("appsList").innerHTML="<p>لا توجد تطبيقات تطابق بحثك</p>";
-return;
-}
-const html=filtered.map(a=>`
-<div class="card" onclick="openApp('${a.package}')">
-<div class="card-top"><img src="${a.icon}" alt="icon"><div class="card-info"><h2>${a.name}</h2><p>${a.developer}</p></div></div>
-<div class="card-desc">${a.shortDesc}</div>
-<div class="card-date">تاريخ الرفع: ${a.uploadDate}</div>
+const sorted=[...allApps].sort((a,b)=>{
+const da=new Date(a.uploadDate);
+const db=new Date(b.uploadDate);
+return isNewestFirst?db-da:da-db;
+});
+const search=document.getElementById("searchInput").value.toLowerCase();
+const filtered=sorted.filter(app=>app.name.toLowerCase().includes(search)||app.developer.toLowerCase().includes(search)||app.shortDesc.toLowerCase().includes(search));
+if(filtered.length===0){document.getElementById("appsList").innerHTML="<p>لا توجد تطبيقات تطابق بحثك</p>";return;}
+const html=filtered.map(app=>`
+<div class="card" onclick="openApp('${app.package}')">
+  <div class="card-top">
+    <img src="${app.icon}" alt="icon">
+    <div class="card-info">
+      <h2>${app.name}</h2>
+      <p>${app.developer}</p>
+    </div>
+  </div>
+  <div class="card-desc">${app.shortDesc}</div>
+  <div class="card-date">تاريخ الرفع: ${app.uploadDate}</div>
 </div>`).join("");
 document.getElementById("appsList").innerHTML=html;
 }
 
 function openApp(pkg){window.location.href=`https://tamaa-pro.github.io/azro/tazazt/download_app/?${pkg}`;}
-
 document.getElementById('sortButton').addEventListener('click',function(){
 isNewestFirst=!isNewestFirst;
 this.innerHTML=isNewestFirst?'<i class="fas fa-sort-amount-down"></i>':'<i class="fas fa-sort-amount-up"></i>';
 renderApps();
 });
 document.getElementById('searchInput').addEventListener('input',renderApps);
-document.getElementById('addAppButton').addEventListener('click',()=>window.location.href="https://tamaa-pro.github.io/azro/tazazt/upload_app");
+document.getElementById('addAppButton').addEventListener('click',()=>{window.location.href="https://tamaa-pro.github.io/azro/tazazt/upload_app";});
 loadApps();
 </script>
 
 <script>
-document.addEventListener('wheel',function(e){if(e.ctrlKey)e.preventDefault();},{passive:false});
-document.addEventListener('keydown',function(e){if((e.ctrlKey&&(e.key==='+'||e.key==='-'||e.key==='='))||e.key==='Meta')e.preventDefault();});
+document.addEventListener('wheel',e=>{if(e.ctrlKey)e.preventDefault()},{passive:false});
+document.addEventListener('keydown',e=>{if((e.ctrlKey&&(e.key==='+'||e.key==='-'||e.key==='='))||e.key==='Meta')e.preventDefault()});
 document.addEventListener('contextmenu',e=>e.preventDefault());
 document.addEventListener('selectstart',e=>e.preventDefault());
 document.addEventListener('copy',e=>e.preventDefault());
+document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&(e.key==='+'||e.key==='-'||e.key==='0'||e.keyCode===187||e.keyCode===189||e.keyCode===48))e.preventDefault()});
+document.addEventListener('wheel',e=>{if(e.ctrlKey)e.preventDefault()},{passive:false});
+let lastTouchEnd=0;
+document.addEventListener('touchstart',e=>{if(e.touches.length>1)e.preventDefault()});
+document.addEventListener('touchend',e=>{const now=Date.now();if(now-lastTouchEnd<=300)e.preventDefault();lastTouchEnd=now},{passive:false});
+document.addEventListener('touchmove',e=>{if(e.touches.length>1)e.preventDefault()},{passive:false});
+document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
+const v=document.querySelector('meta[name="viewport"]');
+v.content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
 </script>
 </body>
 </html>
