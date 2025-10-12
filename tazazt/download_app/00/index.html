@@ -68,93 +68,72 @@ body{background:var(--bg-primary);color:var(--text-primary);font-family:'Segoe U
 const mainBin="https://api.jsonbin.io/v3/b/68b5a02ed0ea881f406e0b94";
 const downloadsBin="https://api.jsonbin.io/v3/b/68b73b75d0ea881f406fa775";
 const apiKey="$2a$10$F5TR7pSKPRRNAeBzsdxQ4.NYog8xHGUi0hektkor0q/QWFVXzba3q";
-function getPackageFromUrl(){const q=window.location.search;return q.startsWith("?")?q.substring(1):null}
-async function fetchBin(url){const res=await fetch(url,{headers:{"X-Master-Key":apiKey}});return res.json()}
+const cacheTTL=300;
+function getPackageFromUrl(){
+try{
+const s=window.location.search||"";
+if(!s)return null;
+const p=new URLSearchParams(s);
+if(p.has("pkg"))return p.get("pkg")||null;
+if(p.has("package"))return p.get("package")||null;
+if(p.has("p"))return p.get("p")||null;
+const f=p.keys().next().value;
+if(f){const c=decodeURIComponent(f);if(/^[a-z0-9_.]+(?:\.[a-z0-9_]+)+$/i.test(c))return c;}
+const raw=s.slice(1).split("&")[0];
+const dec=decodeURIComponent(raw||"");
+const m=dec.match(/[a-z0-9_.]+(?:\.[a-z0-9_]+)+/i);
+return m?m[0]:null;
+}catch(e){return null;}
+}
+function hybridCacheSet(k,v,t){try{const p=JSON.stringify(v);sessionStorage.setItem(k,p);const w={v:v,e:Date.now()+(Number(t)||cacheTTL)*1000};localStorage.setItem(k,JSON.stringify(w));}catch(e){}}
+function hybridCacheGet(k){try{const s=sessionStorage.getItem(k);if(s!==null){try{return JSON.parse(s);}catch(e){sessionStorage.removeItem(k);}}const l=localStorage.getItem(k);if(l!==null){try{const w=JSON.parse(l);if(w&&w.e&&Date.now()<=w.e){sessionStorage.setItem(k,JSON.stringify(w.v));return w.v;}else{localStorage.removeItem(k);}}catch(e){localStorage.removeItem(k);}}return null;}catch(e){return null;}}
+async function fetchBin(u){const r=await fetch(u,{headers:{"X-Master-Key":apiKey,"cache":"no-store"}});return r.json();}
+async function getApps(){const c=hybridCacheGet("appsBin");if(c)return c;const d=await fetchBin(mainBin);const a=d.record.applications||[];hybridCacheSet("appsBin",a,cacheTTL);return a;}
 async function updateDownloads(pkg){
-    try{
-        const d=await fetchBin(downloadsBin);
-        let arr=d.record.applications_downloads||[];
-        let record=arr.find(obj=>pkg in obj);
-        if(!record){record={};record[pkg]="0";arr.push(record)}
-        let count=parseInt(record[pkg])||0;
-        count++;
-        record[pkg]=count.toString();
-        const updateResponse=await fetch(downloadsBin,{method:"PUT",headers:{"Content-Type":"application/json","X-Master-Key":apiKey},body:JSON.stringify({applications_downloads:arr})});
-        const updateData=await updateResponse.json();
-        let newRecord=updateData.record.applications_downloads.find(obj=>pkg in obj);
-        return newRecord?newRecord[pkg]:0;
-    }catch(error){return 0}
+try{
+const d=await fetchBin(downloadsBin);
+let arr=d.record.applications_downloads||[];
+let record=arr.find(o=>pkg in o);
+if(!record){record={};record[pkg]="0";arr.push(record);}
+let count=parseInt(record[pkg])||0;
+count++;
+record[pkg]=count.toString();
+const u=await fetch(downloadsBin,{method:"PUT",headers:{"Content-Type":"application/json","X-Master-Key":apiKey},body:JSON.stringify({applications_downloads:arr})});
+const ud=await u.json();
+let nr=ud.record.applications_downloads.find(o=>pkg in o);
+return nr?nr[pkg]:0;
+}catch(e){return 0;}
 }
 async function loadApp(){
-const pkg=getPackageFromUrl();if(!pkg){document.getElementById("appContent").innerHTML=`<div class="error-message"><i class="fas fa-exclamation-circle"></i><h2>لم يتم تحديد التطبيق</h2><p>يرجى التأكد من الرابط المستخدم للوصول إلى هذه الصفحة</p><a href="https://tamaa-pro.github.io/azro/tazazt/applications_menu" class="app-menu-btn">فتح قائمة التطبيقات المرفوعة</a></div>`;return}
+const pkg=getPackageFromUrl();
+if(!pkg){document.getElementById("appContent").innerHTML=`<div class="error-message"><i class="fas fa-exclamation-circle"></i><h2>لم يتم تحديد التطبيق</h2><p>يرجى التأكد من الرابط المستخدم للوصول إلى هذه الصفحة</p><a href="https://tamaa-pro.github.io/azro/tazazt/applications_menu" class="app-menu-btn">فتح قائمة التطبيقات المرفوعة</a></div>`;return;}
 try{
-const data=await fetchBin(mainBin);const apps=data.record.applications;
-const app=apps.find(a=>a.package===pkg);
-if(!app){document.getElementById("appContent").innerHTML=`<div class="error-message"><i class="fas fa-exclamation-triangle"></i><h2>التطبيق غير موجود</h2><p>قد يكون التطبيق قد تم إزالته أو أن الرابط غير صحيح</p><a href="https://tamaa-pro.github.io/azro/tazazt/applications_menu" class="app-menu-btn">فتح قائمة التطبيقات المرفوعة</a></div>`;return}
+const apps=await getApps();
+const map=new Map(apps.map(a=>[a.package,a]));
+const app=map.get(pkg);
+if(!app){document.getElementById("appContent").innerHTML=`<div class="error-message"><i class="fas fa-exclamation-triangle"></i><h2>التطبيق غير موجود</h2><p>قد يكون التطبيق قد تم إزالته أو أن الرابط غير صحيح</p><a href="https://tamaa-pro.github.io/azro/tazazt/applications_menu" class="app-menu-btn">فتح قائمة التطبيقات المرفوعة</a></div>`;return;}
 let downloads=0;
 try{
-    const dData=await fetchBin(downloadsBin);
-    if(Array.isArray(dData.record.applications_downloads)){
-        const rec=dData.record.applications_downloads.find(obj=>pkg in obj);
-        if(rec){downloads=parseInt(rec[pkg])||0}
-    }
-}catch(error){downloads=0}
+const dData=await fetchBin(downloadsBin);
+if(Array.isArray(dData.record.applications_downloads)){
+const rec=dData.record.applications_downloads.find(o=>pkg in o);
+if(rec){downloads=parseInt(rec[pkg])||0;}
+}}catch(e){downloads=0;}
 let content=`<div class="app-card"><div class="app-header"><img src="${app.icon}" alt="icon"><div><h2 class="app-title">${app.name}</h2><p class="app-developer">${app.developer}</p></div></div><div class="meta-scroll-container"><div class="app-meta"><span>التحميلات: ${downloads}</span><span>الإصدار: ${app.version}</span><span>تاريخ الإصدار: ${app.releaseDate}</span></div></div><button class="download-btn" id="downloadBtn"><span class="text">تحميل التطبيق</span><div class="loading"></div></button>`;
-if(app.screenshots&&app.screenshots.length>0){content+=`<h3 class="section-title">لقطات الشاشة</h3><div class="screenshots-container"><div class="screenshots-scroll">${app.screenshots.map(s=>`<img src="${s}" class="screenshot">`).join("")}</div></div>`}
+if(app.screenshots&&app.screenshots.length>0){content+=`<h3 class="section-title">لقطات الشاشة</h3><div class="screenshots-container"><div class="screenshots-scroll">${app.screenshots.map(s=>`<img src="${s}" class="screenshot">`).join("")}</div></div>`;}
 content+=`<div class="description">${app.longDesc}</div><div class="divider"></div>`;
-if(app.extraInfo){content+=`<div class="notes-box"><h3 class="notes-title">ملاحظات المطور</h3><p>${app.extraInfo}</p></div>`}
-if(app.social&&app.social.length>0){content+=`<div class="social-box"><h3 class="social-title">وسائل التواصل</h3><div class="social-links">${app.social.map(s=>{const socialInfo=getSocialInfo(s);return `<a href="${s}" target="_self" class="social-link"><span class="social-icon">${socialInfo.icon}</span><span>${socialInfo.name}</span></a>`}).join("")}</div></div>`}
-
+if(app.extraInfo){content+=`<div class="notes-box"><h3 class="notes-title">ملاحظات المطور</h3><p>${app.extraInfo}</p></div>`;}
+if(app.social&&app.social.length>0){content+=`<div class="social-box"><h3 class="social-title">وسائل التواصل</h3><div class="social-links">${app.social.map(s=>{const i=getSocialInfo(s);return `<a href="${s}" target="_self" class="social-link"><span class="social-icon">${i.icon}</span><span>${i.name}</span></a>`}).join("")}</div></div>`;}
 content+=`<div class="share-box"><h3 class="share-title">مشاركة التطبيق</h3><div class="share-buttons"><button class="share-btn copy" id="copyLinkBtn"><i class="fas fa-copy"></i> نسخ الرابط</button><button class="share-btn share" id="shareLinkBtn"><i class="fas fa-share-alt"></i> مشاركة</button></div></div>`;
 content+=`</div>`;
 document.getElementById("appContent").innerHTML=content;
-document.getElementById("downloadBtn").addEventListener("click",async function(){const btn=this;const textSpan=btn.querySelector('.text');textSpan.innerHTML='<i class="fas fa-spinner fa-spin"></i> جاري التحميل...';const newCount=await updateDownloads(pkg);document.querySelector('.app-meta span:first-child').textContent=`التحميلات: ${newCount}`;setTimeout(()=>{window.location.href=app.download},1000)});
-
-document.getElementById('copyLinkBtn').addEventListener('click', copyPageLink);
-document.getElementById('shareLinkBtn').addEventListener('click', sharePageLink);
-}catch(err){document.getElementById("appContent").innerHTML=`<div class="error-message"><i class="fas fa-exclamation-triangle"></i><h2>خطأ في جلب البيانات</h2><p>حدث خطأ أثناء تحميل معلومات التطبيق</p></div>`}}
-function getSocialInfo(url){if(url.includes('facebook.com'))return{icon:'<i class="fab fa-facebook"></i>',name:'فيسبوك'};if(url.includes('twitter.com')||url.includes('x.com'))return{icon:'<i class="fab fa-twitter"></i>',name:'تويتر'};if(url.includes('instagram.com'))return{icon:'<i class="fab fa-instagram"></i>',name:'إنستغرام'};if(url.includes('youtube.com'))return{icon:'<i class="fab fa-youtube"></i>',name:'يوتيوب'};if(url.includes('t.me'))return{icon:'<i class="fab fa-telegram"></i>',name:'تلغرام'};if(url.includes('whatsapp.com'))return{icon:'<i class="fab fa-whatsapp"></i>',name:'واتساب'};if(url.includes('linkedin.com'))return{icon:'<i class="fab fa-linkedin"></i>',name:'لينكدإن'};if(url.includes('github.com'))return{icon:'<i class="fab fa-github"></i>',name:'جيت هاب'};if(url.includes('discord.com')||url.includes('discord.gg'))return{icon:'<i class="fab fa-discord"></i>',name:'ديسكورد'};if(url.includes('tiktok.com'))return{icon:'<i class="fab fa-tiktok"></i>',name:'تيك توك'};if(url.includes('snapchat.com'))return{icon:'<i class="fab fa-snapchat"></i>',name:'سناب شات'};return{icon:'<i class="fas fa-globe"></i>',name:'موقع ويب'}}
-
-function copyPageLink() {
-    const pageUrl = window.location.href;
-    navigator.clipboard.writeText(pageUrl).then(() => {
-        const btn = document.getElementById('copyLinkBtn');
-        const originalText = btn.innerHTML;
-        btn.innerHTML = '<i class="fas fa-check"></i> تم النسخ!';
-        btn.style.backgroundColor = 'var(--accent)';
-        setTimeout(() => {
-            btn.innerHTML = originalText;
-            btn.style.backgroundColor = '';
-        }, 2000);
-    }).catch(err => {
-        alert('تعذر نسخ الرابط: ' + err);
-    });
-}
-
-function sharePageLink() {
-    const pageUrl = window.location.href;
-    const pageTitle = document.querySelector('.app-title')?.textContent || 'تطبيق';
-    
-    if (navigator.share) {
-        navigator.share({
-            title: pageTitle,
-            url: pageUrl
-        }).catch(err => {
-            console.log('خطأ في المشاركة:', err);
-        });
-    } else {
-        
-        copyPageLink();
-        const btn = document.getElementById('shareLinkBtn');
-        const originalText = btn.innerHTML;
-        btn.innerHTML = '<i class="fas fa-check"></i> تم النسخ!';
-        btn.style.backgroundColor = 'var(--accent)';
-        setTimeout(() => {
-            btn.innerHTML = originalText;
-            btn.style.backgroundColor = '';
-        }, 2000);
-    }
-}
+document.getElementById("downloadBtn").addEventListener("click",async function(){const b=this;const t=b.querySelector('.text');t.innerHTML='<i class="fas fa-spinner fa-spin"></i> جاري التحميل...';const n=await updateDownloads(pkg);document.querySelector('.app-meta span:first-child').textContent=`التحميلات: ${n}`;setTimeout(()=>{window.location.href=app.download;},1000);});
+document.getElementById('copyLinkBtn').addEventListener('click',copyPageLink);
+document.getElementById('shareLinkBtn').addEventListener('click',sharePageLink);
+}catch(e){document.getElementById("appContent").innerHTML=`<div class="error-message"><i class="fas fa-exclamation-triangle"></i><h2>خطأ في جلب البيانات</h2><p>حدث خطأ أثناء تحميل معلومات التطبيق</p></div>`;}}
+function getSocialInfo(u){if(u.includes('facebook.com'))return{icon:'<i class="fab fa-facebook"></i>',name:'فيسبوك'};if(u.includes('twitter.com')||u.includes('x.com'))return{icon:'<i class="fab fa-twitter"></i>',name:'تويتر'};if(u.includes('instagram.com'))return{icon:'<i class="fab fa-instagram"></i>',name:'إنستغرام'};if(u.includes('youtube.com'))return{icon:'<i class="fab fa-youtube"></i>',name:'يوتيوب'};if(u.includes('t.me'))return{icon:'<i class="fab fa-telegram"></i>',name:'تلغرام'};if(u.includes('whatsapp.com'))return{icon:'<i class="fab fa-whatsapp"></i>',name:'واتساب'};if(u.includes('linkedin.com'))return{icon:'<i class="fab fa-linkedin"></i>',name:'لينكدإن'};if(u.includes('github.com'))return{icon:'<i class="fab fa-github"></i>',name:'جيت هاب'};if(u.includes('discord.com')||u.includes('discord.gg'))return{icon:'<i class="fab fa-discord"></i>',name:'ديسكورد'};if(u.includes('tiktok.com'))return{icon:'<i class="fab fa-tiktok"></i>',name:'تيك توك'};if(u.includes('snapchat.com'))return{icon:'<i class="fab fa-snapchat"></i>',name:'سناب شات'};return{icon:'<i class="fas fa-globe"></i>',name:'موقع ويب'};}
+function copyPageLink(){const u=window.location.href;navigator.clipboard.writeText(u).then(()=>{const b=document.getElementById('copyLinkBtn');const o=b.innerHTML;b.innerHTML='<i class="fas fa-check"></i> تم النسخ!';b.style.backgroundColor='var(--accent)';setTimeout(()=>{b.innerHTML=o;b.style.backgroundColor='';},2000);}).catch(e=>{alert('تعذر نسخ الرابط: '+e);});}
+function sharePageLink(){const u=window.location.href;const t=document.querySelector('.app-title')?.textContent||'تطبيق';if(navigator.share){navigator.share({title:t,url:u}).catch(e=>{});}else{copyPageLink();const b=document.getElementById('shareLinkBtn');const o=b.innerHTML;b.innerHTML='<i class="fas fa-check"></i> تم النسخ!';b.style.backgroundColor='var(--accent)';setTimeout(()=>{b.innerHTML=o;b.style.backgroundColor='';},2000);}}
 loadApp();
 </script>
 <script>
