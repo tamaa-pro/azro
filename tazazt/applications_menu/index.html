@@ -86,7 +86,14 @@ return;
 }
 renderApps();
 }catch(e){
-document.getElementById("appsList").innerHTML="<p>❌ خطأ في تحميل التطبيقات</p>";
+document.getElementById("appsList").innerHTML=`
+<div style="display:flex;justify-content:center;align-items:center;height:250px;">
+  <div style="background:var(--bg-secondary);padding:25px;border-radius:12px;text-align:center;max-width:320px;">
+    <i class="fas fa-times-circle" style="font-size:42px;color:#e74c3c;margin-bottom:10px;"></i>
+    <h3 style="margin:0;font-size:18px;">ERROR CODE 103</h3>
+    <p style="color:var(--text-secondary);margin-top:8px;font-size:14px;">حدث خطأ اثناء تحميل التطبيقات</p>
+  </div>
+</div>`;
 }
 }
 
