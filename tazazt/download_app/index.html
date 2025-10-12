@@ -56,12 +56,12 @@ body{background:var(--bg-primary);color:var(--text-primary);font-family:'Segoe U
 </head>
 <body>
 <div class="container">
-    <div id="appContent">
-        <div class="loading">
-            <div class="spinner"></div>
-            <p>جاري تحميل بيانات التطبيق...</p>
-        </div>
-    </div>
+<div id="appContent">
+<div class="loading">
+<div class="spinner"></div>
+<p>جاري تحميل بيانات التطبيق...</p>
+</div>
+</div>
 </div>
 <div class="footer">Powered by TAMAA PRO STUDIO</div>
 <script>
@@ -137,18 +137,14 @@ function sharePageLink(){const u=window.location.href;const t=document.querySele
 loadApp();
 </script>
 <script>
-
 document.addEventListener('DOMContentLoaded', function() {
     const downloadBtn = document.getElementById('downloadBtn');
-    
     if (downloadBtn) {
         downloadBtn.addEventListener('click', function() {
-            
             this.disabled = true;
         });
     }
 });
-
 </script>
 <script>
 document.addEventListener('wheel', function(e) {if (e.ctrlKey) e.preventDefault();}, { passive: false });document.addEventListener('keydown', function(e) {if ((e.ctrlKey && (e.key === '+' || e.key === '-' || e.key === '=')) || e.key === 'Meta') {e.preventDefault();}});document.addEventListener('contextmenu', e => e.preventDefault());document.addEventListener('selectstart', function(e) {e.preventDefault();});document.addEventListener('copy', function(e) {e.preventDefault();});
