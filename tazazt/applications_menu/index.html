@@ -10,68 +10,14 @@
 :root{--bg-primary:#121212;--bg-secondary:#1e1e1e;--bg-tertiary:#1c1c1c;--text-primary:#e0e0e0;--text-secondary:#a0a0a0;--accent:#4CAF50;--accent-hover:#3e8e41}
 body{background:var(--bg-primary);color:var(--text-primary);font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;margin:0;padding:10px}
 .container{max-width:900px;margin:auto;display:flex;flex-direction:column;gap:20px}
-
-
-.navbar {
-    background: var(--bg-secondary);
-    border-radius: 10px;
-    padding: 10px 10px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.search-container {
-    display: flex;
-    align-items: center;
-    flex-grow: 1;
-    max-width: 300px;
-}
-
-.search-input {
-    background: var(--bg-tertiary);
-    border: none;
-    padding: 10px 15px;
-    color: var(--text-primary);
-    border-radius: 8px;
-    width: 100%;
-    outline: none;
-}
-
-.nav-button {
-    background: var(--bg-tertiary);
-    color: var(--text-primary);
-    border: none;
-    width: 42px;
-    height: 42px;
-    border-radius: 8px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.3s;
-}
-
-.nav-button:hover {
-    background: #2a2a2a;
-}
-
-.nav-button.active {
-    background: var(--accent);
-    color: white;
-}
-
-.nav-button.add-app {
-    background: var(--accent);
-    color: white;
-}
-
-.nav-button.add-app:hover {
-    background: var(--accent-hover);
-}
-
-
+.navbar{background:var(--bg-secondary);border-radius:10px;padding:10px;display:flex;align-items:center;gap:10px;margin-bottom:20px}
+.search-container{display:flex;align-items:center;flex-grow:1;max-width:300px}
+.search-input{background:var(--bg-tertiary);border:none;padding:10px 15px;color:var(--text-primary);border-radius:8px;width:100%;outline:none}
+.nav-button{background:var(--bg-tertiary);color:var(--text-primary);border:none;width:42px;height:42px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .3s}
+.nav-button:hover{background:#2a2a2a}
+.nav-button.active{background:var(--accent);color:white}
+.nav-button.add-app{background:var(--accent);color:white}
+.nav-button.add-app:hover{background:var(--accent-hover)}
 .card{background:var(--bg-secondary);border-radius:10px;padding:10px;cursor:pointer;transition:background .3s;margin-bottom:15px}
 .card:hover{background:#2a2a2a}
 .card-top{display:flex;align-items:center;gap:15px;margin-bottom:10px}
@@ -82,11 +28,21 @@ body{background:var(--bg-primary);color:var(--text-primary);font-family:'Segoe U
 .card-date{font-size:12px;color:var(--text-secondary)}
 .loading{text-align:center;padding:45px}
 .footer{text-align:center;margin-top:40px;padding:15px;color:var(--text-secondary);font-size:14px}
+
+/* ===== Skeleton loading effect ===== */
+.skeleton-card{background:var(--bg-secondary);border-radius:10px;padding:10px;margin-bottom:15px;overflow:hidden}
+.skeleton-anim{background:linear-gradient(90deg,#2a2a2a 25%,#333 50%,#2a2a2a 75%);background-size:200% 100%;animation:shimmer 1.5s infinite}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.skeleton-img{width:64px;height:64px;border-radius:12px;margin-right:15px;flex-shrink:0}
+.skeleton-line{height:14px;border-radius:4px;margin:6px 0}
+.skeleton-line.short{width:30%}
+.skeleton-line.medium{width:60%}
+.skeleton-line.long{width:90%}
+.skeleton-top{display:flex;align-items:center;margin-bottom:10px}
 </style>
 </head>
 <body>
 <div class="container">
-    
     <div class="navbar">
         <input type="text" class="search-input" id="searchInput" placeholder="ابحث عن تطبيق...">
         <button class="nav-button" id="sortButton" title="عكس ترتيب التطبيقات">
@@ -96,96 +52,92 @@ body{background:var(--bg-primary);color:var(--text-primary);font-family:'Segoe U
             <i class="fas fa-plus"></i>
         </button>
     </div>
-    
-    <div id="appsList">
-        <div class="loading"><i class="fas fa-spinner fa-spin"></i> جاري تحميل التطبيقات...</div>
-    </div>
+
+    <div id="appsList"></div>
 </div>
 <div class="footer">Powered by TAMAA PRO STUDIO</div>
+
 <script>
 const jsonBinUrl="https://api.jsonbin.io/v3/b/68b5a02ed0ea881f406e0b94";
 const apiKey="$2a$10$F5TR7pSKPRRNAeBzsdxQ4.NYog8xHGUi0hektkor0q/QWFVXzba3q";
+let allApps=[];let isNewestFirst=true;
 
-let allApps = [];
-let isNewestFirst = true;
+function showSkeleton(){
+let html="";
+for(let i=0;i<6;i++){
+html+=`
+<div class="skeleton-card">
+  <div class="skeleton-top">
+    <div class="skeleton-img skeleton-anim"></div>
+    <div style="flex:1">
+      <div class="skeleton-line long skeleton-anim"></div>
+      <div class="skeleton-line medium skeleton-anim"></div>
+    </div>
+  </div>
+  <div class="skeleton-line long skeleton-anim"></div>
+  <div class="skeleton-line short skeleton-anim"></div>
+</div>`;
+}
+document.getElementById("appsList").innerHTML=html;
+}
 
-async function fetchApps(){const res=await fetch(jsonBinUrl,{headers:{"X-Master-Key":apiKey}});return res.json()}
+async function fetchApps(){
+const res=await fetch(jsonBinUrl,{headers:{"X-Master-Key":apiKey}});
+return res.json();
+}
 
 async function loadApps(){
-    try{
-        const data=await fetchApps();
-        allApps=data.record.applications;
-        
-        if(!allApps||allApps.length===0){
-            document.getElementById("appsList").innerHTML="<p>لا توجد تطبيقات مرفوعة حاليا</p>";
-            return;
-        }
-        
-        renderApps();
-    }catch(err){
-        document.getElementById("appsList").innerHTML="<p>❌ خطأ في تحميل التطبيقات</p>";
-    }
+showSkeleton();
+try{
+const data=await fetchApps();
+allApps=data.record.applications;
+if(!allApps||allApps.length===0){
+document.getElementById("appsList").innerHTML="<p>لا توجد تطبيقات مرفوعة حاليا</p>";
+return;
+}
+renderApps();
+}catch(err){
+document.getElementById("appsList").innerHTML="<p>❌ خطأ في تحميل التطبيقات</p>";
+}
 }
 
-function renderApps() {
-
-    const sortedApps = [...allApps].sort((a, b) => {
-        const dateA = new Date(a.uploadDate);
-        const dateB = new Date(b.uploadDate);
-        return isNewestFirst ? dateB - dateA : dateA - dateB; });
-    const searchTerm = document.getElementById("searchInput").value.toLowerCase();
-    const filteredApps = sortedApps.filter(app => 
-        app.name.toLowerCase().includes(searchTerm) || 
-        app.developer.toLowerCase().includes(searchTerm) ||
-        app.shortDesc.toLowerCase().includes(searchTerm)
-    );
-    
-    if (filteredApps.length === 0) {
-        document.getElementById("appsList").innerHTML = "<p>لا توجد تطبيقات تطابق بحثك</p>";
-        return;
-    }
-    
-    const list = filteredApps.map(app => `
-        <div class="card" onclick="openApp('${app.package}')">
-          <div class="card-top">
-            <img src="${app.icon}" alt="icon">
-            <div class="card-info">
-              <h2>${app.name}</h2>
-              <p>${app.developer}</p>
-            </div>
-          </div>
-          <div class="card-desc">${app.shortDesc}</div>
-          <div class="card-date">تاريخ الرفع: ${app.uploadDate}</div>
-        </div>`).join("");
-    
-    document.getElementById("appsList").innerHTML = list;
+function renderApps(){
+const sortedApps=[...allApps].sort((a,b)=>{
+const A=new Date(a.uploadDate),B=new Date(b.uploadDate);
+return isNewestFirst?B-A:A-B;});
+const term=document.getElementById("searchInput").value.toLowerCase();
+const filtered=sortedApps.filter(a=>a.name.toLowerCase().includes(term)||a.developer.toLowerCase().includes(term)||a.shortDesc.toLowerCase().includes(term));
+if(filtered.length===0){
+document.getElementById("appsList").innerHTML="<p>لا توجد تطبيقات تطابق بحثك</p>";
+return;
+}
+const html=filtered.map(a=>`
+<div class="card" onclick="openApp('${a.package}')">
+<div class="card-top"><img src="${a.icon}" alt="icon"><div class="card-info"><h2>${a.name}</h2><p>${a.developer}</p></div></div>
+<div class="card-desc">${a.shortDesc}</div>
+<div class="card-date">تاريخ الرفع: ${a.uploadDate}</div>
+</div>`).join("");
+document.getElementById("appsList").innerHTML=html;
 }
 
-function openApp(pkg){window.location.href=`https://tamaa-pro.github.io/azro/tazazt/download_app?${pkg}`}
+function openApp(pkg){window.location.href=`https://tamaa-pro.github.io/azro/tazazt/download_app/?${pkg}`;}
 
-
-document.getElementById('sortButton').addEventListener('click', function() {
-    isNewestFirst = !isNewestFirst;
-    this.innerHTML = isNewestFirst ? 
-        '<i class="fas fa-sort-amount-down"></i>' : 
-        '<i class="fas fa-sort-amount-up"></i>';
-    renderApps();
+document.getElementById('sortButton').addEventListener('click',function(){
+isNewestFirst=!isNewestFirst;
+this.innerHTML=isNewestFirst?'<i class="fas fa-sort-amount-down"></i>':'<i class="fas fa-sort-amount-up"></i>';
+renderApps();
 });
-
-document.getElementById('searchInput').addEventListener('input', renderApps);
-
-document.getElementById('addAppButton').addEventListener('click', function() {
-    
-    window.location.href = "https://tamaa-pro.github.io/azro/tazazt/upload_app";
-});
-
+document.getElementById('searchInput').addEventListener('input',renderApps);
+document.getElementById('addAppButton').addEventListener('click',()=>window.location.href="https://tamaa-pro.github.io/azro/tazazt/upload_app");
 loadApps();
 </script>
+
 <script>
-document.addEventListener('wheel', function(e) {if (e.ctrlKey) e.preventDefault();}, { passive: false });document.addEventListener('keydown', function(e) {if ((e.ctrlKey && (e.key === '+' || e.key === '-' || e.key === '=')) || e.key === 'Meta') {e.preventDefault();}});document.addEventListener('contextmenu', e => e.preventDefault());document.addEventListener('selectstart', function(e) {e.preventDefault();});document.addEventListener('copy', function(e) {e.preventDefault();});
-document.addEventListener('keydown', function(e) {if ((e.ctrlKey || e.metaKey) && 
-(e.key === '+' || e.key === '-' || e.key === '0' || e.keyCode === 187 || e.keyCode === 189 || e.keyCode === 48)) {e.preventDefault();}});document.addEventListener('wheel', function(e) {if (e.ctrlKey) {e.preventDefault();}}, { passive: false });let lastTouchEnd = 0;document.addEventListener('touchstart', function(e) {if (e.touches.length > 1) {e.preventDefault();}});document.addEventListener('touchend', function(e) {const now = Date.now();if (now - lastTouchEnd <= 300) {e.preventDefault();}
-lastTouchEnd = now;}, { passive: false });document.addEventListener('touchmove', function(e) {if (e.touches.length > 1) {e.preventDefault();}}, { passive: false });document.addEventListener('dblclick', function(e) {e.preventDefault();}, { passive: false });const viewportMeta = document.querySelector('meta[name="viewport"]');viewportMeta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
+document.addEventListener('wheel',function(e){if(e.ctrlKey)e.preventDefault();},{passive:false});
+document.addEventListener('keydown',function(e){if((e.ctrlKey&&(e.key==='+'||e.key==='-'||e.key==='='))||e.key==='Meta')e.preventDefault();});
+document.addEventListener('contextmenu',e=>e.preventDefault());
+document.addEventListener('selectstart',e=>e.preventDefault());
+document.addEventListener('copy',e=>e.preventDefault());
 </script>
 </body>
 </html>
