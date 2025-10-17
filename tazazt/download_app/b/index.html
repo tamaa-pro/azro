@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -47,9 +48,9 @@ body{background:var(--bg-primary);color:var(--text-primary);font-family:'Segoe U
 .app-menu-btn:hover{background-color:var(--accent-hover)}
 .footer{text-align:center;margin-top:40px;padding:15px;color:var(--text-secondary);font-size:14px}
 
-/* تأثير الهياكل الوهمية */
+/* === تأثير الهياكل الوهمية (Skeleton Loading) === */
 .skeleton {
-  background: linear-gradient(90deg, var(--bg-tertiary) 25%, #2b2b2b 50%, var(--bg-tertiary) 75%);
+  background: linear-gradient(90deg, var(--bg-tertiary) 25%, #2a2a2a 50%, var(--bg-tertiary) 75%);
   background-size: 200% 100%;
   animation: skeleton-loading 1.2s infinite;
   border-radius: 6px;
@@ -61,27 +62,32 @@ body{background:var(--bg-primary);color:var(--text-primary);font-family:'Segoe U
 .skeleton-img { width:80px; height:80px; border-radius:16px; }
 .skeleton-title { width:150px; height:20px; margin-bottom:8px; }
 .skeleton-text { width:100px; height:14px; }
-.skeleton-line { width:100%; height:14px; margin-top:8px; }
-.skeleton-meta { width:70%; height:16px; border-radius:8px; margin:10px 0; }
+.skeleton-meta { width:70%; height:16px; margin:10px 0; border-radius:8px; }
+.skeleton-line { width:100%; height:14px; margin-top:8px; border-radius:4px; }
+.skeleton-btn { width:100%; height:50px; margin:20px 0; border-radius:8px; }
 </style>
 </head>
 <body>
 <div class="container">
-<div id="appContent">
-  <div class="app-card">
-    <div class="app-header">
-      <div class="skeleton skeleton-img"></div>
-      <div>
-        <div class="skeleton skeleton-title"></div>
-        <div class="skeleton skeleton-text"></div>
+  <div id="appContent">
+    <div class="app-card">
+      <div class="app-header">
+        <div class="skeleton skeleton-img"></div>
+        <div>
+          <div class="skeleton skeleton-title"></div>
+          <div class="skeleton skeleton-text"></div>
+        </div>
       </div>
+      <div class="skeleton skeleton-meta"></div>
+      <div class="skeleton skeleton-btn"></div>
+      <div class="skeleton skeleton-line"></div>
+      <div class="skeleton skeleton-line"></div>
+      <div class="skeleton skeleton-line"></div>
+      <div class="skeleton skeleton-meta"></div>
+      <div class="skeleton skeleton-line"></div>
+      <div class="skeleton skeleton-btn"></div>
     </div>
-    <div class="skeleton skeleton-meta"></div>
-    <div class="skeleton skeleton-line"></div>
-    <div class="skeleton skeleton-line"></div>
-    <div class="skeleton skeleton-line"></div>
   </div>
-</div>
 </div>
 <div class="footer">Powered by TAMAA PRO STUDIO</div>
 
