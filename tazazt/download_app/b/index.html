@@ -48,9 +48,48 @@ body{background:var(--bg-primary);color:var(--text-primary);font-family:'Segoe U
 .error-message p{margin:0 0 25px 0;color:var(--text-secondary)}    
 .app-menu-btn{display:block;padding:15px;background-color:var(--accent);color:white;text-align:center;border-radius:8px;font-size:16px;font-weight:bold;text-decoration:none;transition:background-color .3s;border:none;cursor:pointer;width:fit-content;margin:0 auto}    
 .app-menu-btn:hover{background-color:var(--accent-hover)}    
-.loading{text-align:center;padding:40px;background-color:var(--bg-secondary);border-radius:10px}    
-.spinner{display:inline-block;width:40px;height:40px;border:4px solid rgba(255,255,255,.3);border-radius:50%;border-top-color:var(--accent);animation:spin 1s ease-in-out infinite;margin-bottom:20px}    
-@keyframes spin{to{transform:rotate(360deg)}}    
+.loading {
+  text-align: center;
+  padding: 60px;
+  background-color: var(--bg-secondary);
+  border-radius: 10px;
+}
+
+.loader-md {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 20px auto;
+}
+
+.loader-md img {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  z-index: 2;
+}
+
+.loader-md::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 6px solid transparent;
+  border-top-color: var(--accent);
+  border-right-color: var(--accent);
+  animation: spin 1s linear infinite;
+  box-sizing: border-box;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+    }
 .footer{text-align:center;margin-top:40px;padding:15px;color:var(--text-secondary);font-size:14px}    
 </style>    
 </head>    
