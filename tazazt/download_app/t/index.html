@@ -127,41 +127,6 @@ if(app.social&&app.social.length>0){content+=`<div class="social-box"><h3 class=
 content+=`<div class="share-box"><h3 class="share-title">مشاركة التطبيق</h3><div class="share-buttons"><button class="share-btn copy" id="copyLinkBtn"><i class="fas fa-copy"></i> نسخ الرابط</button><button class="share-btn share" id="shareLinkBtn"><i class="fas fa-share-alt"></i> مشاركة</button></div></div>`;
 content+=`</div>`;
 document.getElementById("appContent").innerHTML=content;
-document.getElementById("downloadBtn").addEventListener("click",async function(){const b=this;const t=b.querySelector('.text');t.innerHTML='<i class="fas fa-spinner fa-spin"></i> جاري التحميل...';const n=await updateDownloads(pkg);document.querySelector('.app-meta span:first-child').textContent=`التحميلات: ${n}`;setTimeout(()=>{window.location.href=app.download;},1000);});
-document.getElementById('copyLinkBtn').addEventListener('click',copyPageLink);
-document.getElementById('shareLinkBtn').addEventListener('click',sharePageLink);
-}catch(e){document.getElementById("appContent").innerHTML=`<div class="error-message"><i class="fas fa-exclamation-triangle"></i><h2>خطأ في جلب البيانات</h2><p>حدث خطأ أثناء تحميل معلومات التطبيق</p></div>`;}}
-function getSocialInfo(u){if(u.includes('facebook.com'))return{icon:'<i class="fab fa-facebook"></i>',name:'فيسبوك'};if(u.includes('twitter.com')||u.includes('x.com'))return{icon:'<i class="fab fa-twitter"></i>',name:'تويتر'};if(u.includes('instagram.com'))return{icon:'<i class="fab fa-instagram"></i>',name:'إنستغرام'};if(u.includes('youtube.com'))return{icon:'<i class="fab fa-youtube"></i>',name:'يوتيوب'};if(u.includes('t.me'))return{icon:'<i class="fab fa-telegram"></i>',name:'تلغرام'};if(u.includes('whatsapp.com'))return{icon:'<i class="fab fa-whatsapp"></i>',name:'واتساب'};if(u.includes('linkedin.com'))return{icon:'<i class="fab fa-linkedin"></i>',name:'لينكدإن'};if(u.includes('github.com'))return{icon:'<i class="fab fa-github"></i>',name:'جيت هاب'};if(u.includes('discord.com')||u.includes('discord.gg'))return{icon:'<i class="fab fa-discord"></i>',name:'ديسكورد'};if(u.includes('tiktok.com'))return{icon:'<i class="fab fa-tiktok"></i>',name:'تيك توك'};if(u.includes('snapchat.com'))return{icon:'<i class="fab fa-snapchat"></i>',name:'سناب شات'};return{icon:'<i class="fas fa-globe"></i>',name:'موقع ويب'};}
-function copyPageLink(){
-const pkg=getPackageFromUrl();
-const cleanUrl=window.location.origin+window.location.pathname+"?"+pkg;
-navigator.clipboard.writeText(cleanUrl).then(()=>{
-const b=document.getElementById('copyLinkBtn');
-const o=b.innerHTML;
-b.innerHTML='<i class="fas fa-check"></i> تم النسخ!';
-b.style.backgroundColor='var(--accent)';
-setTimeout(()=>{b.innerHTML=o;b.style.backgroundColor='';},2000);
-}).catch(e=>{alert('تعذر نسخ الرابط: '+e);});
-}
-function sharePageLink(){
-const pkg=getPackageFromUrl();
-const cleanUrl=window.location.origin+window.location.pathname+"?"+pkg;
-const t=document.querySelector('.app-title')?.textContent||'تطبيق';
-if(navigator.share){
-navigator.share({title:t,url:cleanUrl}).catch(e=>{});
-}else{
-navigator.clipboard.writeText(cleanUrl).then(()=>{
-const b=document.getElementById('shareLinkBtn');
-const o=b.innerHTML;
-b.innerHTML='<i class="fas fa-check"></i> تم النسخ!';
-b.style.backgroundColor='var(--accent)';
-setTimeout(()=>{b.innerHTML=o;b.style.backgroundColor='';},2000);
-});
-}}
-loadApp();
-</script>
-<script>
-
 // اختبار إذا كان التطبيق مثبتًا
 const iframeTest = document.createElement("iframe");
 iframeTest.style.display = "none";
@@ -194,6 +159,38 @@ setTimeout(() => {
         downloadBtn.insertAdjacentElement('beforebegin', openBtn);
     }
 }, 1000);
+document.getElementById("downloadBtn").addEventListener("click",async function(){const b=this;const t=b.querySelector('.text');t.innerHTML='<i class="fas fa-spinner fa-spin"></i> جاري التحميل...';const n=await updateDownloads(pkg);document.querySelector('.app-meta span:first-child').textContent=`التحميلات: ${n}`;setTimeout(()=>{window.location.href=app.download;},1000);});
+document.getElementById('copyLinkBtn').addEventListener('click',copyPageLink);
+document.getElementById('shareLinkBtn').addEventListener('click',sharePageLink);
+}catch(e){document.getElementById("appContent").innerHTML=`<div class="error-message"><i class="fas fa-exclamation-triangle"></i><h2>خطأ في جلب البيانات</h2><p>حدث خطأ أثناء تحميل معلومات التطبيق</p></div>`;}}
+function getSocialInfo(u){if(u.includes('facebook.com'))return{icon:'<i class="fab fa-facebook"></i>',name:'فيسبوك'};if(u.includes('twitter.com')||u.includes('x.com'))return{icon:'<i class="fab fa-twitter"></i>',name:'تويتر'};if(u.includes('instagram.com'))return{icon:'<i class="fab fa-instagram"></i>',name:'إنستغرام'};if(u.includes('youtube.com'))return{icon:'<i class="fab fa-youtube"></i>',name:'يوتيوب'};if(u.includes('t.me'))return{icon:'<i class="fab fa-telegram"></i>',name:'تلغرام'};if(u.includes('whatsapp.com'))return{icon:'<i class="fab fa-whatsapp"></i>',name:'واتساب'};if(u.includes('linkedin.com'))return{icon:'<i class="fab fa-linkedin"></i>',name:'لينكدإن'};if(u.includes('github.com'))return{icon:'<i class="fab fa-github"></i>',name:'جيت هاب'};if(u.includes('discord.com')||u.includes('discord.gg'))return{icon:'<i class="fab fa-discord"></i>',name:'ديسكورد'};if(u.includes('tiktok.com'))return{icon:'<i class="fab fa-tiktok"></i>',name:'تيك توك'};if(u.includes('snapchat.com'))return{icon:'<i class="fab fa-snapchat"></i>',name:'سناب شات'};return{icon:'<i class="fas fa-globe"></i>',name:'موقع ويب'};}
+function copyPageLink(){
+const pkg=getPackageFromUrl();
+const cleanUrl=window.location.origin+window.location.pathname+"?"+pkg;
+navigator.clipboard.writeText(cleanUrl).then(()=>{
+const b=document.getElementById('copyLinkBtn');
+const o=b.innerHTML;
+b.innerHTML='<i class="fas fa-check"></i> تم النسخ!';
+b.style.backgroundColor='var(--accent)';
+setTimeout(()=>{b.innerHTML=o;b.style.backgroundColor='';},2000);
+}).catch(e=>{alert('تعذر نسخ الرابط: '+e);});
+}
+function sharePageLink(){
+const pkg=getPackageFromUrl();
+const cleanUrl=window.location.origin+window.location.pathname+"?"+pkg;
+const t=document.querySelector('.app-title')?.textContent||'تطبيق';
+if(navigator.share){
+navigator.share({title:t,url:cleanUrl}).catch(e=>{});
+}else{
+navigator.clipboard.writeText(cleanUrl).then(()=>{
+const b=document.getElementById('shareLinkBtn');
+const o=b.innerHTML;
+b.innerHTML='<i class="fas fa-check"></i> تم النسخ!';
+b.style.backgroundColor='var(--accent)';
+setTimeout(()=>{b.innerHTML=o;b.style.backgroundColor='';},2000);
+});
+}}
+loadApp();
 </script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
