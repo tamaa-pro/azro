@@ -49,73 +49,30 @@ body{background:var(--bg-primary);color:var(--text-primary);font-family:'Segoe U
 .app-menu-btn{display:block;padding:15px;background-color:var(--accent);color:white;text-align:center;border-radius:8px;font-size:16px;font-weight:bold;text-decoration:none;transition:background-color .3s;border:none;cursor:pointer;width:fit-content;margin:0 auto}
 .app-menu-btn:hover{background-color:var(--accent-hover)}
 .loading{text-align:center;padding:40px;background-color:var(--bg-secondary);border-radius:10px}
-.spinner{display:inline-block;width:40px;height:40px;border:4px solid rgba(255,255,255,.3);border-radius:50%;border-top-color:var(--accent);animation:spin 1s ease-in-out infinite;margin-bottom:20px}
-@keyframes spin{to{transform:rotate(360deg)}}
-
-/* رمز التحميل الجديد */
-.murder-drones-loader {
-    position: relative;
-    width: 80px;
-    height: 80px;
-    margin: 0 auto 20px;
+.spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 20px;
+  height: 20px;
 }
 
-.murder-drones-logo {
-    width: 50px;
-    height: 50px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 2;
+.spinner div {
+  width: 6px;
+  height: 12px;
+  background-color: var(--accent);
+  animation: bounce 1s infinite ease-in-out;
 }
 
-.quadrant-loader {
-    width: 100%;
-    height: 100%;
-    position: relative;
-    animation: rotate 2s linear infinite;
-}
+.spinner div:nth-child(2) { animation-delay: 0.1s; }
+.spinner div:nth-child(3) { animation-delay: 0.2s; }
+.spinner div:nth-child(4) { animation-delay: 0.3s; }
+.spinner div:nth-child(5) { animation-delay: 0.4s; }
 
-.quadrant {
-    position: absolute;
-    width: 50%;
-    height: 50%;
-    border-radius: 50%;
-    border: 2px solid transparent;
-}
-
-.quadrant:nth-child(1) {
-    top: 0;
-    left: 0;
-    border-top-color: #ff3e3e;
-    border-right-color: #ff3e3e;
-}
-
-.quadrant:nth-child(2) {
-    top: 0;
-    right: 0;
-    border-top-color: #3e8cff;
-    border-left-color: #3e8cff;
-}
-
-.quadrant:nth-child(3) {
-    bottom: 0;
-    left: 0;
-    border-bottom-color: #3eff8c;
-    border-right-color: #3eff8c;
-}
-
-.quadrant:nth-child(4) {
-    bottom: 0;
-    right: 0;
-    border-bottom-color: #ffd43e;
-    border-left-color: #ffd43e;
-}
-
-@keyframes rotate {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+@keyframes bounce {
+  0%, 40%, 100% { transform: scaleY(0.4); opacity: 0.5; }
+  20% { transform: scaleY(1); opacity: 1; }
 }
 
 .footer{text-align:center;margin-top:40px;padding:15px;color:var(--text-secondary);font-size:14px}
@@ -125,16 +82,10 @@ body{background:var(--bg-primary);color:var(--text-primary);font-family:'Segoe U
 <div class="container">
 <div id="appContent">
 <div class="loading">
-<div class="murder-drones-loader">
-    <img src="https://i.imgur.com/4JQJZ9J.png" alt="Murder Drones Logo" class="murder-drones-logo">
-    <div class="quadrant-loader">
-        <div class="quadrant"></div>
-        <div class="quadrant"></div>
-        <div class="quadrant"></div>
-        <div class="quadrant"></div>
-    </div>
-</div>
-<p>جاري تحميل بيانات التطبيق...</p>
+  <div class="spinner">
+    <div></div><div></div><div></div><div></div><div></div>
+  </div>
+  <p>جاري تحميل بيانات التطبيق...</p>
 </div>
 </div>
 </div>
