@@ -131,7 +131,43 @@ document.getElementById('searchInput').addEventListener('input',renderApps);
 document.getElementById('addAppButton').addEventListener('click',()=>{window.location.href="https://tamaa-pro.github.io/azro/tazazt/upload_app";});
 loadApps();
 </script>
+<script>
+(function(){
+  const ICON_KEY_PREFIX = "localFA_";
 
+  function cacheFAIcons() {
+    const icons = document.querySelectorAll('i.fa, i.fas, i.far, i.fab, svg.fa');
+    icons.forEach(icon => {
+      const className = Array.from(icon.classList).filter(c => c.startsWith('fa')).join('_');
+      const key = ICON_KEY_PREFIX + className;
+      if (!localStorage.getItem(key)) {
+        
+        let svgHTML = icon.outerHTML;
+        localStorage.setItem(key, svgHTML);
+      }
+    });
+  }
+
+  function loadFAIcons() {
+    const icons = document.querySelectorAll('i.fa, i.fas, i.far, i.fab, svg.fa');
+    icons.forEach(icon => {
+      const className = Array.from(icon.classList).filter(c => c.startsWith('fa')).join('_');
+      const key = ICON_KEY_PREFIX + className;
+      const saved = localStorage.getItem(key);
+      if (saved) {
+        const span = document.createElement('span');
+        span.innerHTML = saved;
+        icon.replaceWith(span.firstChild);
+      }
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    cacheFAIcons();
+    loadFAIcons();
+  });
+})();
+</script>
 <script>
 document.addEventListener('wheel',e=>{if(e.ctrlKey)e.preventDefault()},{passive:false});
 document.addEventListener('keydown',e=>{if((e.ctrlKey&&(e.key==='+'||e.key==='-'||e.key==='='))||e.key==='Meta')e.preventDefault()});
