@@ -1,0 +1,72 @@
+<!doctype html>
+
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>محول ضغط الأكواد</title>
+<style>
+:root{--bg:#0b1020;--card:#0f1724;--accent:#7c3aed;--muted:#9aa3b2}
+html,body{height:100%}
+body{margin:0;font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,'Noto Sans',sans-serif;background:linear-gradient(180deg,var(--bg),#071026);color:#e6eef8;display:flex;align-items:center;justify-content:center;padding:24px}
+.container{width:100%;max-width:980px;background:linear-gradient(180deg,var(--card),#071428);border-radius:12px;padding:18px;box-shadow:0 6px 30px rgba(2,6,23,.7)}
+.header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.h1{font-size:18px;font-weight:700}
+.controls{display:flex;gap:8px;align-items:center}
+.select,input,button{background:transparent;border:1px solid rgba(255,255,255,.06);color:inherit;padding:8px 10px;border-radius:8px}
+textarea{width:100%;height:220px;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,.04);background:linear-gradient(180deg,#071124,#071528);color:#dff3ff;resize:vertical;font-family:monospace;font-size:13px}
+.footer{display:flex;gap:8px;align-items:center;justify-content:flex-end;margin-top:10px}
+.btn{cursor:pointer;padding:8px 12px;border-radius:10px;border:none;background:linear-gradient(90deg,var(--accent),#5b21b6);color:white;font-weight:600}
+.small{font-size:12px;color:var(--muted)}
+.row{display:flex;gap:8px;align-items:center;margin-top:12px}
+.stats{display:flex;gap:12px;align-items:center}
+.badge{background:rgba(255,255,255,.04);padding:6px 8px;border-radius:8px;font-size:13px}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header">
+<div>
+<div class="h1">محول ضغط الأكواد</div>
+<div class="small">يدعم JavaScript و HTML و CSS. يُنتج نسخة مضغوطة بدون تعليقات ومسافات زائدة.</div>
+</div>
+<div class="controls">
+<select id="lang">
+<option value="auto">كشف تلقائي</option>
+<option value="js">JavaScript</option>
+<option value="html">HTML</option>
+<option value="css">CSS</option>
+</select>
+<button id="minify" class="btn">ضغط</button>
+</div>
+</div>
+<div style="margin-top:12px">
+<textarea id="input" placeholder="ألصق الشيفرة هنا"></textarea>
+</div>
+<div class="row">
+<div style="flex:1">
+<button id="copyIn" class="btn">نسخ الإدخال</button>
+<button id="clearIn" style="margin-left:8px" class="btn">مسح</button>
+</div>
+<div class="stats">
+<div class="badge" id="inLen">حجم الإدخال: 0</div>
+<div class="badge" id="outLen">حجم الإخراج: 0</div>
+</div>
+</div>
+<div style="margin-top:12px">
+<textarea id="output" placeholder="النتيجة" readonly></textarea>
+</div>
+<div class="footer">
+<button id="copyOut" class="btn">نسخ</button>
+<button id="download" class="btn">تحميل</button>
+</div>
+</div>
+<script>
+const input=document.getElementById('input');const output=document.getElementById('output');const langSelect=document.getElementById('lang');const inLen=document.getElementById('inLen');const outLen=document.getElementById('outLen');function updateStats(){inLen.textContent='حجم الإدخال: '+input.value.length;outLen.textContent='حجم الإخراج: '+output.value.length}input.addEventListener('input',updateStats);function isWhitespace(c){return c===' '||c==='\t'||c==='\n'||c==='\r'||c==='\f'}function minifyGeneral(src,mode){let i=0;let out='';let inS=false;let inD=false;let inB=false;let inLineComment=false;let inBlockComment=false;let lastChar='';while(i<src.length){const ch=src[i];const next=src[i+1]||'';if(inBlockComment){if(ch==='*'&&next==='/'){inBlockComment=false;i+=2;continue}i++;continue}if(inLineComment){if(ch==='\n'){inLineComment=false;out+=ch;lastChar=ch;i++;continue}i++;continue}if(!inS&&!inD&&!inB){if(ch==='/'&&next==='*'){inBlockComment=true;i+=2;continue}if(ch==='/'&&next==='/'){inLineComment=true;i+=2;continue}if(mode==='html'&&ch==='<'&&src.substr(i,4)==='<!--'){inBlockComment=true;i+=4;continue}}if(!inLineComment&&!inBlockComment){out+=ch;if(!inS&&!inD&&!inB){if(ch==="'")inS=true;else if(ch==='"')inD=true;else if(ch==='`')inB=true}else{if(inS&&ch==="'"&&lastChar!=='\\')inS=false;else if(inD&&ch==='"'&&lastChar!=='\\')inD=false;else if(inB&&ch==='`'&&lastChar!=='\\')inB=false}lastChar=ch}i++}if(mode==='html'){out=out.replace(/>\s+</g,'><');out=out.replace(/\s{2,}/g,' ')}else{let res='';i=0;inS=false;inD=false;inB=false;while(i<out.length){const ch=out[i];if(!inS&&!inD&&!inB){if(isWhitespace(ch)){res+=' ';while(i<out.length&&isWhitespace(out[i]))i++;continue}}res+=ch;if(!inS&&!inD&&!inB){if(ch==="'")inS=true;else if(ch==='"')inD=true;else if(ch==='`')inB=true}else{const prev=res[res.length-2]||'';if(inS&&ch==="'"&&prev!=='\\')inS=false;else if(inD&&ch==='"'&&prev!=='\\')inD=false;else if(inB&&ch==='`'&&prev!=='\\')inB=false}i++}out=res;out=out.replace(/\s*([{};:,=+\-\*\/<>])\s*/g,'$1')}return out}
+function minifyJS(src){return minifyGeneral(src,'js')}
+function minifyHTML(src){return minifyGeneral(src,'html')}
+function minifyCSS(src){let r=minifyGeneral(src,'css');r=r.replace(/;}/g,'}');r=r.replace(/\s*:\s*/g,':');return r}
+document.getElementById('minify').addEventListener('click',()=>{const code=input.value;let mode=langSelect.value;if(mode==='auto'){const v=code.trim();if(v.startsWith('<'))mode='html';else if(v.includes('{')&&v.includes(':')&&v.includes('}'))mode='css';else mode='js'}let result='';if(!code){output.value='';updateStats();return}try{if(mode==='js')result=minifyJS(code);else if(mode==='html')result=minifyHTML(code);else if(mode==='css')result=minifyCSS(code);else result=minifyGeneral(code,'js')}catch(e){result=code}output.value=result;updateStats()});document.getElementById('copyOut').addEventListener('click',()=>{navigator.clipboard.writeText(output.value)});document.getElementById('copyIn').addEventListener('click',()=>{navigator.clipboard.writeText(input.value)});document.getElementById('clearIn').addEventListener('click',()=>{input.value='';updateStats()});document.getElementById('download').addEventListener('click',()=>{const blob=new Blob([output.value],{type:'text/plain'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);const ext=(langSelect.value==='html'||(langSelect.value==='auto'&&input.value.trim().startsWith('<')))?'.html':(langSelect.value==='css'?'.css':'.js');a.download='minified'+ext;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(a.href)});updateStats();
+</script>
+</body>
+</html>
