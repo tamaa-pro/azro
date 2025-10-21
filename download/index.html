@@ -1,1 +1,44 @@
-
+<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>صفحة التحميل</title><style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif}
+body{background:#000;color:#fff;display:flex;justify-content:center;align-items:center;min-height:100vh}
+main{width:90%;max-width:600px;display:flex;flex-direction:column;gap:10px}
+.card{background:#111;padding:15px;border-radius:16px}
+#preview{display:flex;justify-content:center;align-items:center;min-height:200px}
+#preview img,#preview video{max-width:100%;border-radius:16px}
+button,a{display:block;width:100%;text-align:center;padding:10px;margin-top:6px;border:none;border-radius:10px;color:#fff;font-size:15px;cursor:pointer;text-decoration:none}
+a#download{background:#0070ff}
+button{background:#333}
+button:hover,a#download:hover{opacity:.8}
+.hidden{display:none}
+pre{white-space:pre-wrap;word-wrap:break-word;background:#000;padding:10px;border-radius:10px;max-height:400px;overflow:auto}
+</style></head><body><main>
+<section id="preview" class="card">جاري التحميل...</section>
+<section id="info" class="card">
+<p>اسم الملف: <span id="fname">--</span></p>
+<p>نوع الملف: <span id="ftype">--</span></p>
+<p>حجم الملف: <span id="fsize">--</span></p>
+<p>مصدر الملف: <span id="fsource">--</span></p>
+<p>تاريخ الرفع: <span id="fdate">--</span></p>
+</section>
+<section id="actions" class="card">
+<a id="download" target="_blank">تحميل الملف</a>
+<button id="copy">نسخ الرابط</button>
+<button id="share">مشاركة</button>
+<button id="openText" class="hidden">فتح الملف</button>
+<button id="openHtml" class="hidden">عرض الصفحة</button>
+</section>
+<div id="viewer" class="card hidden"></div>
+<script>
+const q=location.search.replace(/^\?/,"").replace(/^t=/,"").trim();if(!q){document.querySelector("#preview").innerHTML="لا يوجد رابط";throw"";}
+let url=q.includes("://")?q:"https://"+q;const name=url.split("/").pop().split("?")[0]||"--";const source=url.split("/")[2]||"--";const ext=name.split(".").pop().toLowerCase();
+function type(u){if(["png","jpg","jpeg","gif","webp","svg"].includes(ext))return"image";if(["mp4","webm","mov"].includes(ext))return"video";if(["mp3","wav","ogg"].includes(ext))return"audio";if(["txt","log","md","json","js","css"].includes(ext))return"text";if(["html","htm"].includes(ext))return"html";if(["zip","rar","7z","tar","gz"].includes(ext))return"archive";if(["apk","xapk"].includes(ext))return"app";return"unknown";}
+const ftype=type(url);function preview(t){const p=document.querySelector("#preview");if(t==="image")p.innerHTML=`<img src="${url}">`;else if(t==="video")p.innerHTML=`<video controls src="${url}"></video>`;else if(t==="audio")p.innerHTML=`<audio controls src="${url}" style="width:100%"></audio>`;else p.innerHTML=`<div style="font-size:60px">📁</div>`;}
+preview(ftype);document.querySelector("#fname").textContent=name;document.querySelector("#ftype").textContent=ftype+(ext?" - "+ext:"");document.querySelector("#fsource").textContent=source;
+fetch(url,{method:"HEAD"}).then(r=>{let s=r.headers.get("content-length");let d=r.headers.get("last-modified");document.querySelector("#fsize").textContent=s?formatSize(+s):"--";document.querySelector("#fdate").textContent=d||"--";}).catch(()=>{document.querySelector("#fsize").textContent="--";document.querySelector("#fdate").textContent="--";});
+function formatSize(b){if(b<1024)return b+" B";if(b<1048576)return(b/1024).toFixed(1)+" KB";if(b<1073741824)return(b/1048576).toFixed(1)+" MB";return(b/1073741824).toFixed(1)+" GB";}
+const dl=document.querySelector("#download");dl.href=url;const cp=document.querySelector("#copy");const sh=document.querySelector("#share");const ot=document.querySelector("#openText");const oh=document.querySelector("#openHtml");
+cp.onclick=()=>navigator.clipboard.writeText(location.href);sh.onclick=()=>navigator.share?navigator.share({title:name,url:location.href}):alert("مشاركة غير مدعومة");
+if(ftype==="text")ot.classList.remove("hidden");if(ftype==="html")oh.classList.remove("hidden");
+ot.onclick=()=>{fetch(url).then(r=>r.text()).then(t=>{document.querySelector("#viewer").innerHTML=`<pre>${t.replace(/[<>]/g,m=>({"<":"&lt;",">":"&gt;"}[m]))}</pre>`;document.querySelector("#viewer").classList.remove("hidden");window.scrollTo(0,document.body.scrollHeight);});};
+oh.onclick=()=>{fetch(url).then(r=>r.text()).then(t=>{document.querySelector("#viewer").innerHTML=t;document.querySelector("#viewer").classList.remove("hidden");window.scrollTo(0,document.body.scrollHeight);});};
+</script></main></body></html>
