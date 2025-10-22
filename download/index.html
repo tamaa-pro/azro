@@ -1,54 +1,120 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>تحميل الملفات — Azro</title>
+  <meta charset="UTF-8" />
+  <title>صفحة تحميل المجلد من GitHub</title>
   <style>
-    *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Noto Sans',Arial}
-    body{background:#000;color:#fff;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-    main{width:100%;max-width:760px}
-    .card{background:#0f1113;border-radius:14px;padding:14px;margin-bottom:12px}
-    #preview{min-height:220px;display:flex;align-items:center;justify-content:center}
-    #preview img,#preview video{max-width:100%;border-radius:12px}
-    .muted{color:#9aa0a6;font-size:14px}
-    .row{display:flex;gap:8px}
-    button,a{background:#202428;color:#fff;border-radius:10px;padding:10px;border:none;cursor:pointer;text-decoration:none;text-align:center}
-    #download.btn{background:#006cff}
-    .hidden{display:none}
-    pre{white-space:pre-wrap;background:#060606;padding:12px;border-radius:10px;max-height:380px;overflow:auto}
+    body { font-family: sans-serif; margin: 2rem; }
+    .card { border: 1px solid #ccc; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; }
+    .file-list { max-height: 300px; overflow-y: auto; }
+    .file-item { margin: 0.2rem 0; }
+    .buttons { display: flex; gap: 0.5rem; }
   </style>
 </head>
 <body>
-  <main>
-    <section id="preview" class="card">جاري التحليل...</section>
-    <section id="info" class="card">
-      <p>اسم الملف: <strong id="fname">--</strong></p>
-      <p>النوع: <strong id="ftype">--</strong></p>
-      <p>الحجم: <strong id="fsize">--</strong></p>
-      <p>المصدر: <strong id="fsource">--</strong></p>
-      <p>تاريخ الرفع: <strong id="fdate">--</strong></p>
-    </section>
-    <section id="actions" class="card">
-      <div class="row">
-        <button id="download" class="btn">تحميل الملف</button>
-        <button id="copy">نسخ الرابط</button>
-        <button id="share">مشاركة</button>
-      </div>
-      <div style="margin-top:8px">
-        <button id="openText" class="hidden">فتح الملف النصي</button>
-      </div>
-    </section>
-    <section id="viewer" class="card hidden"></section>
-  </main>
-<script src="libs/jszip.min.js"></script>
-<script src="js/downloader.js"></script>
-<script src="js/imageViewer.js"></script>
-<script src="js/videoViewer.js"></script>
-<script src="js/audioViewer.js"></script>
-<script src="js/textViewer.js"></script>
-<script src="js/zipAppHandler.js"></script>
-<script src="js/folderHandler.js"></script>
-<script src="js/analyzer.js"></script>
+  <h1>تحميل المجلد من GitHub</h1>
+
+  <div id="infoCard" class="card">
+    <h2>محتويات المجلد</h2>
+    <div id="fileList" class="file-list">جار تحميل...</div>
+  </div>
+
+  <div id="actionsCard" class="card">
+    <div class="buttons">
+      <button id="btnDownload">تحميل ZIP</button>
+      <button id="btnOpen">فتح في GitHub</button>
+      <button id="btnCopy">نسخ الرابط</button>
+      <button id="btnShare">مشاركة</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script>
+    async function main() {
+      const params = new URLSearchParams(window.location.search);
+      const target = params.toString(); // كل ما بعد "?"
+      if (!target) {
+        document.getElementById("fileList").innerText = "لم يُقدَّم رابط.";
+        return;
+      }
+      // نسمح أن يكون الرابط كاملاً بعد ?
+      const url = decodeURIComponent(target);
+      // تحديد owner, repo, path من رابط مثل:
+      // https://github.com/owner/repo/tree/branch/path/to/folder
+      const m = url.match(/github\\.com\\/([^\\/]+)\\/([^\\/]+)\\/tree\\/([^\\/]+)\\/(.+)$/);
+      if (!m) {
+        document.getElementById("fileList").innerText = "الرابط غير مطابق لنمط مجلد GitHub.";
+        return;
+      }
+      const owner = m[1], repo = m[2], branch = m[3], path = m[4];
+      const apiBase = `https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=${branch}`;
+      // جلب الملفات (واجهة GitHub)
+      let allFiles = [];
+      async function fetchDir(apiUrl, subPath = "") {
+        const resp = await fetch(apiUrl);
+        if (!resp.ok) {
+          throw new Error("فشل جلب المحتوى: " + resp.status);
+        }
+        const items = await resp.json();
+        for (const item of items) {
+          if (item.type === "file") {
+            allFiles.push({ path: (subPath ? subPath + "/" : "") + item.name, download_url: item.download_url });
+          } else if (item.type === "dir") {
+            // استدعاء تكراري
+            await fetchDir(`https://api.github.com/repos/${owner}/${repo}/contents/${path}/${(subPath ? subPath + "/" : "") + item.name}?ref=${branch}`, (subPath ? subPath + "/" : "") + item.name);
+          }
+        }
+      }
+      try {
+        await fetchDir(apiBase);
+      } catch (e) {
+        document.getElementById("fileList").innerText = "حدث خطأ: " + e.message;
+        console.error(e);
+        return;
+      }
+      // عرض القائمة
+      const fl = document.getElementById("fileList");
+      fl.innerHTML = "";
+      allFiles.forEach(f => {
+        const div = document.createElement("div");
+        div.className = "file-item";
+        div.textContent = f.path;
+        fl.append(div);
+      });
+
+      // ربط الأزرار
+      document.getElementById("btnOpen").onclick = () => {
+        window.open(url, "_blank");
+      };
+      document.getElementById("btnCopy").onclick = () => {
+        navigator.clipboard.writeText(url);
+        alert("تم نسخ الرابط");
+      };
+      document.getElementById("btnShare").onclick = () => {
+        // يمكن تخصيص المشاركة حسب الحاجة
+        const shareUrl = window.location.href;
+        prompt("شارك هذا الرابط:", shareUrl);
+      };
+      document.getElementById("btnDownload").onclick = async () => {
+        const zip = new JSZip();
+        for (const f of allFiles) {
+          const r = await fetch(f.download_url);
+          if (!r.ok) {
+            console.error("فشل تحميل الملف:", f.download_url);
+            continue;
+          }
+          const blob = await r.blob();
+          zip.file(f.path, blob);
+        }
+        const content = await zip.generateAsync({ type: "blob" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(content);
+        a.download = `${repo}-${path.replace(/\//g, "_")}.zip`;
+        a.click();
+      };
+    }
+
+    main();
+  </script>
 </body>
 </html>
