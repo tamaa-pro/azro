@@ -85,3 +85,8 @@ function escapeHtml(s){return s.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;',
 
 // exposed helper
 export const analyzed = detail;
+
+if(url.includes("github.io/") && !url.match(/\.[a-zA-Z0-9]+$/)){
+ folderHandler.loadFolder(url);
+ return;
+}
