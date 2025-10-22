@@ -1,1 +1,0 @@
-const imageViewer={show:u=>{document.querySelector("#preview").innerHTML=`<img src="https://corsproxy.io/?${u}" style="max-width:100%;border-radius:16px">`;document.querySelector("#ftype").textContent="صورة";}};

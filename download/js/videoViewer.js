@@ -1,1 +1,0 @@
-const videoViewer={show:u=>{document.querySelector("#preview").innerHTML=`<video controls src="https://corsproxy.io/?${u}" style="max-width:100%;border-radius:16px"></video>`;document.querySelector("#ftype").textContent="فيديو";}};

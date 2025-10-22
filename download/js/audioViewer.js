@@ -1,1 +1,0 @@
-const audioViewer={show:u=>{document.querySelector("#preview").innerHTML=`<audio controls src="https://corsproxy.io/?${u}" style="width:100%"></audio>`;document.querySelector("#ftype").textContent="صوت";}};
