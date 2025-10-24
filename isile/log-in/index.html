@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إنشاء حساب - دردشة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #7289da;
+            --dark-bg: #36393f;
+            --darker-bg: #2f3136;
+            --darkest-bg: #202225;
+            --text-color: #dcddde;
+            --text-muted: #72767d;
+            --online-color: #3ba55c;
+            --offline-color: #747f8d;
+            --success-color: #43b581;
+            --error-color: #f04747;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Tajawal', sans-serif;
+        }
+        
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background-color: var(--darker-bg);
+            border-radius: 8px;
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: white;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--darkest-bg);
+            border-radius: 4px;
+            background-color: var(--darkest-bg);
+            color: var(--text-color);
+            font-size: 16px;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        
+        .avatar-upload {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .cover-container {
+            width: 100%;
+            margin-bottom: 35px; /* تعديل الهامش السفلي */
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .cover-preview {
+            width: 100%;
+            height: 200px;
+            background-color: var(--darkest-bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .cover-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .avatar-container {
+            position: absolute;
+            bottom: -25px; /* تعديل لجعل جزء من الصورة داخل الغلاف */
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+        }
+        
+        .avatar-preview {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background-color: var(--darkest-bg);
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 5px solid var(--darker-bg);
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .avatar-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .upload-text {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+        
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 4px;
+            width: 100%;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-bottom: 10px;
+        }
+        
+        button:hover {
+            background-color: #677bc4;
+        }
+        
+        button:disabled {
+            background-color: var(--text-muted);
+            cursor: not-allowed;
+        }
+        
+        .secondary-btn {
+            background-color: transparent;
+            border: 1px solid var(--text-muted);
+            color: var(--text-color);
+        }
+        
+        .secondary-btn:hover {
+            background-color: var(--darkest-bg);
+        }
+        
+        .error {
+            color: var(--error-color);
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .hint {
+            color: var(--text-muted);
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        
+        /* رسائل التنبيه */
+        .alert {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 5px;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transform: translateX(120%);
+            transition: transform 0.3s ease;
+        }
+        
+        .alert.show {
+            transform: translateX(0);
+        }
+        
+        .alert.success {
+            background-color: var(--success-color);
+        }
+        
+        .alert.error {
+            background-color: var(--error-color);
+        }
+        
+        /* نمط تسجيل الدخول */
+        .login-form {
+            display: none;
+        }
+        
+        /* تحسينات للجوال */
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .cover-preview {
+                height: 150px;
+            }
+            
+            .avatar-preview {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .avatar-container {
+                bottom: -20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- رسائل التنبيه -->
+    <div id="alertContainer"></div>
+
+    <div class="container">
+        <!-- نموذج إنشاء حساب -->
+        <div id="signupForm">
+            <h1>إنشاء حساب جديد</h1>
+            
+            <div class="avatar-upload">
+                <div class="cover-container">
+                    <div class="cover-preview" id="coverPreview">
+                        <span class="upload-text">انقر لرفع صورة الغلاف</span>
+                    </div>
+                    <input type="file" id="coverInput" accept="image/*" style="display: none;">
+                </div>
+                
+                <div class="avatar-container">
+                    <div class="avatar-preview" id="avatarPreview">
+                        <span class="upload-text">صورة الحساب</span>
+                    </div>
+                    <input type="file" id="avatarInput" accept="image/*" style="display: none;">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="displayName">اسم العرض</label>
+                <input type="text" id="displayName" maxlength="15" required>
+                <div class="hint">(الحد الأقصى 15 حرفًا)</div>
+                <div class="error" id="displayNameError">اسم العرض مطلوب</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="username">اسم المستخدم</label>
+                <input type="text" id="username" maxlength="20" required>
+                <div class="error" id="usernameError">اسم المستخدم مطلوب ويجب أن يكون فريدًا</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="bio">الوصف</label>
+                <input type="text" id="bio" maxlength="100">
+                <div class="hint">(اختياري، الحد الأقصى 100 حرف)</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="country">البلد</label>
+                <input type="text" id="country">
+                <div class="hint">(اختياري)</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">البريد الإلكتروني</label>
+                <input type="email" id="email">
+                <div class="hint">(اختياري)</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">كلمة المرور</label>
+                <input type="password" id="password" maxlength="20" required>
+                <div class="hint">(الحد الأقصى 20 حرفًا)</div>
+                <div class="error" id="passwordError">كلمة المرور مطلوبة</div>
+            </div>
+            
+            <button id="createAccountBtn" disabled>إنشاء حساب</button>
+            <button id="showLoginBtn" class="secondary-btn">تسجيل الدخول</button>
+        </div>
+        
+        <!-- نموذج تسجيل الدخول -->
+        <div id="loginForm" class="login-form">
+            <h1>تسجيل الدخول</h1>
+            
+            <div class="form-group">
+                <label for="loginEmail">البريد الإلكتروني أو اسم المستخدم</label>
+                <input type="text" id="loginEmail" required>
+                <div class="hint">ألم تضف بريد الكتروني؟ جرب اسم المستخدم بدلًا من ذلك</div>
+                <div class="error" id="loginEmailError">مطلوب</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="loginPassword">كلمة المرور</label>
+                <input type="password" id="loginPassword" required>
+                <div class="error" id="loginPasswordError">كلمة المرور مطلوبة</div>
+            </div>
+            
+            <button id="loginBtn">تسجيل الدخول</button>
+            <button id="showSignupBtn" class="secondary-btn">إنشاء حساب جديد</button>
+        </div>
+    </div>
+
+    <script>
+        // Cloudinary configuration
+        const cloudName = 'tamaa';
+        const apiKey = '299481434614369';
+        const uploadPreset = 'users_avatars';
+        
+        // JSONBin.io configuration
+        const jsonbinApiKey = '$2a$10$F5TR7pSKPRRNAeBzsdxQ4.NYog8xHGUi0hektkor0q/QWFVXzba3q';
+        const usersBinId = '688fe2b17b4b8670d8ac7dc8';
+        const messagesBinId = '688df0ccae596e708fbffb56';
+        
+        // DOM elements
+        const signupForm = document.getElementById('signupForm');
+        const loginForm = document.getElementById('loginForm');
+        const showLoginBtn = document.getElementById('showLoginBtn');
+        const showSignupBtn = document.getElementById('showSignupBtn');
+        const coverPreview = document.getElementById('coverPreview');
+        const coverInput = document.getElementById('coverInput');
+        const avatarPreview = document.getElementById('avatarPreview');
+        const avatarInput = document.getElementById('avatarInput');
+        const createAccountBtn = document.getElementById('createAccountBtn');
+        const loginBtn = document.getElementById('loginBtn');
+        const alertContainer = document.getElementById('alertContainer');
+        
+        // Form data
+        let formData = {
+            coverUrl: '',
+            avatarUrl: '',
+            displayName: '',
+            username: '',
+            bio: '',
+            country: '',
+            email: '',
+            password: ''
+        };
+        
+        // دالة لعرض رسائل التنبيه
+        function showAlert(message, type = 'success', duration = 5000) {
+            const alert = document.createElement('div');
+            alert.className = `alert ${type}`;
+            alert.textContent = message;
+            alertContainer.appendChild(alert);
+            
+            // إظهار الرسالة
+            setTimeout(() => {
+                alert.classList.add('show');
+            }, 10);
+            
+            // إخفاء الرسالة بعد المدة المحددة
+            setTimeout(() => {
+                alert.classList.remove('show');
+                setTimeout(() => {
+                    alert.remove();
+                }, 300);
+            }, duration);
+        }
+        
+        // تبديل بين نماذج التسجيل والدخول
+        showLoginBtn.addEventListener('click', () => {
+            signupForm.style.display = 'none';
+            loginForm.style.display = 'block';
+        });
+        
+        showSignupBtn.addEventListener('click', () => {
+            loginForm.style.display = 'none';
+            signupForm.style.display = 'block';
+        });
+        
+        // دالة رفع الصور إلى Cloudinary
+        async function uploadToCloudinary(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', uploadPreset);
+            formData.append('api_key', apiKey);
+            
+            try {
+                const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    throw new Error('فشل في رفع الصورة: ' + response.statusText);
+                }
+                
+                const data = await response.json();
+                return data.secure_url;
+            } catch (error) {
+                console.error('Error uploading image:', error);
+                throw new Error('حدث خطأ أثناء رفع الصورة. يرجى المحاولة مرة أخرى.');
+            }
+        }
+        
+        // التحقق من صحة اسم المستخدم
+        function isValidUsername(username) {
+            // يجب أن يبدأ بـ @ ويحتوي على أحرف لاتينية، أرقام، _ أو -
+            return /^@[a-zA-Z0-9_-]+$/.test(username);
+        }
+        
+        // معالجة رفع صورة الغلاف
+        coverInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            if (!file.type.match('image.*')) {
+                showAlert('الرجاء اختيار ملف صورة فقط', 'error');
+                return;
+            }
+            
+            try {
+                const imageUrl = await uploadToCloudinary(file);
+                formData.coverUrl = imageUrl;
+                coverPreview.innerHTML = `<img src="${imageUrl}" alt="Cover">`;
+                checkFormValidity();
+            } catch (error) {
+                showAlert(error.message, 'error');
+            }
+        });
+        
+        // معالجة رفع صورة الحساب
+        avatarInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            if (!file.type.match('image.*')) {
+                showAlert('الرجاء اختيار ملف صورة فقط', 'error');
+                return;
+            }
+            
+            try {
+                const imageUrl = await uploadToCloudinary(file);
+                formData.avatarUrl = imageUrl;
+                avatarPreview.innerHTML = `<img src="${imageUrl}" alt="Avatar">`;
+                checkFormValidity();
+            } catch (error) {
+                showAlert(error.message, 'error');
+            }
+        });
+        
+        // النقر على معاينة الصور لفتح محدد الملفات
+        coverPreview.addEventListener('click', () => coverInput.click());
+        avatarPreview.addEventListener('click', () => avatarInput.click());
+        
+        // التحقق من صحة النموذج
+        function checkFormValidity() {
+            const displayName = document.getElementById('displayName').value.trim();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            
+            // التحقق من اسم المستخدم
+            if (username && !isValidUsername(username)) {
+                document.getElementById('usernameError').textContent = 'يجب أن يبدأ اسم المستخدم بـ @ ويحتوي على أحرف لاتينية، أرقام، _ أو - فقط';
+                document.getElementById('usernameError').style.display = 'block';
+                createAccountBtn.disabled = true;
+                return;
+            } else {
+                document.getElementById('usernameError').style.display = 'none';
+            }
+            
+            const isValid = displayName !== '' && 
+                          username !== '' && 
+                          password !== '' && 
+                          formData.avatarUrl !== '';
+            
+            createAccountBtn.disabled = !isValid;
+        }
+        
+        // متابعة تغييرات حقول النموذج
+        document.getElementById('displayName').addEventListener('input', (e) => {
+            formData.displayName = e.target.value.trim();
+            checkFormValidity();
+        });
+        
+        document.getElementById('username').addEventListener('input', (e) => {
+            let username = e.target.value.trim();
+            
+            // إضافة @ تلقائيًا إذا لم تكن موجودة
+            if (username && !username.startsWith('@')) {
+                username = '@' + username;
+            }
+            
+            // إزالة الفراغات
+            username = username.replace(/\s+/g, '');
+            
+            formData.username = username;
+            e.target.value = username;
+            checkFormValidity();
+        });
+        
+        document.getElementById('bio').addEventListener('input', (e) => {
+            formData.bio = e.target.value.trim();
+        });
+        
+        document.getElementById('country').addEventListener('input', (e) => {
+            formData.country = e.target.value.trim();
+        });
+        
+        document.getElementById('email').addEventListener('input', (e) => {
+            formData.email = e.target.value.trim();
+        });
+        
+        document.getElementById('password').addEventListener('input', (e) => {
+            formData.password = e.target.value.trim();
+            checkFormValidity();
+        });
+        
+        // إنشاء الحساب
+        createAccountBtn.addEventListener('click', async () => {
+            // التحقق من أن اسم المستخدم فريد
+            try {
+                const response = await axios.get(`https://api.jsonbin.io/v3/b/${usersBinId}/latest`, {
+                    headers: {
+                        'X-Master-Key': jsonbinApiKey
+                    }
+                });
+                
+                // التأكد من أن البيانات تحتوي على مصفوفة users
+                let users = [];
+                if (response.data.record && response.data.record.users) {
+                    users = response.data.record.users;
+                } else if (Array.isArray(response.data.record)) {
+                    // للتوافق مع التنسيق القديم
+                    users = response.data.record;
+                }
+                
+                // التحقق من أسماء المستخدمين مع تجاهل حالة الأحرف والشرطات
+                const usernameExists = users.some(user => {
+                    const existingUsername = user.username.replace(/[-_]/g, '').toLowerCase();
+                    const newUsername = formData.username.replace(/[-_]/g, '').toLowerCase();
+                    return existingUsername === newUsername;
+                });
+                
+                if (usernameExists) {
+                    document.getElementById('usernameError').textContent = 'اسم المستخدم موجود بالفعل (حتى مع اختلاف الشرطات أو حالة الأحرف)';
+                    document.getElementById('usernameError').style.display = 'block';
+                    return;
+                }
+                
+                // إضافة المستخدم الجديد
+                const newUser = {
+                    id:Date.now().toString(),
+                    ...formData,
+                    createdAt: new Date().toISOString()
+                };
+                
+                // إنشاء كائن البيانات مع مصفوفة users
+                const dataToUpdate = { users: [...users, newUser] };
+                
+                await axios.put(`https://api.jsonbin.io/v3/b/${usersBinId}`, dataToUpdate, {
+                    headers: {
+                        'X-Master-Key': jsonbinApiKey,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                // حفظ بيانات المستخدم في localStorage
+                localStorage.setItem('currentUser', JSON.stringify(newUser));
+                
+                // عرض رسالة النجاح
+                showAlert('تم إنشاء الحساب بنجاح!', 'success');
+                
+                // الانتقال إلى صفحة الدردشة بعد ثانية
+                setTimeout(() => {
+                    window.location.href = 'chat.html';
+                }, 1000);
+                
+            } catch (error) {
+                console.error('Error creating account:', error);
+                showAlert('حدث خطأ أثناء إنشاء الحساب. يرجى المحاولة مرة أخرى.', 'error');
+            }
+        });
+        
+        // تسجيل الدخول
+        loginBtn.addEventListener('click', async () => {
+            const loginEmail = document.getElementById('loginEmail').value.trim();
+            const loginPassword = document.getElementById('loginPassword').value.trim();
+            
+            if (!loginEmail || !loginPassword) {
+                showAlert('الرجاء إدخال جميع البيانات المطلوبة', 'error');
+                return;
+            }
+            
+            try {
+                const response = await axios.get(`https://api.jsonbin.io/v3/b/${usersBinId}/latest`, {
+                    headers: {
+                        'X-Master-Key': jsonbinApiKey
+                    }
+                });
+                
+                let users = [];
+                if (response.data.record && response.data.record.users) {
+                    users = response.data.record.users;
+                } else if (Array.isArray(response.data.record)) {
+                    users = response.data.record;
+                }
+                
+                // البحث عن المستخدم باستخدام البريد الإلكتروني أو اسم المستخدم
+                const user = users.find(u => 
+                    (u.email && u.email.toLowerCase() === loginEmail.toLowerCase()) || 
+                    u.username.toLowerCase() === loginEmail.toLowerCase()
+                );
+                
+                if (user && user.password === loginPassword) {
+                    // حفظ بيانات المستخدم في localStorage
+                    localStorage.setItem('currentUser', JSON.stringify(user));
+                    
+                    // عرض رسالة النجاح
+                    showAlert('تم تسجيل الدخول بنجاح!', 'success');
+                    
+                    // الانتقال إلى صفحة الدردشة بعد ثانية
+                    setTimeout(() => {
+                        window.location.href = "go:chat";
+                    }, 1000);
+                } else {
+                    showAlert('بيانات الدخول غير صحيحة', 'error');
+                }
+            } catch (error) {
+                console.error('Error logging in:', error);
+                showAlert('حدث خطأ أثناء تسجيل الدخول. يرجى المحاولة مرة أخرى.', 'error');
+            }
+        });
+        
+        // التحقق إذا كان المستخدم مسجل الدخول بالفعل
+        window.addEventListener('DOMContentLoaded', () => {
+            const currentUser = localStorage.getItem('currentUser');
+            if (currentUser) {
+                window.location.href = "go:chat";
+            }
+        });
+    </script>
+</body>
+</html>
