@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>عرض مجلد GitHub</title>
+<style>
+body {
+  background: #0b0b0b;
+  color: #e0e0e0;
+  font-family: sans-serif;
+  text-align: center;
+  padding: 20px;
+}
+#list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 15px;
+  margin-top: 20px;
+}
+.item {
+  background: #1a1a1a;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.item:hover { transform: scale(1.05); }
+.item img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+}
+.item span {
+  display: block;
+  padding: 5px;
+  font-size: 13px;
+  background: #111;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+#viewer {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.9);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+}
+#viewer img {
+  max-width: 95%;
+  max-height: 95%;
+  border-radius: 10px;
+  box-shadow: 0 0 20px #000;
+}
+#viewer:target { display: flex; }
+#close {
+  position: fixed;
+  top: 20px;
+  right: 30px;
+  font-size: 25px;
+  color: white;
+  cursor: pointer;
+}
+.loading {
+  font-size: 18px;
+  color: #888;
+  margin-top: 40px;
+}
+</style>
+</head>
+<body>
+
+<h2>🗂️ عرض محتوى مجلد GitHub</h2>
+<div id="list"></div>
+<div id="viewer">
+  <span id="close">×</span>
+  <img id="bigImg" src="">
+</div>
+<div id="status" class="loading">جار التحميل...</div>
+
+<script>
+(async () => {
+  const params = location.search.slice(1);
+  if (!params) {
+    document.getElementById("status").textContent = "لم يتم تحديد رابط المجلد.";
+    return;
+  }
+
+  let folder = decodeURIComponent(params.trim());
+  if (!folder.startsWith("https://")) folder = "https://" + folder;
+  
+  const apiUrl = folder
+    .replace("github.com", "api.github.com/repos")
+    .replace("/tree/", "/contents/");
+
+  try {
+    const res = await fetch("https://corsproxy.io/?" + apiUrl);
+    if (!res.ok) throw new Error("فشل الجلب");
+    const data = await res.json();
+    const list = document.getElementById("list");
+    const status = document.getElementById("status");
+    status.remove();
+
+    data.forEach(file => {
+      if (file.type === "file" && /\.(png|jpg|jpeg|gif|webp|svg)$/i.test(file.name)) {
+        const div = document.createElement("div");
+        div.className = "item";
+        div.innerHTML = `<img src="${file.download_url}" alt=""><span>${file.name}</span>`;
+        div.onclick = () => {
+          document.getElementById("bigImg").src = file.download_url;
+          document.getElementById("viewer").style.display = "flex";
+        };
+        list.appendChild(div);
+      }
+    });
+
+    if (!list.children.length) {
+      list.innerHTML = "<p>📁 لا توجد صور في هذا المجلد.</p>";
+    }
+  } catch (err) {
+    document.getElementById("status").textContent = "حدث خطأ أثناء تحميل المجلد.";
+  }
+
+  document.getElementById("close").onclick = () => {
+    document.getElementById("viewer").style.display = "none";
+  };
+})();
+</script>
+
+</body>
+</html>
