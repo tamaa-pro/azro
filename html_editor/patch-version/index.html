@@ -16,6 +16,7 @@ html,body{
     height:100%;
     overflow:hidden;
     background:#000;
+    font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,Arial,sans-serif;
 }
 
 /* الشريط */
@@ -161,7 +162,6 @@ html,body{
     <button onclick="closeSettings()"><i class="fa-solid fa-xmark"></i></button>
 </header>
 
-<!-- قسم الكود -->
 <div class="setting">
     <label>اسم الملف</label>
     <input id="fileName" value="index.html">
@@ -181,7 +181,6 @@ html,body{
 
 <div class="divider"></div>
 
-<!-- قسم الشكل -->
 <div class="setting">
     <label>لون النص</label>
     <input id="textColor">
@@ -200,7 +199,7 @@ html,body{
 <div class="setting">
     <label>نوع الخط</label>
     <select id="fontFamily">
-        <option value="inherit">عادي</option>
+        <option value="system-ui">عادي</option>
         <option value="monospace">Monospace</option>
         <option value="Arial">Arial</option>
         <option value="Tahoma">Tahoma</option>
@@ -236,7 +235,7 @@ editor.value=localStorage.getItem(CODE_KEY)||"";
 editor.addEventListener("input",()=>localStorage.setItem(CODE_KEY,editor.value));
 
 /* الإعدادات */
-const editorSettings={color:"#fff",bg:"#000",size:"15px",font:"inherit"};
+const editorSettings={color:"#fff",bg:"#000",size:"15px",font:"system-ui"};
 Object.assign(editorSettings,JSON.parse(localStorage.getItem(SETTINGS_KEY)||"{}"));
 applySettings();
 
@@ -265,10 +264,12 @@ function closeSettings(){overlay.style.display="none";settingsBox.style.display=
 
 /* أدوات */
 function hasSel(){return editor.selectionStart!==editor.selectionEnd}
+
 function copyText(){
     const t=hasSel()?editor.value.substring(editor.selectionStart,editor.selectionEnd):editor.value;
     navigator.clipboard.writeText(t);
 }
+
 function cutText(){
     if(hasSel()){
         const s=editor.selectionStart,e=editor.selectionEnd;
@@ -280,11 +281,16 @@ function cutText(){
     }
     localStorage.setItem(CODE_KEY,editor.value);
 }
-function pasteText(){
-    editor.focus();
-    document.execCommand("paste");
-    localStorage.setItem(CODE_KEY,editor.value);
+
+async function pasteText(){
+    try{
+        const text=await navigator.clipboard.readText();
+        const s=editor.selectionStart;
+        editor.setRangeText(text,s,s,"end");
+        localStorage.setItem(CODE_KEY,editor.value);
+    }catch(e){}
 }
+
 function clearAll(){editor.value="";localStorage.setItem(CODE_KEY,"")}
 function undo(){document.execCommand("undo")}
 function redo(){document.execCommand("redo")}
@@ -316,19 +322,18 @@ fileInput.onchange=()=>{
 /* استيراد من رابط */
 function importFromUrl(){
     fetch(fileUrl.value)
-    .then(r=>r.text())
-    .then(t=>{
-        editor.value=t;
-        localStorage.setItem(CODE_KEY,editor.value);
-    });
+        .then(r=>r.text())
+        .then(t=>{
+            editor.value=t;
+            localStorage.setItem(CODE_KEY,editor.value);
+        });
 }
 
-/* تشغيل */
+/* تشغيل في نفس النافذة */
 function runCode(){
-    const w=window.open();
-    w.document.open();
-    w.document.write(editor.value);
-    w.document.close();
+    const blob=new Blob([editor.value],{type:"text/html"});
+    const url=URL.createObjectURL(blob);
+    window.location.href=url;
 }
 </script>
 
