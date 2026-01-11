@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,height=device-height,initial-scale=1.0">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+*{box-sizing:border-box}
+
+html,body{
+    margin:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:#000;
+}
+
+#toolbar{
+    position:fixed;
+    top:0;left:0;right:0;
+    height:48px;
+    background:#111;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:0 8px;
+    z-index:10;
+}
+
+#toolbar button{
+    background:none;
+    border:none;
+    color:#fff;
+    font-size:16px;
+    cursor:pointer;
+}
+
+#editor,#viewer{
+    position:fixed;
+    top:48px;left:0;right:0;bottom:0;
+    padding:3px;
+    background:#000;
+    color:#fff;
+    font-size:15px;
+    border:none;
+    outline:none;
+}
+
+#viewer{display:none}
+
+#overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.4);
+    backdrop-filter:blur(6px);
+    display:none;
+    z-index:20;
+}
+
+#settings{
+    position:fixed;
+    top:50%;left:50%;
+    transform:translate(-50%,-50%);
+    width:320px;
+    background:#222;
+    padding:12px;
+    display:none;
+    z-index:30;
+}
+
+header button{
+    background:none;
+    border:none;
+    color:#fff;
+    font-size:16px;
+}
+
+.label{
+    color:#aaa;
+    font-size:12px;
+    margin:6px 0 4px;
+}
+
+input,select{
+    width:100%;
+    background:#111;
+    color:#fff;
+    border:1px solid #333;
+    padding:6px;
+}
+
+.btn{
+    background:#111;
+    color:#fff;
+    border:1px solid #333;
+    padding:7px;
+    cursor:pointer;
+}
+
+.btn:hover{background:#191919}
+
+.row{
+    display:flex;
+    gap:6px;
+}
+
+.row .btn{flex:1}
+
+.divider{
+    height:1px;
+    background:#333;
+    margin:10px 0;
+}
+
+.hidden{display:none}
+</style>
+</head>
+
+<body>
+
+<div id="toolbar">
+<button onclick="copyText()"><i class="fa fa-copy"></i></button>
+<button onclick="cutText()"><i class="fa fa-scissors"></i></button>
+<button onclick="pasteText()"><i class="fa fa-paste"></i></button>
+<button onclick="clearAll()"><i class="fa fa-trash"></i></button>
+<button onclick="undo()"><i class="fa fa-rotate-left"></i></button>
+<button onclick="redo()"><i class="fa fa-rotate-right"></i></button>
+<button onclick="goStart()"><i class="fa fa-angles-up"></i></button>
+<button onclick="goEnd()"><i class="fa fa-angles-down"></i></button>
+<button onclick="openSettings()"><i class="fa fa-gear"></i></button>
+</div>
+
+<textarea id="editor"></textarea>
+<iframe id="viewer"></iframe>
+
+<div id="overlay"></div>
+
+<div id="settings">
+<header>
+<button onclick="closeSettings()"><i class="fa fa-xmark"></i></button>
+</header>
+
+<div class="label">اسم الملف</div>
+<input id="fileName" value="index.html">
+
+<div class="row">
+<button class="btn" onclick="exportCode()">تصدير ملف</button>
+<button class="btn" onclick="fileInput.click()">استيراد ملف</button>
+</div>
+<input type="file" id="fileInput" class="hidden">
+
+<div class="label">رابط الملف</div>
+<input id="fileUrl">
+<button class="btn" onclick="importFromUrl()">استيراد من رابط</button>
+
+<div class="label" style="margin-top:10px">تشغيل الكود</div>
+
+<div class="row">
+<button id="runExternal" class="btn" onclick="toggleExternal()">تشغيل خارجيًا</button>
+<button id="runInternal" class="btn" onclick="toggleInternal()">تشغيل داخليًا</button>
+</div>
+
+<div class="divider"></div>
+
+<div class="label">لون النص</div>
+<input id="textColor">
+
+<div class="label">لون الخلفية</div>
+<input id="bgColor">
+
+<div class="label">حجم الخط</div>
+<input id="fontSize">
+
+<div class="label">نوع الخط</div>
+<select id="fontFamily">
+<option value="inherit">عادي</option>
+<option>monospace</option>
+<option>Arial</option>
+<option>Tahoma</option>
+<option>Verdana</option>
+<option>Courier New</option>
+<option>Georgia</option>
+<option>Times New Roman</option>
+<option>Segoe UI</option>
+<option>sans-serif</option>
+</select>
+</div>
+
+<script>
+const editor=editorEl=document.getElementById("editor");
+const viewer=document.getElementById("viewer");
+const overlay=document.getElementById("overlay");
+const settings=document.getElementById("settings");
+
+let external=false,internal=false;
+
+function toggleExternal(){
+    if(external){
+        viewer.style.display="none";
+        editor.style.display="block";
+        runExternal.textContent="تشغيل خارجيًا";
+        external=false;
+        return;
+    }
+    viewer.srcdoc=editor.value;
+    viewer.style.display="block";
+    editor.style.display="none";
+    runExternal.textContent="إيقاف العرض";
+    runInternal.textContent="تشغيل داخليًا";
+    external=true;
+    internal=false;
+}
+
+function toggleInternal(){
+    if(internal){
+        viewer.style.display="none";
+        editor.style.display="block";
+        runInternal.textContent="تشغيل داخليًا";
+        internal=false;
+        return;
+    }
+    viewer.srcdoc=editor.value;
+    viewer.style.display="block";
+    editor.style.display="none";
+    runInternal.textContent="إيقاف العرض";
+    runExternal.textContent="تشغيل خارجيًا";
+    internal=true;
+    external=false;
+}
+
+function openSettings(){overlay.style.display=settings.style.display="block"}
+function closeSettings(){overlay.style.display=settings.style.display="none"}
+
+function copyText(){navigator.clipboard.writeText(editor.value)}
+function cutText(){navigator.clipboard.writeText(editor.value);editor.value=""}
+function pasteText(){document.execCommand("paste")}
+function clearAll(){editor.value=""}
+function undo(){document.execCommand("undo")}
+function redo(){document.execCommand("redo")}
+function goStart(){editor.focus();editor.setSelectionRange(0,0)}
+function goEnd(){editor.focus();editor.setSelectionRange(editor.value.length,editor.value.length)}
+
+function exportCode(){
+const b=new Blob([editor.value],{type:"text/plain"});
+const a=document.createElement("a");
+a.href=URL.createObjectURL(b);
+a.download=fileName.value||"index.html";
+a.click();
+}
+
+fileInput.onchange=()=>{
+const r=new FileReader();
+r.onload=e=>editor.value=e.target.result;
+r.readAsText(fileInput.files[0]);
+}
+
+function importFromUrl(){
+fetch(fileUrl.value).then(r=>r.text()).then(t=>editor.value=t);
+}
+</script>
+
+</body>
+</html>
