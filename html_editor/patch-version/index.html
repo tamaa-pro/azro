@@ -18,6 +18,7 @@ html,body{
     background:#000;
 }
 
+/* الشريط */
 #toolbar{
     position:fixed;
     top:0;left:0;right:0;
@@ -38,22 +39,25 @@ html,body{
     cursor:pointer;
 }
 
-#editor,
-#viewer{
+/* المحرر */
+#editor{
     position:fixed;
     top:48px;left:0;right:0;bottom:0;
+    background:#000;
+    color:#fff;
     border:none;
     outline:none;
     resize:none;
     padding:3px;
     font-size:15px;
     font-family:inherit;
-    background:#000;
-    color:#fff;
+    direction:ltr;
+    white-space:pre-wrap;
+    word-wrap:break-word;
+    overflow:auto;
 }
 
-#viewer{display:none}
-
+/* التضبيب */
 #overlay{
     position:fixed;
     inset:0;
@@ -63,6 +67,7 @@ html,body{
     z-index:20;
 }
 
+/* نافذة الإعدادات */
 #settingsBox{
     position:fixed;
     top:50%;
@@ -75,6 +80,10 @@ html,body{
     z-index:30;
 }
 
+#settingsBox header{
+    margin-bottom:8px;
+}
+
 #settingsBox header button{
     background:none;
     border:none;
@@ -82,20 +91,21 @@ html,body{
     font-size:16px;
 }
 
+/* الفاصل */
 .divider{
     height:1px;
     background:#333;
     margin:10px 0;
 }
 
+/* الحقول */
 .setting{margin-bottom:8px}
 
-.setting label,
-.section-title{
+.setting label{
     display:block;
-    color:#aaa;
+    color:#ccc;
     font-size:12px;
-    margin-bottom:4px;
+    margin-bottom:3px;
 }
 
 .setting input,
@@ -105,26 +115,24 @@ html,body{
     color:#fff;
     border:1px solid #333;
     padding:6px;
+    outline:none;
     font-size:13px;
 }
 
+/* الأزرار */
 .btn{
+    width:100%;
     background:#111;
     color:#fff;
     border:1px solid #333;
     padding:7px;
     font-size:13px;
     cursor:pointer;
+    margin-bottom:6px;
 }
 
 .btn:hover{background:#191919}
-
-.row{
-    display:flex;
-    gap:6px;
-}
-
-.row .btn{flex:1}
+.btn:active{opacity:.7}
 
 .hidden{display:none}
 </style>
@@ -145,7 +153,6 @@ html,body{
 </div>
 
 <textarea id="editor"></textarea>
-<iframe id="viewer"></iframe>
 
 <div id="overlay"></div>
 
@@ -154,48 +161,42 @@ html,body{
     <button onclick="closeSettings()"><i class="fa-solid fa-xmark"></i></button>
 </header>
 
-<!-- خيارات الكود -->
+<!-- قسم الكود -->
 <div class="setting">
     <label>اسم الملف</label>
     <input id="fileName" value="index.html">
 </div>
+<button class="btn" onclick="exportCode()">تصدير الكود كملف</button>
 
-<div class="row">
-    <button class="btn" onclick="exportCode()">تصدير ملف</button>
-    <button class="btn" onclick="fileInput.click()">استيراد ملف</button>
-</div>
+<button class="btn" onclick="fileInput.click()">استيراد من ملف</button>
 <input id="fileInput" type="file" class="hidden">
 
 <div class="setting">
     <label>رابط الملف</label>
-    <input id="fileUrl">
+    <input id="fileUrl" placeholder="https://example.com/file.txt">
 </div>
 <button class="btn" onclick="importFromUrl()">استيراد من رابط</button>
 
-<div class="setting">
-    <span class="section-title">تشغيل الكود</span>
-</div>
-
-<div class="row">
-    <button id="runExternalBtn" class="btn" onclick="toggleExternal()">تشغيل خارجيًا</button>
-    <button id="runInternalBtn" class="btn" onclick="toggleInternal()">تشغيل داخليًا</button>
-</div>
+<button class="btn" onclick="runCode()">تشغيل الكود</button>
 
 <div class="divider"></div>
 
-<!-- تخصيص الشكل -->
+<!-- قسم الشكل -->
 <div class="setting">
     <label>لون النص</label>
     <input id="textColor">
 </div>
+
 <div class="setting">
     <label>لون الخلفية</label>
     <input id="bgColor">
 </div>
+
 <div class="setting">
     <label>حجم الخط</label>
     <input id="fontSize">
 </div>
+
 <div class="setting">
     <label>نوع الخط</label>
     <select id="fontFamily">
@@ -204,86 +205,130 @@ html,body{
         <option value="Arial">Arial</option>
         <option value="Tahoma">Tahoma</option>
         <option value="Verdana">Verdana</option>
-        <option value="Courier New">Courier</option>
-        <option value="Times New Roman">Times</option>
+        <option value="Courier New">Courier New</option>
+        <option value="Times New Roman">Times New Roman</option>
         <option value="Georgia">Georgia</option>
         <option value="Segoe UI">Segoe UI</option>
-        <option value="sans-serif">Sans</option>
+        <option value="sans-serif">Sans-serif</option>
     </select>
 </div>
 </div>
 
 <script>
 const editor=document.getElementById("editor");
-const viewer=document.getElementById("viewer");
+const overlay=document.getElementById("overlay");
+const settingsBox=document.getElementById("settingsBox");
 
-let externalRunning=false;
-let internalRunning=false;
+const fileInput=document.getElementById("fileInput");
+const fileName=document.getElementById("fileName");
+const fileUrl=document.getElementById("fileUrl");
 
-/* تشغيل خارجي */
-function toggleExternal(){
-    if(externalRunning){
-        viewer.style.display="none";
-        editor.style.display="block";
-        externalRunning=false;
-        runExternalBtn.textContent="تشغيل خارجيًا";
-        return;
-    }
-    viewer.srcdoc=editor.value;
-    viewer.style.display="block";
-    editor.style.display="none";
-    externalRunning=true;
-    runExternalBtn.textContent="إيقاف العرض";
-    internalRunning=false;
-    runInternalBtn.textContent="تشغيل داخليًا";
+const textColor=document.getElementById("textColor");
+const bgColor=document.getElementById("bgColor");
+const fontSize=document.getElementById("fontSize");
+const fontFamily=document.getElementById("fontFamily");
+
+const CODE_KEY="saved_code";
+const SETTINGS_KEY="editor_settings";
+
+/* استرجاع */
+editor.value=localStorage.getItem(CODE_KEY)||"";
+editor.addEventListener("input",()=>localStorage.setItem(CODE_KEY,editor.value));
+
+/* الإعدادات */
+const editorSettings={color:"#fff",bg:"#000",size:"15px",font:"inherit"};
+Object.assign(editorSettings,JSON.parse(localStorage.getItem(SETTINGS_KEY)||"{}"));
+applySettings();
+
+function applySettings(){
+    editor.style.color=editorSettings.color;
+    editor.style.background=editorSettings.bg;
+    editor.style.fontSize=editorSettings.size;
+    editor.style.fontFamily=editorSettings.font;
+
+    textColor.value=editorSettings.color;
+    bgColor.value=editorSettings.bg;
+    fontSize.value=editorSettings.size;
+    fontFamily.value=editorSettings.font;
+
+    localStorage.setItem(SETTINGS_KEY,JSON.stringify(editorSettings));
 }
 
-/* تشغيل داخلي */
-function toggleInternal(){
-    if(internalRunning){
-        editor.style.display="block";
-        viewer.style.display="none";
-        internalRunning=false;
-        runInternalBtn.textContent="تشغيل داخليًا";
-        return;
-    }
-    viewer.srcdoc=editor.value;
-    viewer.style.display="block";
-    editor.style.display="none";
-    internalRunning=true;
-    runInternalBtn.textContent="إيقاف العرض";
-    externalRunning=false;
-    runExternalBtn.textContent="تشغيل خارجيًا";
-}
+textColor.oninput=()=>{editorSettings.color=textColor.value;applySettings();}
+bgColor.oninput=()=>{editorSettings.bg=bgColor.value;applySettings();}
+fontSize.oninput=()=>{editorSettings.size=fontSize.value;applySettings();}
+fontFamily.onchange=()=>{editorSettings.font=fontFamily.value;applySettings();}
 
-/* باقي الأدوات دون تغيير */
-function openSettings(){overlay.style.display="block";settingsBox.style.display="block"}
-function closeSettings(){overlay.style.display="none";settingsBox.style.display="none"}
-function copyText(){navigator.clipboard.writeText(editor.value)}
-function cutText(){navigator.clipboard.writeText(editor.value);editor.value=""}
-function pasteText(){document.execCommand("paste")}
-function clearAll(){editor.value=""}
+/* نافذة */
+function openSettings(){overlay.style.display="block";settingsBox.style.display="block";}
+function closeSettings(){overlay.style.display="none";settingsBox.style.display="none";}
+
+/* أدوات */
+function hasSel(){return editor.selectionStart!==editor.selectionEnd}
+function copyText(){
+    const t=hasSel()?editor.value.substring(editor.selectionStart,editor.selectionEnd):editor.value;
+    navigator.clipboard.writeText(t);
+}
+function cutText(){
+    if(hasSel()){
+        const s=editor.selectionStart,e=editor.selectionEnd;
+        navigator.clipboard.writeText(editor.value.substring(s,e));
+        editor.setRangeText("",s,e,"start");
+    }else{
+        navigator.clipboard.writeText(editor.value);
+        editor.value="";
+    }
+    localStorage.setItem(CODE_KEY,editor.value);
+}
+function pasteText(){
+    editor.focus();
+    document.execCommand("paste");
+    localStorage.setItem(CODE_KEY,editor.value);
+}
+function clearAll(){editor.value="";localStorage.setItem(CODE_KEY,"")}
 function undo(){document.execCommand("undo")}
 function redo(){document.execCommand("redo")}
-function goStart(){editor.setSelectionRange(0,0)}
-function goEnd(){editor.setSelectionRange(editor.value.length,editor.value.length)}
+function goStart(){editor.focus();editor.setSelectionRange(0,0)}
+function goEnd(){editor.focus();editor.setSelectionRange(editor.value.length,editor.value.length)}
 
+/* تصدير */
 function exportCode(){
-    const b=new Blob([editor.value],{type:"text/plain"});
+    const blob=new Blob([editor.value],{type:"text/plain"});
     const a=document.createElement("a");
-    a.href=URL.createObjectURL(b);
+    a.href=URL.createObjectURL(blob);
     a.download=fileName.value||"index.html";
     a.click();
+    URL.revokeObjectURL(a.href);
 }
 
+/* استيراد ملف */
 fileInput.onchange=()=>{
+    const f=fileInput.files[0];
+    if(!f)return;
     const r=new FileReader();
-    r.onload=e=>editor.value=e.target.result;
-    r.readAsText(fileInput.files[0]);
+    r.onload=e=>{
+        editor.value=e.target.result;
+        localStorage.setItem(CODE_KEY,editor.value);
+    };
+    r.readAsText(f);
 };
 
+/* استيراد من رابط */
 function importFromUrl(){
-    fetch(fileUrl.value).then(r=>r.text()).then(t=>editor.value=t);
+    fetch(fileUrl.value)
+    .then(r=>r.text())
+    .then(t=>{
+        editor.value=t;
+        localStorage.setItem(CODE_KEY,editor.value);
+    });
+}
+
+/* تشغيل */
+function runCode(){
+    const w=window.open();
+    w.document.open();
+    w.document.write(editor.value);
+    w.document.close();
 }
 </script>
 
