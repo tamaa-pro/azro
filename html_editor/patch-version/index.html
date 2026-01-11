@@ -11,6 +11,7 @@
 
 html,body{
     margin:0;
+    padding:0;
     width:100%;
     height:100%;
     overflow:hidden;
@@ -20,7 +21,7 @@ html,body{
 #toolbar{
     position:fixed;
     top:0;left:0;right:0;
-    height:50px;
+    height:48px;
     background:#111;
     display:flex;
     align-items:center;
@@ -40,12 +41,13 @@ html,body{
 #editor,
 #viewer{
     position:fixed;
-    top:50px;left:0;right:0;bottom:0;
+    top:48px;left:0;right:0;bottom:0;
     border:none;
     outline:none;
     resize:none;
     padding:3px;
     font-size:15px;
+    font-family:inherit;
     background:#000;
     color:#fff;
 }
@@ -67,32 +69,33 @@ html,body{
     left:50%;
     transform:translate(-50%,-50%);
     background:#222;
-    width:320px;
+    width:300px;
     padding:12px;
     display:none;
     z-index:30;
-}
-
-#settingsBox header{
-    display:flex;
-    justify-content:flex-start;
 }
 
 #settingsBox header button{
     background:none;
     border:none;
     color:#fff;
-    font-size:18px;
+    font-size:16px;
 }
 
+.divider{
+    height:1px;
+    background:#333;
+    margin:10px 0;
+}
+
+.setting{margin-bottom:8px}
+
+.setting label,
 .section-title{
+    display:block;
     color:#aaa;
     font-size:12px;
-    margin:8px 0 4px;
-}
-
-.setting{
-    margin-bottom:8px;
+    margin-bottom:4px;
 }
 
 .setting input,
@@ -102,15 +105,10 @@ html,body{
     color:#fff;
     border:1px solid #333;
     padding:6px;
-}
-
-.row{
-    display:flex;
-    gap:6px;
+    font-size:13px;
 }
 
 .btn{
-    flex:1;
     background:#111;
     color:#fff;
     border:1px solid #333;
@@ -119,13 +117,14 @@ html,body{
     cursor:pointer;
 }
 
-.btn:hover{background:#1a1a1a}
+.btn:hover{background:#191919}
 
-.divider{
-    height:1px;
-    background:#333;
-    margin:10px 0;
+.row{
+    display:flex;
+    gap:6px;
 }
+
+.row .btn{flex:1}
 
 .hidden{display:none}
 </style>
@@ -155,8 +154,9 @@ html,body{
     <button onclick="closeSettings()"><i class="fa-solid fa-xmark"></i></button>
 </header>
 
+<!-- خيارات الكود -->
 <div class="setting">
-    <label class="section-title">اسم الملف</label>
+    <label>اسم الملف</label>
     <input id="fileName" value="index.html">
 </div>
 
@@ -167,12 +167,15 @@ html,body{
 <input id="fileInput" type="file" class="hidden">
 
 <div class="setting">
-    <label class="section-title">رابط الملف</label>
+    <label>رابط الملف</label>
     <input id="fileUrl">
 </div>
 <button class="btn" onclick="importFromUrl()">استيراد من رابط</button>
 
-<div class="section-title">تشغيل الكود</div>
+<div class="setting">
+    <span class="section-title">تشغيل الكود</span>
+</div>
+
 <div class="row">
     <button id="runExternalBtn" class="btn" onclick="toggleExternal()">تشغيل خارجيًا</button>
     <button id="runInternalBtn" class="btn" onclick="toggleInternal()">تشغيل داخليًا</button>
@@ -180,18 +183,21 @@ html,body{
 
 <div class="divider"></div>
 
-<div class="section-title">تخصيص الشكل</div>
-
+<!-- تخصيص الشكل -->
 <div class="setting">
-    <input id="textColor" placeholder="لون النص (#fff)">
+    <label>لون النص</label>
+    <input id="textColor">
 </div>
 <div class="setting">
-    <input id="bgColor" placeholder="لون الخلفية (#000)">
+    <label>لون الخلفية</label>
+    <input id="bgColor">
 </div>
 <div class="setting">
-    <input id="fontSize" placeholder="حجم الخط (15px)">
+    <label>حجم الخط</label>
+    <input id="fontSize">
 </div>
 <div class="setting">
+    <label>نوع الخط</label>
     <select id="fontFamily">
         <option value="inherit">عادي</option>
         <option value="monospace">Monospace</option>
@@ -199,68 +205,68 @@ html,body{
         <option value="Tahoma">Tahoma</option>
         <option value="Verdana">Verdana</option>
         <option value="Courier New">Courier</option>
+        <option value="Times New Roman">Times</option>
         <option value="Georgia">Georgia</option>
         <option value="Segoe UI">Segoe UI</option>
         <option value="sans-serif">Sans</option>
     </select>
 </div>
-
 </div>
 
 <script>
 const editor=document.getElementById("editor");
 const viewer=document.getElementById("viewer");
 
-let external=false;
-let internal=false;
+let externalRunning=false;
+let internalRunning=false;
 
 /* تشغيل خارجي */
 function toggleExternal(){
-    if(external){
+    if(externalRunning){
         viewer.style.display="none";
         editor.style.display="block";
+        externalRunning=false;
         runExternalBtn.textContent="تشغيل خارجيًا";
-        external=false;
         return;
     }
     viewer.srcdoc=editor.value;
     viewer.style.display="block";
     editor.style.display="none";
+    externalRunning=true;
     runExternalBtn.textContent="إيقاف العرض";
+    internalRunning=false;
     runInternalBtn.textContent="تشغيل داخليًا";
-    external=true;
-    internal=false;
 }
 
 /* تشغيل داخلي */
 function toggleInternal(){
-    if(internal){
-        viewer.style.display="none";
+    if(internalRunning){
         editor.style.display="block";
+        viewer.style.display="none";
+        internalRunning=false;
         runInternalBtn.textContent="تشغيل داخليًا";
-        internal=false;
         return;
     }
     viewer.srcdoc=editor.value;
     viewer.style.display="block";
     editor.style.display="none";
+    internalRunning=true;
     runInternalBtn.textContent="إيقاف العرض";
+    externalRunning=false;
     runExternalBtn.textContent="تشغيل خارجيًا";
-    internal=true;
-    external=false;
 }
 
-/* الأدوات */
+/* باقي الأدوات دون تغيير */
 function openSettings(){overlay.style.display="block";settingsBox.style.display="block"}
 function closeSettings(){overlay.style.display="none";settingsBox.style.display="none"}
 function copyText(){navigator.clipboard.writeText(editor.value)}
 function cutText(){navigator.clipboard.writeText(editor.value);editor.value=""}
-function pasteText(){editor.focus();document.execCommand("paste")}
+function pasteText(){document.execCommand("paste")}
 function clearAll(){editor.value=""}
 function undo(){document.execCommand("undo")}
 function redo(){document.execCommand("redo")}
-function goStart(){editor.focus();editor.setSelectionRange(0,0)}
-function goEnd(){editor.focus();editor.setSelectionRange(editor.value.length,editor.value.length)}
+function goStart(){editor.setSelectionRange(0,0)}
+function goEnd(){editor.setSelectionRange(editor.value.length,editor.value.length)}
 
 function exportCode(){
     const b=new Blob([editor.value],{type:"text/plain"});
