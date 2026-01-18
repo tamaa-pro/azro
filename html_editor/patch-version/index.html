@@ -3,9 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,height=device-height,initial-scale=1.0">
-
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
 <style>
 *{box-sizing:border-box}
 
@@ -19,7 +17,6 @@ html,body{
     font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,Arial,sans-serif;
 }
 
-/* الشريط */
 #toolbar{
     position:fixed;
     top:0;left:0;right:0;
@@ -27,20 +24,36 @@ html,body{
     background:#111;
     display:flex;
     align-items:center;
-    gap:10px;
-    padding:0 8px;
+    gap:8px;
+    padding:0 6px;
     z-index:10;
+    overflow-x:auto;
+    overflow-y:hidden;
+    white-space:nowrap;
+    -webkit-overflow-scrolling:touch;
+}
+
+#toolbar::-webkit-scrollbar{
+    height:3px;
+}
+
+#toolbar::-webkit-scrollbar-track{
+    background:#111;
+}
+
+#toolbar::-webkit-scrollbar-thumb{
+    background:#444;
 }
 
 #toolbar button{
     background:none;
     border:none;
     color:#fff;
-    font-size:16px;
+    font-size:14px;
     cursor:pointer;
+    flex-shrink:0;
 }
 
-/* المحرر */
 #editor{
     position:fixed;
     top:48px;left:0;right:0;bottom:0;
@@ -58,59 +71,37 @@ html,body{
     overflow:auto;
 }
 
-/* التضبيب */
-#overlay{
+#searchBar{
     position:fixed;
-    inset:0;
-    background:rgba(0,0,0,.4);
-    backdrop-filter:blur(6px);
-    display:none;
-    z-index:20;
-}
-
-/* نافذة الإعدادات */
-#settingsBox{
-    position:fixed;
-    top:50%;
-    left:50%;
-    transform:translate(-50%,-50%);
+    top:48px;
+    left:0;
+    right:0;
     background:#222;
-    width:300px;
-    padding:12px;
+    padding:10px;
     display:none;
-    z-index:30;
+    z-index:5;
+    border-bottom:1px solid #333;
+    transform:translateY(-100%);
+    transition:transform 0.3s ease;
 }
 
-#settingsBox header{
-    margin-bottom:8px;
+#searchBar.show{
+    transform:translateY(0);
 }
 
-#settingsBox header button{
-    background:none;
-    border:none;
-    color:#fff;
-    font-size:16px;
+.search-container{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
 }
 
-/* الفاصل */
-.divider{
-    height:1px;
-    background:#333;
-    margin:10px 0;
+.search-input-group{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
 }
 
-/* الحقول */
-.setting{margin-bottom:8px}
-
-.setting label{
-    display:block;
-    color:#ccc;
-    font-size:12px;
-    margin-bottom:3px;
-}
-
-.setting input,
-.setting select{
+.search-input{
     width:100%;
     background:#111;
     color:#fff;
@@ -120,7 +111,123 @@ html,body{
     font-size:13px;
 }
 
-/* الأزرار */
+.search-buttons{
+    display:flex;
+    gap:6px;
+    flex-wrap:wrap;
+}
+
+.search-btn{
+    flex:1;
+    min-width:80px;
+    background:#333;
+    color:#fff;
+    border:1px solid #444;
+    padding:6px 12px;
+    cursor:pointer;
+    font-size:13px;
+    text-align:center;
+}
+
+.search-btn:hover{
+    background:#444;
+}
+
+.search-results{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    margin-top:5px;
+    color:#ccc;
+    font-size:13px;
+    flex-wrap:wrap;
+}
+
+.nav-btn{
+    background:#333;
+    color:#fff;
+    border:1px solid #444;
+    padding:4px 8px;
+    cursor:pointer;
+    font-size:12px;
+    min-width:32px;
+}
+
+.nav-btn:hover{
+    background:#444;
+}
+
+#overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.4);
+    backdrop-filter:blur(6px);
+    display:none;
+    z-index:20;
+}
+
+#settingsBox{
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    background:#222;
+    width:300px;
+    height:420px;
+    display:none;
+    z-index:30;
+}
+
+#settingsHeader{
+    position:sticky;
+    top:0;
+    background:#222;
+    padding:10px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+#settingsHeader button{
+    background:none;
+    border:none;
+    color:#fff;
+    font-size:16px;
+}
+
+#settingsContent{
+    height:calc(100% - 46px);
+    overflow-y:auto;
+    padding:10px 12px;
+}
+
+.divider{
+    height:1px;
+    background:#333;
+    margin:10px 0;
+}
+
+.setting{margin-bottom:8px}
+
+.setting label{
+    display:block;
+    color:#ccc;
+    font-size:12px;
+    margin-bottom:3px;
+    user-select:none;
+}
+
+.setting input{
+    width:100%;
+    background:#111;
+    color:#fff;
+    border:1px solid #333;
+    padding:6px;
+    outline:none;
+    font-size:13px;
+}
+
 .btn{
     width:100%;
     background:#111;
@@ -130,17 +237,142 @@ html,body{
     font-size:13px;
     cursor:pointer;
     margin-bottom:6px;
+    user-select:none;
 }
 
 .btn:hover{background:#191919}
 .btn:active{opacity:.7}
 
+.btnRow{
+    display:flex;
+    gap:6px;
+}
+
+.btnRow .btn{
+    flex:1;
+    margin-bottom:6px;
+}
+
+.note{
+    font-size:11px;
+    color:#aaa;
+    margin-bottom:8px;
+    user-select:none;
+}
+
+.section-title{
+    color:#ccc;
+    font-size:13px;
+    margin:12px 0 6px 0;
+    user-select:none;
+}
+
+.fileItem{
+    padding:8px;
+    border:1px solid #333;
+    margin-bottom:6px;
+    cursor:pointer;
+    background:#191919;
+}
+
+.fileHeader{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:4px;
+}
+
+.fileName{
+    color:#ccc;
+    font-size:14px;
+    font-weight:500;
+    user-select:none;
+}
+
+.fileInfo{
+    display:flex;
+    gap:10px;
+    font-size:11px;
+    color:#888;
+    user-select:none;
+}
+
+.deleteBtn{
+    background:none;
+    border:none;
+    color:#ff5555;
+    cursor:pointer;
+    font-size:12px;
+    padding:2px 6px;
+}
+
+.font-dropdown{
+    position:relative;
+    width:100%;
+    margin-bottom:8px;
+}
+
+.font-dropdown-btn{
+    width:100%;
+    background:#111;
+    color:#fff;
+    border:1px solid #333;
+    padding:6px;
+    text-align:left;
+    cursor:pointer;
+    font-size:13px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.font-dropdown-content{
+    display:none;
+    position:absolute;
+    background:#222;
+    border:1px solid #333;
+    width:100%;
+    max-height:200px;
+    overflow-y:auto;
+    z-index:40;
+    margin-top:1px;
+}
+
+.font-option{
+    padding:8px 10px;
+    color:#fff;
+    cursor:pointer;
+    font-size:13px;
+}
+
+.font-option:hover{
+    background:#333;
+}
+
+.font-option.normal{font-family:system-ui;}
+.font-option.thin{font-family:'Segoe UI', sans-serif;}
+.font-option.bold{font-family:'Arial Black', sans-serif; font-weight:bold;}
+.font-option.courier{font-family:'Courier New', monospace;}
+.font-option.times{font-family:'Times New Roman', serif;}
+.font-option.verdana{font-family:Verdana, sans-serif;}
+.font-option.tahoma{font-family:Tahoma, sans-serif;}
+.font-option.georgia{font-family:Georgia, serif;}
+.font-option.comic{font-family:'Comic Sans MS', cursive;}
+.font-option.impact{font-family:Impact, sans-serif;}
+
+.listTitle{
+    color:#ccc;
+    font-size:16px;
+    margin-top:0;
+    margin-bottom:10px;
+    text-align:center;
+    user-select:none;
+}
+
 .hidden{display:none}
 </style>
 </head>
-
 <body>
-
 <div id="toolbar">
     <button onclick="copyText()"><i class="fa-solid fa-copy"></i></button>
     <button onclick="cutText()"><i class="fa-solid fa-scissors"></i></button>
@@ -150,7 +382,31 @@ html,body{
     <button onclick="redo()"><i class="fa-solid fa-rotate-right"></i></button>
     <button onclick="goStart()"><i class="fa-solid fa-angles-up"></i></button>
     <button onclick="goEnd()"><i class="fa-solid fa-angles-down"></i></button>
+    <button onclick="runCode()"><i class="fa-solid fa-play"></i></button>
+    <button onclick="toggleSearch()"><i class="fa-solid fa-search"></i></button>
     <button onclick="openSettings()"><i class="fa-solid fa-gear"></i></button>
+</div>
+
+<div id="searchBar">
+    <div class="search-container">
+        <div class="search-input-group">
+            <input type="text" id="searchInput" class="search-input" placeholder="البحث عن...">
+            <input type="text" id="replaceInput" class="search-input" placeholder="استبدال بـ (اختياري)">
+        </div>
+        <div class="search-buttons">
+            <button class="search-btn" onclick="performSearch()">بحث</button>
+            <button class="search-btn" onclick="replaceCurrent()">استبدال</button>
+            <button class="search-btn" onclick="replaceAll()">استبدال الكل</button>
+        </div>
+        <div id="searchResults" class="search-results hidden">
+            <span id="resultsCount">0 نتائج</span>
+            <span id="currentMatch">0/0</span>
+            <div>
+                <button class="nav-btn" onclick="prevResult()"><i class="fa-solid fa-chevron-up"></i></button>
+                <button class="nav-btn" onclick="nextResult()"><i class="fa-solid fa-chevron-down"></i></button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <textarea id="editor"></textarea>
@@ -158,184 +414,456 @@ html,body{
 <div id="overlay"></div>
 
 <div id="settingsBox">
-<header>
-    <button onclick="closeSettings()"><i class="fa-solid fa-xmark"></i></button>
-</header>
+    <div id="settingsHeader">
+        <button onclick="closeSettings()"><i class="fa-solid fa-xmark"></i></button>
+        <button id="backBtn" class="hidden" onclick="showSettings()"><i class="fa-solid fa-arrow-left"></i></button>
+    </div>
+    
+    <div id="settingsContent">
+        <div id="settingsView">
+            <div class="setting">
+                <label>اسم الملف</label>
+                <input id="fileName" value="index.html">
+            </div>
 
-<div class="setting">
-    <label>اسم الملف</label>
-    <input id="fileName" value="index.html">
-</div>
-<button class="btn" onclick="exportCode()">تصدير الكود كملف</button>
+            <button class="btn" onclick="saveCode()">حفظ الكود</button>
+            <div class="note">في حال حفظ الكود باسم موجود مسبقًا سيتم استبداله مباشرة.</div>
 
-<button class="btn" onclick="fileInput.click()">استيراد من ملف</button>
-<input id="fileInput" type="file" class="hidden">
+            <div class="btnRow">
+                <button class="btn" onclick="exportCode()">تصدير كملف</button>
+                <button class="btn" onclick="fileInput.click()">استيراد من ملف</button>
+            </div>
+            <input id="fileInput" type="file" class="hidden">
 
-<div class="setting">
-    <label>رابط الملف</label>
-    <input id="fileUrl" placeholder="https://example.com/file.txt">
-</div>
-<button class="btn" onclick="importFromUrl()">استيراد من رابط</button>
+            <div class="setting">
+                <label>رابط الملف</label>
+                <input id="fileUrl" placeholder="https://example.com/file.txt">
+            </div>
+            <button class="btn" onclick="importFromUrl()">استيراد من رابط</button>
 
-<button class="btn" onclick="runCode()">تشغيل الكود</button>
+            <div class="divider"></div>
 
-<div class="divider"></div>
+            <div class="section-title">الإدارة</div>
+            <button class="btn" onclick="showSavedList()">قائمة الأكواد المحفوظة</button>
 
-<div class="setting">
-    <label>لون النص</label>
-    <input id="textColor">
-</div>
+            <div class="divider"></div>
 
-<div class="setting">
-    <label>لون الخلفية</label>
-    <input id="bgColor">
-</div>
+            <div class="section-title">المظهر</div>
+            
+            <div class="setting">
+                <label>لون النص</label>
+                <input id="textColor">
+            </div>
 
-<div class="setting">
-    <label>حجم الخط</label>
-    <input id="fontSize">
-</div>
+            <div class="setting">
+                <label>لون الخلفية</label>
+                <input id="bgColor">
+            </div>
 
-<div class="setting">
-    <label>نوع الخط</label>
-    <select id="fontFamily">
-        <option value="system-ui">عادي</option>
-        <option value="monospace">Monospace</option>
-        <option value="Arial">Arial</option>
-        <option value="Tahoma">Tahoma</option>
-        <option value="Verdana">Verdana</option>
-        <option value="Courier New">Courier New</option>
-        <option value="Times New Roman">Times New Roman</option>
-        <option value="Georgia">Georgia</option>
-        <option value="Segoe UI">Segoe UI</option>
-        <option value="sans-serif">Sans-serif</option>
-    </select>
-</div>
+            <div class="setting">
+                <label>حجم الخط</label>
+                <input id="fontSize">
+            </div>
+
+            <div class="setting">
+                <label>نوع الخط</label>
+                <div class="font-dropdown">
+                    <button class="font-dropdown-btn" onclick="toggleFontDropdown()">
+                        <span id="selectedFont">عادي (متوسط)</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    <div class="font-dropdown-content" id="fontDropdown">
+                        <div class="font-option normal" onclick="selectFont('system-ui', 'عادي (متوسط)')">عادي (متوسط)</div>
+                        <div class="font-option thin" onclick="selectFont('\'Segoe UI\', sans-serif', 'رقيق')">رقيق</div>
+                        <div class="font-option bold" onclick="selectFont('\'Arial Black\', sans-serif', 'غليظ')">غليظ</div>
+                        <div class="font-option courier" onclick="selectFont('\'Courier New\', monospace', 'Courier New')">Courier New</div>
+                        <div class="font-option times" onclick="selectFont('\'Times New Roman\', serif', 'Times New Roman')">Times New Roman</div>
+                        <div class="font-option verdana" onclick="selectFont('Verdana, sans-serif', 'Verdana')">Verdana</div>
+                        <div class="font-option tahoma" onclick="selectFont('Tahoma, sans-serif', 'Tahoma')">Tahoma</div>
+                        <div class="font-option georgia" onclick="selectFont('Georgia, serif', 'Georgia')">Georgia</div>
+                        <div class="font-option comic" onclick="selectFont('\'Comic Sans MS\', cursive', 'Comic Sans MS')">Comic Sans MS</div>
+                        <div class="font-option impact" onclick="selectFont('Impact, sans-serif', 'Impact')">Impact</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="setting">
+                <label>التفاف النص</label>
+                <select id="wrapToggle" class="btn" style="padding:6px; margin-bottom:0;">
+                    <option value="on">مفعل</option>
+                    <option value="off">معطل</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="listView" class="hidden">
+            <h3 class="listTitle">الأكواد المحفوظة</h3>
+        </div>
+    </div>
 </div>
 
 <script>
-const editor=document.getElementById("editor");
-const overlay=document.getElementById("overlay");
-const settingsBox=document.getElementById("settingsBox");
+const editor = document.getElementById("editor");
+const overlay = document.getElementById("overlay");
+const settingsBox = document.getElementById("settingsBox");
+const searchBar = document.getElementById("searchBar");
+const searchInput = document.getElementById("searchInput");
+const replaceInput = document.getElementById("replaceInput");
+const searchResults = document.getElementById("searchResults");
+const resultsCount = document.getElementById("resultsCount");
+const currentMatch = document.getElementById("currentMatch");
 
-const fileInput=document.getElementById("fileInput");
-const fileName=document.getElementById("fileName");
-const fileUrl=document.getElementById("fileUrl");
+const fileInput = document.getElementById("fileInput");
+const fileName = document.getElementById("fileName");
+const fileUrl = document.getElementById("fileUrl");
 
-const textColor=document.getElementById("textColor");
-const bgColor=document.getElementById("bgColor");
-const fontSize=document.getElementById("fontSize");
-const fontFamily=document.getElementById("fontFamily");
+const textColor = document.getElementById("textColor");
+const bgColor = document.getElementById("bgColor");
+const fontSize = document.getElementById("fontSize");
+const wrapToggle = document.getElementById("wrapToggle");
 
-const CODE_KEY="saved_code";
-const SETTINGS_KEY="editor_settings";
+const settingsView = document.getElementById("settingsView");
+const listView = document.getElementById("listView");
+const backBtn = document.getElementById("backBtn");
 
-/* استرجاع */
-editor.value=localStorage.getItem(CODE_KEY)||"";
-editor.addEventListener("input",()=>localStorage.setItem(CODE_KEY,editor.value));
+const selectedFont = document.getElementById("selectedFont");
+const fontDropdown = document.getElementById("fontDropdown");
 
-/* الإعدادات */
-const editorSettings={color:"#fff",bg:"#000",size:"15px",font:"system-ui"};
-Object.assign(editorSettings,JSON.parse(localStorage.getItem(SETTINGS_KEY)||"{}"));
+const CODE_KEY = "saved_code";
+const SETTINGS_KEY = "editor_settings";
+const FILES_KEY = "saved_files";
+
+editor.value = localStorage.getItem(CODE_KEY) || "";
+editor.addEventListener("input", () => localStorage.setItem(CODE_KEY, editor.value));
+
+const editorSettings = {color: "#fff", bg: "#000", size: "15px", font: "system-ui", wrap: true};
+Object.assign(editorSettings, JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}"));
 applySettings();
 
+let searchMatches = [];
+let currentMatchIndex = -1;
+
 function applySettings(){
-    editor.style.color=editorSettings.color;
-    editor.style.background=editorSettings.bg;
-    editor.style.fontSize=editorSettings.size;
-    editor.style.fontFamily=editorSettings.font;
+    editor.style.color = editorSettings.color;
+    editor.style.background = editorSettings.bg;
+    editor.style.fontSize = editorSettings.size;
+    editor.style.fontFamily = editorSettings.font;
+    editor.style.whiteSpace = editorSettings.wrap ? "pre-wrap" : "pre";
+    editor.style.wordWrap = editorSettings.wrap ? "break-word" : "normal";
 
-    textColor.value=editorSettings.color;
-    bgColor.value=editorSettings.bg;
-    fontSize.value=editorSettings.size;
-    fontFamily.value=editorSettings.font;
+    textColor.value = editorSettings.color;
+    bgColor.value = editorSettings.bg;
+    fontSize.value = editorSettings.size;
+    wrapToggle.value = editorSettings.wrap ? "on" : "off";
+    
+    let fontName = "عادي (متوسط)";
+    switch(editorSettings.font) {
+        case "'Segoe UI', sans-serif": fontName = "رقيق"; break;
+        case "'Arial Black', sans-serif": fontName = "غليظ"; break;
+        case "'Courier New', monospace": fontName = "Courier New"; break;
+        case "'Times New Roman', serif": fontName = "Times New Roman"; break;
+        case "Verdana, sans-serif": fontName = "Verdana"; break;
+        case "Tahoma, sans-serif": fontName = "Tahoma"; break;
+        case "Georgia, serif": fontName = "Georgia"; break;
+        case "'Comic Sans MS', cursive": fontName = "Comic Sans MS"; break;
+        case "Impact, sans-serif": fontName = "Impact"; break;
+    }
+    selectedFont.textContent = fontName;
 
-    localStorage.setItem(SETTINGS_KEY,JSON.stringify(editorSettings));
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(editorSettings));
 }
 
-textColor.oninput=()=>{editorSettings.color=textColor.value;applySettings();}
-bgColor.oninput=()=>{editorSettings.bg=bgColor.value;applySettings();}
-fontSize.oninput=()=>{editorSettings.size=fontSize.value;applySettings();}
-fontFamily.onchange=()=>{editorSettings.font=fontFamily.value;applySettings();}
+textColor.oninput = () => {editorSettings.color = textColor.value; applySettings();}
+bgColor.oninput = () => {editorSettings.bg = bgColor.value; applySettings();}
+fontSize.oninput = () => {editorSettings.size = fontSize.value; applySettings();}
+wrapToggle.onchange = () => {editorSettings.wrap = wrapToggle.value === "on"; applySettings();}
 
-/* نافذة */
-function openSettings(){overlay.style.display="block";settingsBox.style.display="block";}
-function closeSettings(){overlay.style.display="none";settingsBox.style.display="none";}
+function toggleFontDropdown() {
+    fontDropdown.style.display = fontDropdown.style.display === "block" ? "none" : "block";
+}
 
-/* أدوات */
-function hasSel(){return editor.selectionStart!==editor.selectionEnd}
+function selectFont(font, displayName) {
+    editorSettings.font = font;
+    selectedFont.textContent = displayName;
+    applySettings();
+    fontDropdown.style.display = "none";
+}
+
+document.addEventListener('click', function(event) {
+    if (!event.target.closest('.font-dropdown')) {
+        fontDropdown.style.display = 'none';
+    }
+});
+
+function openSettings(){overlay.style.display = "block"; settingsBox.style.display = "block";}
+function closeSettings(){overlay.style.display = "none"; settingsBox.style.display = "none"; showSettings();}
+
+function showSavedList(){
+    settingsView.classList.add("hidden");
+    listView.classList.remove("hidden");
+    backBtn.classList.remove("hidden");
+    renderSavedList();
+}
+
+function showSettings(){
+    settingsView.classList.remove("hidden");
+    listView.classList.add("hidden");
+    backBtn.classList.add("hidden");
+}
+
+function saveCode(){
+    const files = JSON.parse(localStorage.getItem(FILES_KEY) || "{}");
+    const now = new Date();
+    const timeString = now.toLocaleString('en-US', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+    }).replace(',', '');
+    
+    files[fileName.value] = {
+        code: editor.value,
+        time: timeString,
+        size: editor.value.length
+    };
+    localStorage.setItem(FILES_KEY, JSON.stringify(files));
+}
+
+function renderSavedList(){
+    const files = JSON.parse(localStorage.getItem(FILES_KEY) || "{}");
+    listView.innerHTML = '<h3 class="listTitle">الأكواد المحفوظة</h3>';
+    
+    Object.keys(files).forEach(name => {
+        const file = files[name];
+        const fileItem = document.createElement("div");
+        fileItem.className = "fileItem";
+        
+        const fileHeader = document.createElement("div");
+        fileHeader.className = "fileHeader";
+        
+        const fileNameSpan = document.createElement("div");
+        fileNameSpan.className = "fileName";
+        fileNameSpan.textContent = name;
+        
+        const deleteBtn = document.createElement("button");
+        deleteBtn.className = "deleteBtn";
+        deleteBtn.innerHTML = '<i class="fa-solid fa-trash"></i>';
+        deleteBtn.onclick = (e) => {
+            e.stopPropagation();
+            delete files[name];
+            localStorage.setItem(FILES_KEY, JSON.stringify(files));
+            renderSavedList();
+        };
+        
+        fileHeader.appendChild(fileNameSpan);
+        fileHeader.appendChild(deleteBtn);
+        
+        const fileInfo = document.createElement("div");
+        fileInfo.className = "fileInfo";
+        
+        const fileSize = file.size;
+        let sizeText = fileSize + " حرف";
+        if (fileSize > 1024) {
+            sizeText = (fileSize / 1024).toFixed(2) + " كيلوبايت";
+        }
+        
+        fileInfo.innerHTML = `
+            <span>آخر حفظ: ${file.time}</span>
+            <span>الحجم: ${sizeText}</span>
+        `;
+        
+        fileItem.appendChild(fileHeader);
+        fileItem.appendChild(fileInfo);
+        
+        fileItem.onclick = () => {
+            editor.value = file.code;
+            localStorage.setItem(CODE_KEY, editor.value);
+            fileName.value = name;
+            showSettings();
+        };
+        
+        listView.appendChild(fileItem);
+    });
+}
+
+function hasSel(){return editor.selectionStart !== editor.selectionEnd}
 
 function copyText(){
-    const t=hasSel()?editor.value.substring(editor.selectionStart,editor.selectionEnd):editor.value;
+    const t = hasSel() ? editor.value.substring(editor.selectionStart, editor.selectionEnd) : editor.value;
     navigator.clipboard.writeText(t);
 }
 
 function cutText(){
     if(hasSel()){
-        const s=editor.selectionStart,e=editor.selectionEnd;
-        navigator.clipboard.writeText(editor.value.substring(s,e));
-        editor.setRangeText("",s,e,"start");
+        const s = editor.selectionStart, e = editor.selectionEnd;
+        navigator.clipboard.writeText(editor.value.substring(s, e));
+        editor.setRangeText("", s, e, "start");
     }else{
         navigator.clipboard.writeText(editor.value);
-        editor.value="";
+        editor.value = "";
     }
-    localStorage.setItem(CODE_KEY,editor.value);
+    localStorage.setItem(CODE_KEY, editor.value);
 }
 
 async function pasteText(){
     try{
-        const text=await navigator.clipboard.readText();
-        const s=editor.selectionStart;
-        editor.setRangeText(text,s,s,"end");
-        localStorage.setItem(CODE_KEY,editor.value);
+        const text = await navigator.clipboard.readText();
+        const s = editor.selectionStart;
+        editor.setRangeText(text, s, s, "end");
+        localStorage.setItem(CODE_KEY, editor.value);
     }catch(e){}
 }
 
-function clearAll(){editor.value="";localStorage.setItem(CODE_KEY,"")}
+function clearAll(){editor.value = ""; localStorage.setItem(CODE_KEY, "")}
 function undo(){document.execCommand("undo")}
 function redo(){document.execCommand("redo")}
-function goStart(){editor.focus();editor.setSelectionRange(0,0)}
-function goEnd(){editor.focus();editor.setSelectionRange(editor.value.length,editor.value.length)}
+function goStart(){editor.focus(); editor.setSelectionRange(0, 0)}
+function goEnd(){editor.focus(); editor.setSelectionRange(editor.value.length, editor.value.length)}
 
-/* تصدير */
 function exportCode(){
-    const blob=new Blob([editor.value],{type:"text/plain"});
-    const a=document.createElement("a");
-    a.href=URL.createObjectURL(blob);
-    a.download=fileName.value||"index.html";
+    const blob = new Blob([editor.value], {type: "text/plain"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = fileName.value || "index.html";
     a.click();
     URL.revokeObjectURL(a.href);
 }
 
-/* استيراد ملف */
-fileInput.onchange=()=>{
-    const f=fileInput.files[0];
-    if(!f)return;
-    const r=new FileReader();
-    r.onload=e=>{
-        editor.value=e.target.result;
-        localStorage.setItem(CODE_KEY,editor.value);
+fileInput.onchange = () => {
+    const f = fileInput.files[0];
+    if(!f) return;
+    const r = new FileReader();
+    r.onload = e => {
+        editor.value = e.target.result;
+        localStorage.setItem(CODE_KEY, editor.value);
     };
     r.readAsText(f);
 };
 
-/* استيراد من رابط */
 function importFromUrl(){
     fetch(fileUrl.value)
-        .then(r=>r.text())
-        .then(t=>{
-            editor.value=t;
-            localStorage.setItem(CODE_KEY,editor.value);
+        .then(r => r.text())
+        .then(t => {
+            editor.value = t;
+            localStorage.setItem(CODE_KEY, editor.value);
         });
 }
 
-/* تشغيل في نفس النافذة */
 function runCode(){
-    const blob=new Blob([editor.value],{type:"text/html"});
-    const url=URL.createObjectURL(blob);
-    window.location.href=url;
+    const blob = new Blob([editor.value], {type: "text/html"});
+    const url = URL.createObjectURL(blob);
+    window.open(url, '_blank');
+}
+
+function toggleSearch() {
+    if (searchBar.style.display === "none" || searchBar.style.display === "") {
+        searchBar.style.display = "block";
+        setTimeout(() => {
+            searchBar.classList.add("show");
+        }, 10);
+        searchInput.focus();
+    } else {
+        searchBar.classList.remove("show");
+        setTimeout(() => {
+            searchBar.style.display = "none";
+            clearSearch();
+        }, 300);
+    }
+}
+
+function clearSearch() {
+    searchMatches = [];
+    currentMatchIndex = -1;
+    searchResults.classList.add("hidden");
+    editor.focus();
+}
+
+function performSearch() {
+    const searchText = searchInput.value;
+    if (!searchText) return;
+    
+    clearSearch();
+    const text = editor.value;
+    let matches = [];
+    let startIndex = 0;
+    
+    while (startIndex < text.length) {
+        const index = text.indexOf(searchText, startIndex);
+        if (index === -1) break;
+        
+        matches.push(index);
+        startIndex = index + searchText.length;
+    }
+    
+    if (matches.length > 0) {
+        searchMatches = matches;
+        currentMatchIndex = 0;
+        resultsCount.textContent = matches.length + " نتائج";
+        currentMatch.textContent = (currentMatchIndex + 1) + "/" + matches.length;
+        searchResults.classList.remove("hidden");
+        highlightCurrentMatch();
+    } else {
+        resultsCount.textContent = "0 نتائج";
+        currentMatch.textContent = "0/0";
+        searchResults.classList.remove("hidden");
+    }
+}
+
+function highlightCurrentMatch() {
+    if (currentMatchIndex === -1 || searchMatches.length === 0) return;
+    
+    const searchText = searchInput.value;
+    const start = searchMatches[currentMatchIndex];
+    const end = start + searchText.length;
+    
+    editor.focus();
+    editor.setSelectionRange(start, end);
+    editor.scrollTop = editor.scrollHeight * (start / editor.value.length) - editor.clientHeight / 3;
+    
+    currentMatch.textContent = (currentMatchIndex + 1) + "/" + searchMatches.length;
+}
+
+function nextResult() {
+    if (searchMatches.length === 0) return;
+    currentMatchIndex = (currentMatchIndex + 1) % searchMatches.length;
+    highlightCurrentMatch();
+}
+
+function prevResult() {
+    if (searchMatches.length === 0) return;
+    currentMatchIndex = (currentMatchIndex - 1 + searchMatches.length) % searchMatches.length;
+    highlightCurrentMatch();
+}
+
+function replaceCurrent() {
+    const searchText = searchInput.value;
+    const replaceText = replaceInput.value;
+    
+    if (!searchText || currentMatchIndex === -1 || searchMatches.length === 0) return;
+    
+    const start = searchMatches[currentMatchIndex];
+    const end = start + searchText.length;
+    
+    editor.setRangeText(replaceText, start, end, "end");
+    localStorage.setItem(CODE_KEY, editor.value);
+    
+    performSearch();
+}
+
+function replaceAll() {
+    const searchText = searchInput.value;
+    const replaceText = replaceInput.value;
+    
+    if (!searchText) return;
+    
+    const newText = editor.value.split(searchText).join(replaceText);
+    editor.value = newText;
+    localStorage.setItem(CODE_KEY, editor.value);
+    
+    performSearch();
 }
 </script>
-
 </body>
 </html>
