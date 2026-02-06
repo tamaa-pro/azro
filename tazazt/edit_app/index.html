@@ -1049,6 +1049,54 @@
                 }
             });
         });
-    </script> 
+    </script>
+    <script>
+const style = document.createElement('style');
+style.textContent = `
+    *{
+        -webkit-tap-highlight-color: transparent !important;
+        -webkit-touch-callout: none !important;
+    }
+    :focus {
+        outline: none !important;
+        box-shadow: none !important;
+        border-color: transparent !important;
+    }
+    button, 
+    [role="button"], 
+    input[type="submit"], 
+    input[type="button"],
+    .btn,
+    .button-class
+    {
+        transition: transform 0.05s ease;
+    }
+    button:active, 
+    [role="button"]:active, 
+    input[type="submit"]:active, 
+    input[type="button"]:active,
+    .btn:active, 
+    .button-class:active,
+    .open-btn:active,
+    .download-btn:active
+    
+    {
+        transform: translateY(2px) !important;
+    }
+    a:active, img:active,
+    a:focus, img:focus {
+        transform: none !important;
+        opacity: 1 !important;
+    }
+    nav a:active,
+    ul li a:active,
+    .sidebar a:active
+    {
+        transform: none !important;
+        box-shadow: none !important;
+    }
+`;
+document.head.appendChild(style);
+    </script>
 </body>
 </html>
