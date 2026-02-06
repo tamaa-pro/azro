@@ -18,6 +18,10 @@
   }
 })();
 </script>
+<script>
+if (performance.navigation.type !== 1 && !sessionStorage.getItem("reloaded")) {sessionStorage.setItem("reloaded", "true");
+setTimeout(() => {location.reload();}, 1000);} else {sessionStorage.removeItem("reloaded");}
+</script>
 <style>
 :root{--bg-primary:#121212;--bg-secondary:#1e1e1e;--bg-tertiary:#252525;--text-primary:#e0e0e0;--text-secondary:#a0a0a0;--accent:#4CAF50;--accent-hover:#3e8e41;--error:#ff4d4d}
 body{background:var(--bg-primary);color:var(--text-primary);font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;margin:0;padding:10px;line-height:1.6}
