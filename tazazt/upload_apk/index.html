@@ -38,7 +38,7 @@ function upload(){
   fd.append("version",v);
 
   const xhr=new XMLHttpRequest();
-  xhr.open("POST","https://YOUR-WORKER-URL");
+  xhr.open("POST","https://upload-app-vf.tamaa-production-studios.workers.dev/");
 
   xhr.upload.onprogress=e=>{
     if(e.lengthComputable)
