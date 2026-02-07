@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>رفع ملف التطبيق</title>
+<style>
+body{background:#121212;color:#eee;font-family:sans-serif;padding:20px}
+input,button{width:100%;padding:10px;margin:10px 0;border-radius:6px;border:none}
+button{background:#4CAF50;color:#fff;font-weight:bold}
+progress{width:100%;height:20px}
+#result{margin-top:15px;word-break:break-all}
+</style>
+</head>
+<body>
+
+<h2>رفع ملف APK</h2>
+
+<input type="file" id="file" accept=".apk">
+<input type="text" id="name" placeholder="اسم التطبيق">
+<input type="text" id="version" placeholder="الإصدار (مثال: 1.0.0)">
+
+<button onclick="upload()">رفع</button>
+
+<progress id="progress" value="0" max="100"></progress>
+<div id="status"></div>
+<div id="result"></div>
+
+<script>
+function upload(){
+  const f=document.getElementById("file").files[0];
+  const n=document.getElementById("name").value;
+  const v=document.getElementById("version").value;
+  if(!f||!n||!v) return;
+
+  const fd=new FormData();
+  fd.append("file",f);
+  fd.append("name",n);
+  fd.append("version",v);
+
+  const xhr=new XMLHttpRequest();
+  xhr.open("POST","https://YOUR-WORKER-URL");
+
+  xhr.upload.onprogress=e=>{
+    if(e.lengthComputable)
+      document.getElementById("progress").value=(e.loaded/e.total)*100;
+  };
+
+  xhr.onload=()=>{
+    if(xhr.status===200){
+      const r=JSON.parse(xhr.responseText);
+      document.getElementById("result").innerHTML=
+        `رابط التحميل:<br><a href="${r.url}" target="_blank">${r.url}</a>`;
+    }else{
+      document.getElementById("status").textContent="فشل الرفع";
+    }
+  };
+
+  xhr.send(fd);
+}
+</script>
+
+</body>
+</html>
