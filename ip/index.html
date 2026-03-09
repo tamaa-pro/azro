@@ -8,120 +8,99 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Changa',sans-serif}body{background-color:#0b0e14;color:#c9d1d9;padding:15px;line-height:1.4}header{display:flex;justify-content:space-between;align-items:center;padding:15px;background:#161b22;border-radius:12px;margin-bottom:20px;border:1px solid #30363d}h1{font-size:1.4rem;color:#a855f7}#refresh-btn{background:#238636;color:#fff;border:none;padding:8px 15px;border-radius:6px;cursor:pointer;display:flex;align-items:center;gap:8px;font-weight:700}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:15px}.card{background:#161b22;border:1px solid #30363d;padding:18px;border-radius:12px;position:relative}.card h2{font-size:1.1rem;color:#facc15;margin-bottom:15px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #30363d;padding-bottom:8px}.info-row{display:flex;justify-content:space-between;margin-bottom:10px;font-size:0.95rem}.label{color:#8b949e;display:flex;align-items:center;gap:6px}.value{color:#fff;font-weight:700;text-align:left}.flag-img{height:18px;vertical-align:middle;border-radius:2px}.status-tag{padding:2px 10px;border-radius:20px;font-size:0.8rem;font-weight:700}.tag-yes{background:rgba(52,211,153,0.1);color:#34d399}.tag-no{background:rgba(248,113,113,0.1);color:#f87171}#map-trigger{background:#30363d;color:#fff;text-align:center;padding:15px;border-radius:10px;cursor:pointer;margin-top:10px;border:2px dashed #484f58;transition:0.3s}#map-trigger:hover{background:#484f58;border-color:#a855f7}#map{height:250px;width:100%;border-radius:10px;margin-top:10px;display:none;border:1px solid #a855f7}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Changa',sans-serif}body{background-color:#0d1117;color:#c9d1d9;padding:15px;line-height:1.4}header{display:flex;justify-content:space-between;align-items:center;padding:15px;background:#161b22;border-radius:12px;margin-bottom:20px;border:1px solid #30363d}h1{font-size:1.4rem;color:#a855f7}#refresh-btn{background:#238636;color:#fff;border:none;padding:8px 15px;border-radius:6px;cursor:pointer;display:flex;align-items:center;gap:8px;font-weight:700}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:15px}.card{background:#161b22;border:1px solid #30363d;padding:18px;border-radius:12px;position:relative}.card h2{font-size:1.1rem;color:#facc15;margin-bottom:15px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #30363d;padding-bottom:8px}.info-row{display:flex;justify-content:space-between;margin-bottom:10px;font-size:0.95rem}.label{color:#8b949e;display:flex;align-items:center;gap:6px}.value{color:#fff;font-weight:700;text-align:left}.flag-img{height:18px;vertical-align:middle;border-radius:2px;margin-right:5px}.status-tag{padding:2px 10px;border-radius:20px;font-size:0.8rem;font-weight:700}.tag-yes{background:rgba(52,211,153,0.1);color:#34d399}.tag-no{background:rgba(248,113,113,0.1);color:#f87171}#map-trigger{background:#30363d;color:#fff;text-align:center;padding:15px;border-radius:10px;cursor:pointer;margin-top:10px;border:2px dashed #484f58;transition:0.3s}#map-trigger:hover{background:#484f58;border-color:#a855f7}#map{height:250px;width:100%;border-radius:10px;margin-top:10px;display:none;border:1px solid #a855f7}
 </style>
 </head>
 <body>
 <div class="container">
 <header>
-<h1><i class="fas fa-satellite-dish"></i> رادار الشبكة</h1>
+<h1><i class="fas fa-radar"></i> رادار الشبكة</h1>
 <button id="refresh-btn" onclick="location.reload()"><i class="fas fa-sync-alt"></i> تحديث</button>
 </header>
 <div id="loader" style="text-align:center;padding:50px;color:#a855f7;"><i class="fas fa-spinner fa-spin fa-2x"></i></div>
 <div id="content" class="grid" style="display:none">
 <div class="card">
-<h2><i class="fas fa-wifi"></i> الشبكة والـ IP</h2>
-<div class="info-row"><span class="label"><i class="fas fa-address-card"></i> IPv4/v6:</span><span class="value" id="ip">-</span></div>
-<div class="info-row"><span class="label"><i class="fas fa-broadcast-tower"></i> المزود:</span><span class="value" id="isp">-</span></div>
-<div class="info-row"><span class="label"><i class="fas fa-globe"></i> ASN:</span><span class="value" id="asn">-</span></div>
-<div class="info-row"><span class="label"><i class="fas fa-tachometer-alt"></i> السرعة:</span><span class="value" id="downlink">-</span></div>
+<h2><i class="fas fa-network-wired"></i> اتصال الإنترنت</h2>
+<div class="info-row"><span class="label"><i class="fas fa-fingerprint"></i> IP:</span><span class="value" id="ip">-</span></div>
+<div class="info-row"><span class="label"><i class="fas fa-server"></i> المزود (ISP):</span><span class="value" id="isp">-</span></div>
+<div class="info-row"><span class="label"><i class="fas fa-route"></i> ASN:</span><span class="value" id="asn">-</span></div>
+<div class="info-row"><span class="label"><i class="fas fa-bolt"></i> السرعة:</span><span class="value" id="downlink">-</span></div>
 </div>
 <div class="card">
-<h2><i class="fas fa-map-location-dot"></i> البيانات الجغرافية</h2>
+<h2><i class="fas fa-map-marker-alt"></i> البيانات الجغرافية</h2>
 <div class="info-row"><span class="label"><i class="fas fa-flag"></i> الدولة:</span><span class="value" id="country">-</span></div>
 <div class="info-row"><span class="label"><i class="fas fa-city"></i> المدينة:</span><span class="value" id="city">-</span></div>
-<div class="info-row"><span class="label"><i class="fas fa-phone"></i> رمز الاتصال:</span><span class="value" id="calling_code">-</span></div>
+<div class="info-row"><span class="label"><i class="fas fa-clock"></i> التوقيت:</span><span class="value" id="timezone">-</span></div>
 <div class="info-row"><span class="label"><i class="fas fa-coins"></i> العملة:</span><span class="value" id="currency">-</span></div>
-<div id="map-trigger" onclick="loadMap()"><i class="fas fa-map-marked-alt"></i> انقر لعرض الموقع على الخريطة</div>
+<div id="map-trigger" onclick="loadMap()"><i class="fas fa-map-marked-alt"></i> عرض الموقع</div>
 <div id="map"></div>
 </div>
 <div class="card">
-<h2><i class="fas fa-shield-virus"></i> اختبار الأمان</h2>
-<div class="info-row"><span class="label"><i class="fas fa-user-secret"></i> VPN/Proxy:</span><span id="is_proxy" class="value">-</span></div>
-<div class="info-row"><span class="label"><i class="fas fa-server"></i> مركز بيانات:</span><span id="is_hosting" class="value">-</span></div>
-<div class="info-row"><span class="label"><i class="fas fa-mask"></i> Tor Exit:</span><span id="is_tor" class="value">-</span></div>
+<h2><i class="fas fa-shield-halved"></i> الأمان</h2>
+<div class="info-row"><span class="label">Proxy/VPN:</span><span id="is_proxy" class="value">-</span></div>
+<div class="info-row"><span class="label">مركز بيانات:</span><span id="is_hosting" class="value">-</span></div>
+<div class="info-row"><span class="label">بيانات خلوي:</span><span id="is_mobile" class="value">-</span></div>
 </div>
 <div class="card">
-<h2><i class="fas fa-microchip"></i> تفاصيل الجهاز</h2>
-<div class="info-row"><span class="label"><i class="fas fa-battery-half"></i> البطارية:</span><span class="value" id="battery">-</span></div>
-<div class="info-row"><span class="label"><i class="fas fa-memory"></i> الرام (تقريبي):</span><span class="value" id="ram">-</span></div>
-<div class="info-row"><span class="label"><i class="fas fa-expand"></i> الشاشة:</span><span class="value" id="screen">-</span></div>
-<div class="info-row"><span class="label"><i class="fas fa-brands fa-android"></i> النظام:</span><span class="value" id="os">-</span></div>
+<h2><i class="fas fa-microchip"></i> العتاد</h2>
+<div class="info-row"><span class="label">البطارية:</span><span class="value" id="battery">-</span></div>
+<div class="info-row"><span class="label">المعالج:</span><span class="value" id="cpu">-</span></div>
+<div class="info-row"><span class="label">الشاشة:</span><span class="value" id="screen">-</span></div>
 </div>
 </div>
 </div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 let userLat, userLon;
-
 async function getAllData() {
-    try {
-        // استخدام API يدعم HTTPS (freeipapi.com)
-        const res = await fetch('https://freeipapi.com/api/json');
-        const data = await res.json();
-        
-        userLat = data.latitude;
-        userLon = data.longitude;
-        renderUI(data);
-    } catch (e) {
-        document.getElementById('loader').innerHTML = "حدث خطأ أثناء جلب البيانات. تأكد من اتصالك.";
-    }
+try {
+const proxy = 'https://corsproxy.io/?';
+const target = encodeURIComponent('http://ip-api.com/json/?fields=66846719');
+const res = await fetch(proxy + target);
+const data = await res.json();
+if (data.status === 'success') {
+userLat = data.lat;
+userLon = data.lon;
+renderUI(data);
+} else { throw new Error(); }
+} catch (e) {
+document.getElementById('loader').innerHTML = "<i class='fas fa-exclamation-triangle'></i> خطأ في الاتصال بالمزود.";
 }
-
+}
 function renderUI(data) {
-    document.getElementById('loader').style.display = 'none';
-    document.getElementById('content').style.display = 'grid';
-
-    document.getElementById('ip').innerText = data.ipAddress;
-    document.getElementById('isp').innerText = data.asName || 'Unknown';
-    document.getElementById('asn').innerText = data.asOrganization || '-';
-    
-    // الدولة مع العلم
-    const flagUrl = `https://flagcdn.com/32x24/${data.countryCode.toLowerCase()}.png`;
-    document.getElementById('country').innerHTML = `<img src="${flagUrl}" class="flag-img"> ${data.countryName}`;
-    document.getElementById('city').innerText = data.cityName;
-    document.getElementById('calling_code').innerText = `+${data.countryCode}`;
-    document.getElementById('currency').innerText = data.currencyCode || 'N/A';
-
-    // الأمان (محاكاة ذكية بناءً على نوع الـ ASN)
-    const check = (val) => val ? '<span class="status-tag tag-yes">نعم</span>' : '<span class="status-tag tag-no">لا</span>';
-    document.getElementById('is_proxy').innerHTML = check(data.isProxy);
-    document.getElementById('is_hosting').innerHTML = check(false); 
-    document.getElementById('is_tor').innerHTML = check(false);
-
-    // العتاد
-    document.getElementById('ram').innerText = `${navigator.deviceMemory || '4'} GB`;
-    document.getElementById('screen').innerText = `${window.screen.width} x ${window.screen.height}`;
-    document.getElementById('os').innerText = getOSInfo();
-    
-    if (navigator.getBattery) {
-        navigator.getBattery().then(batt => {
-            document.getElementById('battery').innerText = `${Math.round(batt.level * 100)}%`;
-        });
-    }
-    if (navigator.connection) {
-        document.getElementById('downlink').innerText = `${navigator.connection.downlink} Mbps`;
-    }
+document.getElementById('loader').style.display = 'none';
+document.getElementById('content').style.display = 'grid';
+document.getElementById('ip').innerText = data.query;
+document.getElementById('isp').innerText = data.isp;
+document.getElementById('asn').innerText = data.as;
+const flagUrl = `https://flagcdn.com/32x24/${data.countryCode.toLowerCase()}.png`;
+document.getElementById('country').innerHTML = `<img src="${flagUrl}" class="flag-img"> ${data.country}`;
+document.getElementById('city').innerText = data.city;
+document.getElementById('timezone').innerText = data.timezone;
+document.getElementById('currency').innerText = data.currency || 'N/A';
+const check = (v) => v ? '<span class="status-tag tag-yes">نعم</span>' : '<span class="status-tag tag-no">لا</span>';
+document.getElementById('is_proxy').innerHTML = check(data.proxy);
+document.getElementById('is_hosting').innerHTML = check(data.hosting);
+document.getElementById('is_mobile').innerHTML = check(data.mobile);
+document.getElementById('cpu').innerText = `${navigator.hardwareConcurrency || 'N/A'} Cores`;
+document.getElementById('screen').innerText = `${window.screen.width} x ${window.screen.height}`;
+if (navigator.getBattery) {
+navigator.getBattery().then(batt => {
+document.getElementById('battery').innerText = `${Math.round(batt.level * 100)}%`;
+});
 }
-
-function getOSInfo() {
-    const ua = navigator.userAgent;
-    if (/android/i.test(ua)) return "Android";
-    if (/iPhone|iPad/i.test(ua)) return "iOS";
-    if (/Windows/i.test(ua)) return "Windows";
-    return "نظام غير معروف";
+if (navigator.connection) {
+document.getElementById('downlink').innerText = `${navigator.connection.downlink} Mbps`;
 }
-
+}
 function loadMap() {
-    document.getElementById('map-trigger').style.display = 'none';
-    const mapDiv = document.getElementById('map');
-    mapDiv.style.display = 'block';
-
-    const map = L.map('map').setView([userLat, userLon], 13);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-    L.marker([userLat, userLon]).addTo(map).bindPopup('موقعك التقريبي').openPopup();
+document.getElementById('map-trigger').style.display = 'none';
+const mapDiv = document.getElementById('map');
+mapDiv.style.display = 'block';
+const map = L.map('map').setView([userLat, userLon], 13);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+L.marker([userLat, userLon]).addTo(map).bindPopup('موقع الاتصال').openPopup();
 }
-
 getAllData();
 </script>
 </body>
