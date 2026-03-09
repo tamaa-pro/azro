@@ -3,17 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>بيانات الشبكة v1.4</title>
+<title>رادار الشبكة | 1.6</title>
 <link href="https://fonts.googleapis.com/css2?family=Changa:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Changa',sans-serif}body{background-color:#0d1117;color:#c9d1d9;padding:10px;line-height:1.2;font-size:0.85rem}header{display:flex;justify-content:space-between;align-items:center;padding:10px;background:#161b22;border-radius:8px;margin-bottom:15px;border:1px solid #30363d}h1{font-size:1.1rem;color:#a855f7}#refresh-btn{background:#238636;color:#fff;border:none;padding:5px 12px;border-radius:5px;cursor:pointer;display:flex;align-items:center;gap:6px;font-size:0.8rem;font-weight:700}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}.card{background:#161b22;border:1px solid #30363d;padding:15px;border-radius:10px}.card h2{font-size:0.95rem;color:#facc15;margin-bottom:12px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #30363d;padding-bottom:5px}.info-row{display:flex;justify-content:space-between;margin-bottom:8px}.label{color:#8b949e;display:flex;align-items:center;gap:5px}.value{color:#fff;font-weight:700;text-align:left;word-break:break-all}.flag-box{width:30px;height:18px;border-radius:3px;overflow:hidden;border:1px solid #484f58;display:inline-block;vertical-align:middle}.flag-box img{width:100%;height:100%;object-fit:cover}#map{height:180px;width:100%;border-radius:8px;margin-top:10px;display:none;border:1px solid #a855f7}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Changa',sans-serif}body{background-color:#0d1117;color:#c9d1d9;padding:10px;line-height:1.2;font-size:0.85rem}header{display:flex;justify-content:space-between;align-items:center;padding:10px;background:#161b22;border-radius:8px;margin-bottom:15px;border:1px solid #30363d}h1{font-size:1.1rem;color:#a855f7}#refresh-btn{background:#238636;color:#fff;border:none;padding:5px 12px;border-radius:5px;cursor:pointer;display:flex;align-items:center;gap:6px;font-size:0.8rem;font-weight:700}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}.card{background:#161b22;border:1px solid #30363d;padding:15px;border-radius:10px;height:fit-content}.card h2{font-size:0.95rem;color:#facc15;margin-bottom:12px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #30363d;padding-bottom:5px}.info-row{display:flex;justify-content:space-between;margin-bottom:8px}.label{color:#8b949e;display:flex;align-items:center;gap:5px}.value{color:#fff;font-weight:700;text-align:left;word-break:break-all}.flag-box{width:30px;height:18px;border-radius:3px;overflow:hidden;border:1px solid #484f58;display:inline-block;vertical-align:middle}.flag-box img{width:100%;height:100%;object-fit:cover}#map{height:180px;width:100%;border-radius:8px;margin-top:10px;display:none;border:1px solid #a855f7}.more-btn{width:100%;background:#30363d;color:#c9d1d9;border:none;padding:8px;border-radius:6px;cursor:pointer;font-weight:700;margin-top:5px;transition:0.3s}.more-btn:hover{background:#484f58}#extra-data{display:none;margin-top:10px;padding-top:10px;border-top:1px dashed #30363d}.small-note{font-size:0.7rem;color:#8b949e;display:block;margin-top:2px}
 </style>
 </head>
 <body>
 <header>
-<h1><i class="fas fa-broadcast-tower"></i> رادار الشبكة</h1>
+<h1><i class="fas fa-satellite"></i> رادار الشبكة</h1>
 <button id="refresh-btn" onclick="updateOnlyData()"><i class="fas fa-sync-alt" id="sync-icon"></i> تحديث شامل</button>
 </header>
 <div id="loader" style="text-align:center;padding:40px;color:#a855f7;"><i class="fas fa-spinner fa-spin fa-2x"></i></div>
@@ -23,22 +23,45 @@
 <div class="info-row"><span class="label">IPv4:</span><span class="value" id="ipv4">...</span></div>
 <div class="info-row"><span class="label">IPv6:</span><span class="value" id="ipv6">...</span></div>
 <div class="info-row"><span class="label">المزود (ISP):</span><span class="value" id="isp">-</span></div>
-<div class="info-row"><span class="label">الاستجابة:</span><span class="value" id="ping">-</span></div>
-<div class="info-row"><span class="label">السرعة:</span><span class="value" id="downlink">-</span></div>
+<div class="info-row"><span class="label">الاستجابة (Ping):</span><span class="value" id="ping">-</span></div>
+<div class="info-row"><span class="label">سرعة التحميل:</span><span class="value" id="downlink">...</span></div>
+<span class="small-note">* سرعة تقديرية من المتصفح، ليست اختباراً فعلياً.</span>
 </div>
 <div class="card">
 <h2><i class="fas fa-map-marked-alt"></i> الموقع والتوقيت</h2>
 <div class="info-row"><span class="label">الدولة:</span><span class="value" id="country">-</span></div>
 <div class="info-row"><span class="label">المدينة:</span><span class="value" id="city">-</span></div>
 <div class="info-row"><span class="label">العملة:</span><span class="value" id="currency">-</span></div>
-<div class="info-row"><span class="label">المنطقة الزمنية:</span><span class="value" id="timezone_name">-</span></div>
 <div class="info-row"><span class="label">توقيت المنطقة:</span><span class="value" id="live_clock" style="color:#facc15">-</span></div>
 <div id="map"></div>
+</div>
+<div class="card" id="extra-card">
+<h2><i class="fas fa-database"></i> البيانات الفنية</h2>
+<button class="more-btn" id="toggle-btn" onclick="toggleExtra()">عرض باقي البيانات</button>
+<div id="extra-data">
+<div class="info-row"><span class="label">Country:</span><span class="value" id="ext-country">-</span></div>
+<div class="info-row"><span class="label">Country Code:</span><span class="value" id="ext-code">-</span></div>
+<div class="info-row"><span class="label">Region Name:</span><span class="value" id="ext-region">-</span></div>
+<div class="info-row"><span class="label">City:</span><span class="value" id="ext-city">-</span></div>
+<div class="info-row"><span class="label">Zip Code:</span><span class="value" id="ext-zip">-</span></div>
+<div class="info-row"><span class="label">Latitude:</span><span class="value" id="ext-lat">-</span></div>
+<div class="info-row"><span class="label">Longitude:</span><span class="value" id="ext-lon">-</span></div>
+<div class="info-row"><span class="label">Timezone:</span><span class="value" id="ext-tz">-</span></div>
+<div class="info-row"><span class="label">ISP:</span><span class="value" id="ext-isp">-</span></div>
+<div class="info-row"><span class="label">ASN:</span><span class="value" id="ext-asn">-</span></div>
+<div class="info-row"><span class="label">Hostname:</span><span class="value" id="ext-host">-</span></div>
+<div class="info-row"><span class="label">IP Decimal:</span><span class="value" id="ext-dec">-</span></div>
+<div class="info-row"><span class="label">Proxy/VPN:</span><span class="value" id="ext-proxy">-</span></div>
+<div class="info-row"><span class="label">Org:</span><span class="value" id="ext-org">-</span></div>
+<div class="info-row"><span class="label">Status:</span><span class="value" id="ext-status">-</span></div>
+<div class="info-row"><span class="label">Updated:</span><span class="value" id="ext-upd">-</span></div>
+</div>
 </div>
 </div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 let userLat, userLon, clockInterval, speedInterval, remoteOffset = 0;
+const ip2int = ip => ip.split('.').reduce((int, oct) => (int << 8) + parseInt(oct, 10), 0) >>> 0;
 async function fetchIPs() {
 try {
 const [v4, v6] = await Promise.all([
@@ -47,12 +70,13 @@ fetch('https://api64.ipify.org?format=json').then(r => r.json()).catch(() => ({i
 ]);
 document.getElementById('ipv4').innerText = v4.ip;
 document.getElementById('ipv6').innerText = v6.ip === v4.ip ? 'غير مدعوم' : v6.ip;
-} catch (e) {}
+return v4.ip;
+} catch (e) { return null; }
 }
 async function getAllData() {
 try {
 const start = Date.now();
-await fetchIPs();
+const realIP = await fetchIPs();
 const proxy = 'https://corsproxy.io/?';
 const target = encodeURIComponent('http://ip-api.com/json/?fields=66846719&t=' + Date.now());
 const res = await fetch(proxy + target);
@@ -61,9 +85,9 @@ const pingValue = Date.now() - start;
 if (data.status === 'success') {
 userLat = data.lat; userLon = data.lon;
 remoteOffset = data.offset; 
-renderUI(data, pingValue);
+renderUI(data, pingValue, realIP);
 }
-} catch (e) { document.getElementById('loader').innerText = "خطأ في الشبكة"; }
+} catch (e) { document.getElementById('loader').innerText = "خطأ في الاتصال"; }
 }
 function renderUI(data, ping, realIP) {
 document.getElementById('loader').style.display = 'none';
@@ -74,7 +98,22 @@ const flagUrl = `https://flagcdn.com/w40/${data.countryCode.toLowerCase()}.png`;
 document.getElementById('country').innerHTML = `<span class="flag-box"><img src="${flagUrl}"></span> ${data.country}`;
 document.getElementById('city').innerText = data.city;
 document.getElementById('currency').innerText = data.currency || 'N/A';
-document.getElementById('timezone_name').innerText = data.timezone;
+document.getElementById('ext-country').innerText = data.country;
+document.getElementById('ext-code').innerText = data.countryCode;
+document.getElementById('ext-region').innerText = data.regionName;
+document.getElementById('ext-city').innerText = data.city;
+document.getElementById('ext-zip').innerText = data.zip;
+document.getElementById('ext-lat').innerText = data.lat;
+document.getElementById('ext-lon').innerText = data.lon;
+document.getElementById('ext-tz').innerText = data.timezone;
+document.getElementById('ext-isp').innerText = data.isp;
+document.getElementById('ext-asn').innerText = data.as;
+document.getElementById('ext-host').innerText = data.reverse || 'N/A';
+document.getElementById('ext-dec').innerText = realIP.includes('.') ? ip2int(realIP) : 'N/A';
+document.getElementById('ext-proxy').innerText = data.proxy ? 'True' : 'False';
+document.getElementById('ext-org').innerText = data.org || 'N/A';
+document.getElementById('ext-status').innerText = data.status;
+document.getElementById('ext-upd').innerText = new Date().toLocaleTimeString();
 startLiveElements();
 loadMap();
 }
@@ -83,21 +122,31 @@ if(clockInterval) clearInterval(clockInterval);
 clockInterval = setInterval(() => {
 const utc = new Date().getTime() + (new Date().getTimezoneOffset() * 60000);
 const remoteTime = new Date(utc + (remoteOffset * 1000));
-const fmt = (n) => String(n).padStart(2, '0');
-const d = `${remoteTime.getFullYear()}/${fmt(remoteTime.getMonth()+1)}/${fmt(remoteTime.getDate())}`;
+const f = (n) => String(n).padStart(2, '0');
+const d = `${remoteTime.getFullYear()}/${f(remoteTime.getMonth()+1)}/${f(remoteTime.getDate())}`;
 let h = remoteTime.getHours(); const m = h >= 12 ? 'م' : 'ص'; h = h % 12 || 12;
-const t = `${fmt(h)}:${fmt(remoteTime.getMinutes())}:${fmt(remoteTime.getSeconds())} ${m}`;
-document.getElementById('live_clock').innerText = `${t} - ${d}`;
+document.getElementById('live_clock').innerText = `${f(h)}:${f(remoteTime.getMinutes())}:${f(remoteTime.getSeconds())} ${m} - ${d}`;
 }, 1000);
 if(speedInterval) clearInterval(speedInterval);
 speedInterval = setInterval(async () => {
 if (navigator.connection) {
-document.getElementById('downlink').innerText = (navigator.connection.downlink + (Math.random()*0.02)).toFixed(2) + ' Mbps';
+document.getElementById('downlink').innerText = navigator.connection.downlink + ' Mbps';
 }
 const s = Date.now();
 await fetch('https://api.ipify.org?t=' + s, { mode: 'no-cors' });
 document.getElementById('ping').innerText = (Date.now() - s) + ' ms';
-}, 1500);
+}, 2000);
+}
+function toggleExtra() {
+const el = document.getElementById('extra-data');
+const btn = document.getElementById('toggle-btn');
+if (el.style.display === 'block') {
+el.style.display = 'none';
+btn.innerText = 'عرض باقي البيانات';
+} else {
+el.style.display = 'block';
+btn.innerText = 'إخفاء البيانات';
+}
 }
 function updateOnlyData() {
 const icon = document.getElementById('sync-icon');
