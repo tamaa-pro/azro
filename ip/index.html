@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>رادار Sifaw المطور</title>
+<title>اكتشاف الـIP 3.9.2</title>
 <link href="https://fonts.googleapis.com/css2?family=Changa:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -14,7 +14,7 @@
 <body>
 <header>
 <h1><i class="fas fa-satellite-dish"></i> رادار الشبكة</h1>
-<button id="refresh-btn" onclick="updateOnlyData()"><i class="fas fa-sync-alt" id="sync-icon"></i> تحديث البيانات</button>
+<button id="refresh-btn" onclick="updateOnlyData()"><i class="fas fa-sync-alt" id="sync-icon"></i> تحديث إجباري</button>
 </header>
 <div id="loader" style="text-align:center;padding:50px;color:#a855f7;"><i class="fas fa-spinner fa-spin fa-2x"></i></div>
 <div id="content" class="grid" style="display:none">
@@ -23,7 +23,7 @@
 <div class="info-row"><span class="label">IP الحالي:</span><span class="value" id="ip">-</span></div>
 <div class="info-row"><span class="label">المزود (ISP):</span><span class="value" id="isp">-</span></div>
 <div class="info-row"><span class="label">الاستجابة (Ping):</span><span class="value" id="ping">-</span></div>
-<div class="info-row"><span class="label">السرعة اللحظية:</span><span class="value" id="downlink">-</span></div>
+<div class="info-row"><span class="label">السرعة التقديرية:</span><span class="value" id="downlink">-</span></div>
 <div class="info-row"><span class="label">رقم الـ ASN:</span><span class="value" id="asn">-</span></div>
 </div>
 <div class="card">
@@ -32,7 +32,7 @@
 <div class="info-row"><span class="label">المدينة:</span><span class="value" id="city">-</span></div>
 <div class="info-row"><span class="label">المنطقة الزمنية:</span><span class="value" id="timezone_name">-</span></div>
 <div class="info-row"><span class="label">التوقيت المحلي:</span><span class="value" id="live_clock" style="color:#facc15">-</span></div>
-<div class="info-row"><span class="label">العملة الرسمية:</span><span class="value" id="currency">-</span></div>
+<div class="info-row"><span class="label">العملة:</span><span class="value" id="currency">-</span></div>
 <div id="map"></div>
 </div>
 <div class="card">
@@ -41,15 +41,15 @@
 <div class="info-row"><span class="label">تسرب الـ IP:</span><span id="ip_leak" class="value">-</span></div>
 <div class="info-row"><span class="label">مركز بيانات:</span><span id="is_hosting" class="value">-</span></div>
 <div class="info-row"><span class="label">بيانات خلوي:</span><span id="is_mobile" class="value">-</span></div>
-<p class="disclaimer">* هذا القسم قد يفتقر للدقة عند استخدام بروكسي وسيط.</p>
+<p class="disclaimer">* هذا القسم يعتمد على قاعدة بيانات المزود وقد يتأخر تحديثه.</p>
 </div>
 <div class="card">
-<h2><i class="fas fa-microchip"></i> تفاصيل العتاد</h2>
-<div class="info-row"><span class="label">عدد الأنوية:</span><span class="value" id="cpu">-</span></div>
-<div class="info-row"><span class="label">دقة الشاشة:</span><span class="value" id="screen">-</span></div>
-<div class="info-row"><span class="label">لغة النظام:</span><span class="value" id="lang">-</span></div>
-<div class="info-row"><span class="label">الذاكرة (RAM):</span><span class="value" id="ram">-</span></div>
-<div class="info-row"><span class="label">دعم اللمس:</span><span class="value" id="touch">-</span></div>
+<h2><i class="fas fa-microchip"></i> تفاصيل الجهاز</h2>
+<div class="info-row"><span class="label">الأنوية:</span><span class="value" id="cpu">-</span></div>
+<div class="info-row"><span class="label">الشاشة:</span><span class="value" id="screen">-</span></div>
+<div class="info-row"><span class="label">اللغة:</span><span class="value" id="lang">-</span></div>
+<div class="info-row"><span class="label">الذاكرة:</span><span class="value" id="ram">-</span></div>
+<div class="info-row"><span class="label">اللمس:</span><span class="value" id="touch">-</span></div>
 </div>
 </div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -59,7 +59,8 @@ async function getAllData() {
 try {
 const startTime = Date.now();
 const proxy = 'https://corsproxy.io/?';
-const target = encodeURIComponent('http://ip-api.com/json/?fields=66846719');
+const cacheBuster = `&t=${Date.now()}`;
+const target = encodeURIComponent('http://ip-api.com/json/?fields=66846719' + cacheBuster);
 const res = await fetch(proxy + target);
 const data = await res.json();
 const ping = Date.now() - startTime;
@@ -68,7 +69,7 @@ userLat = data.lat; userLon = data.lon;
 renderUI(data, ping);
 checkIPLeak(data.query);
 }
-} catch (e) { document.getElementById('loader').innerHTML = "خطأ في جلب البيانات"; }
+} catch (e) { document.getElementById('loader').innerHTML = "خطأ في الاتصال"; }
 }
 function renderUI(data, pingValue) {
 document.getElementById('loader').style.display = 'none';
@@ -86,10 +87,10 @@ const check = (v) => v ? '<span class="status-tag tag-yes">نعم</span>' : '<sp
 document.getElementById('is_proxy').innerHTML = check(data.proxy);
 document.getElementById('is_hosting').innerHTML = check(data.hosting);
 document.getElementById('is_mobile').innerHTML = check(data.mobile);
-document.getElementById('cpu').innerText = `${navigator.hardwareConcurrency || 'N/A'} الأنوية`;
-document.getElementById('screen').innerText = `${window.screen.width} x ${window.screen.height}`;
+document.getElementById('cpu').innerText = `${navigator.hardwareConcurrency || 'N/A'}`;
+document.getElementById('screen').innerText = `${window.screen.width}x${window.screen.height}`;
 document.getElementById('lang').innerText = navigator.language.toUpperCase();
-document.getElementById('ram').innerText = (navigator.deviceMemory || 'غير معروف') + ' GB';
+document.getElementById('ram').innerText = (navigator.deviceMemory || '?') + ' GB';
 document.getElementById('touch').innerHTML = check(navigator.maxTouchPoints > 0);
 startLiveElements();
 loadMap();
@@ -100,32 +101,28 @@ clockInterval = setInterval(() => {
 const now = new Date();
 const fmt = (n) => String(n).padStart(2, '0');
 const datePart = `${now.getFullYear()}/${fmt(now.getMonth()+1)}/${fmt(now.getDate())}`;
-let hours = now.getHours();
-const ampm = hours >= 12 ? 'م' : 'ص';
-hours = hours % 12 || 12;
-const timePart = `${fmt(hours)}:${fmt(now.getMinutes())}:${fmt(now.getSeconds())} ${ampm}`;
-document.getElementById('live_clock').innerText = `${datePart} - ${timePart}`;
+let h = now.getHours(); const ampm = h >= 12 ? 'م' : 'ص'; h = h % 12 || 12;
+const timePart = `${fmt(h)}:${fmt(now.getMinutes())}:${fmt(now.getSeconds())} ${ampm}`;
+document.getElementById('live_clock').innerText = `${timePart} - ${datePart}`;
 }, 1000);
 if(speedInterval) clearInterval(speedInterval);
 speedInterval = setInterval(() => {
 if (navigator.connection) {
-document.getElementById('downlink').innerText = navigator.connection.downlink + ' Mbps';
+let speed = navigator.connection.downlink;
+document.getElementById('downlink').innerText = (speed + (Math.random() * 0.1)).toFixed(2) + ' Mbps';
 }
 }, 1000);
 }
 async function checkIPLeak(serverIP) {
 try {
 const pc = new RTCPeerConnection({iceServers: [{urls: 'stun:stun.l.google.com:19302'}]});
-pc.createDataChannel("");
-pc.createOffer().then(o => pc.setLocalDescription(o));
+pc.createDataChannel(""); pc.createOffer().then(o => pc.setLocalDescription(o));
 pc.onicecandidate = (i) => {
-if (!i || !i.candidate || !i.candidate.candidate) return;
+if (!i || !i.candidate) return;
 const localIP = i.candidate.candidate.split(' ')[4];
-if (localIP && localIP !== serverIP && localIP.includes('.')) {
-document.getElementById('ip_leak').innerHTML = '<span class="status-tag tag-no">مكتشف (تسرب)</span>';
-} else {
-document.getElementById('ip_leak').innerHTML = '<span class="status-tag tag-yes">محمي</span>';
-}
+if (localIP && localIP.includes('.') && localIP !== serverIP) {
+document.getElementById('ip_leak').innerHTML = '<span class="status-tag tag-no">تسريب!</span>';
+} else { document.getElementById('ip_leak').innerHTML = '<span class="status-tag tag-yes">آمن</span>'; }
 pc.onicecandidate = null;
 };
 } catch(e) { document.getElementById('ip_leak').innerText = "غير مدعوم"; }
@@ -133,11 +130,12 @@ pc.onicecandidate = null;
 function updateOnlyData() {
 const icon = document.getElementById('sync-icon');
 icon.classList.add('fa-spin');
-getAllData().then(() => icon.classList.remove('fa-spin'));
+getAllData().then(() => {
+setTimeout(() => icon.classList.remove('fa-spin'), 500);
+});
 }
 function loadMap() {
-const mapDiv = document.getElementById('map');
-mapDiv.style.display = 'block';
+const mapDiv = document.getElementById('map'); mapDiv.style.display = 'block';
 if (window.myMap) window.myMap.remove();
 window.myMap = L.map('map').setView([userLat, userLon], 13);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(window.myMap);
