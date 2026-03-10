@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>كاشف الشبكة | 1.7</title>
+<title>رادار الشبكة | المقياس الذكي</title>
 <link href="https://fonts.googleapis.com/css2?family=Changa:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Changa',sans-serif}body{background-color:#0d1117;color:#c9d1d9;padding:10px;line-height:1.2;font-size:0.85rem}header{display:flex;justify-content:space-between;align-items:center;padding:10px;background:#161b22;border-radius:8px;margin-bottom:15px;border:1px solid #30363d}h1{font-size:1.1rem;color:#a855f7}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}.card{background:#161b22;border:1px solid #30363d;padding:15px;border-radius:10px;height:fit-content}.card h2{font-size:0.95rem;color:#facc15;margin-bottom:12px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #30363d;padding-bottom:5px}.info-row{display:flex;justify-content:space-between;margin-bottom:8px}.label{color:#8b949e;display:flex;align-items:center;gap:5px}.value{color:#fff;font-weight:700;text-align:left}.speed-test-unit{margin-top:15px;padding-top:15px;border-top:1px solid #30363d}.gauge-box{position:relative;width:220px;height:130px;margin:0 auto;display:flex;justify-content:center;align-items:flex-end}.gauge-svg{width:220px;height:130px}.gauge-bg{fill:none;stroke:#30363d;stroke-width:14;stroke-linecap:round}.gauge-fill-arc{fill:none;stroke:#a855f7;stroke-width:14;stroke-linecap:round;stroke-dasharray:283;stroke-dashoffset:283;transition:stroke-dashoffset 0.5s ease}.needle{fill:#f43f5e;transition:transform 0.5s ease;transform-origin:110px 120px}.tick{stroke:#484f58;stroke-width:2}.tick-text{fill:#8b949e;font-size:10px;font-weight:700}.gauge-center{position:absolute;bottom:15px;text-align:center}.gauge-center div:first-child{font-size:1.5rem;font-weight:700;color:#fff;line-height:1}.gauge-center div:last-child{font-size:0.75rem;color:#8b949e;font-weight:700}.results-row{display:flex;justify-content:space-around;margin:10px 0;padding:8px 0;background:rgba(0,0,0,0.2);border-radius:8px}.res-item{text-align:center}.res-item span{display:block;font-size:0.65rem;color:#8b949e}.res-item b{font-size:0.9rem;color:#34d399}.control-bar{display:flex;justify-content:space-between;align-items:center;margin-top:10px}#start-test{background:#a855f7;color:#fff;border:none;padding:5px 12px;border-radius:4px;cursor:pointer;font-weight:700;font-size:0.75rem}.test-stat{font-size:0.75rem;color:#8b949e;font-weight:700;width:70px;text-align:center}#refresh-btn{background:#238636;color:#fff;border:none;padding:5px 12px;border-radius:5px;cursor:pointer;font-size:0.8rem}#map{height:160px;width:100%;border-radius:8px;margin-top:10px;display:none;border:1px solid #a855f7}.more-btn{width:100%;background:#30363d;color:#c9d1d9;border:none;padding:6px;border-radius:5px;cursor:pointer;margin-top:10px}#extra-data{display:none;margin-top:10px;border-top:1px dashed #30363d;padding-top:10px}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Changa',sans-serif}body{background-color:#0d1117;color:#c9d1d9;padding:10px;line-height:1.2;font-size:0.85rem}header{display:flex;justify-content:space-between;align-items:center;padding:10px;background:#161b22;border-radius:8px;margin-bottom:15px;border:1px solid #30363d}h1{font-size:1.1rem;color:#a855f7}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}.card{background:#161b22;border:1px solid #30363d;padding:15px;border-radius:10px;height:fit-content}.card h2{font-size:0.95rem;color:#facc15;margin-bottom:12px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #30363d;padding-bottom:5px}.info-row{display:flex;justify-content:space-between;margin-bottom:8px}.label{color:#8b949e;display:flex;align-items:center;gap:5px}.value{color:#fff;font-weight:700;text-align:left}.speed-test-unit{margin-top:15px;padding-top:15px;border-top:1px solid #30363d}.gauge-box{position:relative;width:220px;height:130px;margin:0 auto;display:flex;justify-content:center;align-items:flex-end}.gauge-svg{width:220px;height:130px}.gauge-bg{fill:none;stroke:#30363d;stroke-width:14;stroke-linecap:round}.gauge-fill-arc{fill:none;stroke:#a855f7;stroke-width:14;stroke-linecap:round;stroke-dasharray:283;stroke-dashoffset:283;transition:stroke-dashoffset 0.4s ease-out}.tick-text{fill:#8b949e;font-size:10px;font-weight:700}.gauge-center{position:absolute;bottom:15px;text-align:center}.gauge-center div:first-child{font-size:1.5rem;font-weight:700;color:#fff;line-height:1}.gauge-center div:last-child{font-size:0.75rem;color:#8b949e;font-weight:700}.results-row{display:flex;justify-content:space-around;margin:10px 0;padding:8px 0;background:rgba(0,0,0,0.2);border-radius:8px}.res-item{text-align:center}.res-item span{display:block;font-size:0.65rem;color:#8b949e}.res-item b{font-size:0.95rem;transition:color 0.3s ease}.progress-container{width:100%;height:4px;background:#30363d;border-radius:2px;margin:10px 0;overflow:hidden;display:none}.progress-bar{height:100%;width:0%;background:linear-gradient(90deg,#a855f7,#f43f5e);transition:width 0.2s linear}.control-bar{display:flex;justify-content:space-between;align-items:center;margin-top:5px}#start-test{background:#a855f7;color:#fff;border:none;padding:5px 12px;border-radius:4px;cursor:pointer;font-weight:700;font-size:0.75rem}#start-test.cancelling{background:#f43f5e}.test-stat{font-size:0.75rem;color:#8b949e;font-weight:700;width:70px;text-align:center}#refresh-btn{background:#238636;color:#fff;border:none;padding:5px 12px;border-radius:5px;cursor:pointer;font-size:0.8rem}#map{height:160px;width:100%;border-radius:8px;margin-top:10px;display:none;border:1px solid #a855f7}.more-btn{width:100%;background:#30363d;color:#c9d1d9;border:none;padding:6px;border-radius:5px;cursor:pointer;margin-top:10px}#extra-data{display:none;margin-top:10px;border-top:1px dashed #30363d;padding-top:10px}
 </style>
 </head>
 <body>
@@ -30,20 +30,17 @@
 <path class="gauge-bg" d="M30,120 A80,80 0 0,1 190,120" />
 <path id="gauge-fill" class="gauge-fill-arc" d="M30,120 A80,80 0 0,1 190,120" />
 <g id="ticks"></g>
-<polygon id="needle" class="needle" points="108,120 112,120 110,40" transform="rotate(-90, 110, 120)" />
 </svg>
-<div class="gauge-center">
-<div id="test-speed-val">0.0</div>
-<div id="test-unit-text">Mbps</div>
-</div>
+<div class="gauge-center"><div id="test-speed-val">0.0</div><div id="test-unit-text">Mbps</div></div>
 </div>
 <div class="results-row">
 <div class="res-item"><span>تحميل</span><b id="dl-val">0.00</b></div>
-<div class="res-item"><span>رفع</span><b id="ul-val" style="color:#60a5fa">0.00</b></div>
+<div class="res-item"><span>رفع</span><b id="ul-val">0.00</b></div>
 </div>
+<div class="progress-container" id="p-cont"><div class="progress-bar" id="p-bar"></div></div>
 <div class="control-bar">
 <div class="test-stat" id="test-ping-live">0 ms</div>
-<button id="start-test" onclick="runRealTest()">إبدأ الإختبار</button>
+<button id="start-test" onclick="handleTestButton()">إبدأ الإختبار</button>
 <div class="test-stat" id="test-timer">00.00 ث</div>
 </div>
 </div>
@@ -79,49 +76,46 @@
 </div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-let userLat, userLon, clockInt, remoteOff = 0, currentMax = 25;
+let userLat, userLon, clockInt, remoteOff = 0, currentMax = 25, isTesting = false, abortCtrl;
 const scales = [25, 50, 100, 200, 300, 400, 500, 1000];
 const ip2int = ip => ip.split('.').reduce((int, oct) => (int << 8) + parseInt(oct, 10), 0) >>> 0;
+
+function getSpeedColor(speed) {
+if (speed < 5) return "#f43f5e";
+if (speed < 15) return "#f97316";
+if (speed < 30) return "#eab308";
+if (speed < 60) return "#22c55e";
+return "#a855f7";
+}
+
 function drawTicks(max) {
-const g = document.getElementById('ticks');
-g.innerHTML = '';
+const g = document.getElementById('ticks'); g.innerHTML = '';
 for(let i=0; i<=5; i++) {
 const val = (max / 5) * i;
 const angle = -180 + (i * 36);
 const rad = angle * Math.PI / 180;
-const x1 = 110 + 70 * Math.cos(rad); const y1 = 120 + 70 * Math.sin(rad);
-const x2 = 110 + 80 * Math.cos(rad); const y2 = 120 + 80 * Math.sin(rad);
 const xT = 110 + 95 * Math.cos(rad); const yT = 120 + 95 * Math.sin(rad);
-g.innerHTML += `<line class="tick" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" />`;
 g.innerHTML += `<text class="tick-text" x="${xT}" y="${yT}" text-anchor="middle">${val >= 1000 ? (val/1000)+'G' : val}</text>`;
 }
 }
-async function fetchIPs() {
-try {
-const [v4, v6] = await Promise.all([
-fetch('https://api.ipify.org?format=json').then(r => r.json()).catch(() => ({ip: 'N/A'})),
-fetch('https://api64.ipify.org?format=json').then(r => r.json()).catch(() => ({ip: 'N/A'}))
-]);
-document.getElementById('ipv4').innerText = v4.ip;
-document.getElementById('ipv6').innerText = v6.ip === v4.ip ? 'N/A' : v6.ip;
-return v4.ip;
-} catch (e) { return "0.0.0.0"; }
-}
+
 async function getAllData() {
 try {
 const start = Date.now();
-const realIP = await fetchIPs();
-const res = await fetch('https://corsproxy.io/?' + encodeURIComponent('http://ip-api.com/json/'+realIP+'?fields=66846719&t=' + Date.now()));
+const v4 = await fetch('https://api.ipify.org?format=json').then(r => r.json());
+const res = await fetch('https://corsproxy.io/?' + encodeURIComponent('http://ip-api.com/json/'+v4.ip+'?fields=66846719&t=' + Date.now()));
 const data = await res.json();
 if (data.status === 'success') {
 userLat = data.lat; userLon = data.lon; remoteOff = data.offset;
-renderUI(data, realIP, Date.now() - start);
+renderUI(data, v4.ip, Date.now() - start);
 }
 } catch (e) { document.getElementById('loader').innerText = "فشل الاتصال بمزود البيانات."; }
 }
+
 function renderUI(data, realIP, ping) {
 document.getElementById('loader').style.display = 'none';
 document.getElementById('content').style.display = 'grid';
+document.getElementById('ipv4').innerText = realIP;
 document.getElementById('isp').innerText = data.isp;
 document.getElementById('main-ping').innerText = ping + ' ms';
 document.getElementById('country').innerHTML = `<img src="https://flagcdn.com/w40/${data.countryCode.toLowerCase()}.png" style="width:20px;vertical-align:middle"> ${data.country}`;
@@ -142,6 +136,7 @@ document.getElementById('ext-status').innerText = data.status;
 document.getElementById('ext-upd').innerText = new Date().toLocaleTimeString();
 startClock(); loadMap();
 }
+
 function startClock() {
 if(clockInt) clearInterval(clockInt);
 clockInt = setInterval(() => {
@@ -152,58 +147,98 @@ let h = rem.getHours(); const m = h >= 12 ? 'م' : 'ص'; h = h % 12 || 12;
 document.getElementById('live_clock').innerText = `${f(h)}:${f(rem.getMinutes())}:${f(rem.getSeconds())} ${m} - ${rem.getFullYear()}/${f(rem.getMonth()+1)}/${f(rem.getDate())}`;
 }, 1000);
 }
+
+function handleTestButton() {
+if (isTesting) {
+isTesting = false; if (abortCtrl) abortCtrl.abort();
+resetUIAfterTest();
+} else { runRealTest(); }
+}
+
+function resetUIAfterTest() {
+const btn = document.getElementById('start-test');
+btn.innerText = "إعادة الإختبار"; btn.classList.remove('cancelling');
+document.getElementById('p-cont').style.display = 'none';
+isTesting = false;
+}
+
 async function runRealTest() {
-const btn = document.getElementById('start-test'), timerEl = document.getElementById('test-timer'), pingEl = document.getElementById('test-ping-live');
-const needle = document.getElementById('needle'), fill = document.getElementById('gauge-fill'), valEl = document.getElementById('test-speed-val'), unitEl = document.getElementById('test-unit-text');
-btn.disabled = true; btn.innerText = "...";
+isTesting = true; abortCtrl = new AbortController();
+const btn = document.getElementById('start-test'), pCont = document.getElementById('p-cont'), pBar = document.getElementById('p-bar');
+const fill = document.getElementById('gauge-fill'), valEl = document.getElementById('test-speed-val'), unitEl = document.getElementById('test-unit-text');
+btn.innerText = "إلغاء الإختبار"; btn.classList.add('cancelling'); pCont.style.display = 'block'; pBar.style.width = '0%';
+
 let start = Date.now();
-let t = setInterval(() => timerEl.innerText = ((Date.now() - start) / 1000).toFixed(2) + " ث", 50);
+let t = setInterval(() => {
+if(!isTesting) clearInterval(t);
+else document.getElementById('test-timer').innerText = ((Date.now() - start) / 1000).toFixed(2) + " ث";
+}, 50);
+
 try {
 const pStart = Date.now();
-await fetch('https://api.ipify.org?t=' + pStart, { mode: 'no-cors' });
-pingEl.innerText = (Date.now() - pStart) + " ms";
-const dlRes = await fetch('https://cachefly.cachefly.net/1mb.test?t=' + Date.now());
+await fetch('https://api.ipify.org?t=' + pStart, { mode: 'no-cors', signal: abortCtrl.signal });
+document.getElementById('test-ping-live').innerText = (Date.now() - pStart) + " ms";
+
+const totalBytes = 10 * 1024 * 1024; // 10MB file
+const dlRes = await fetch('https://cachefly.cachefly.net/10mb.test?t=' + Date.now(), { signal: abortCtrl.signal });
 const reader = dlRes.body.getReader(); let loaded = 0;
-while(true) {
+
+while(isTesting) {
 const {done, value} = await reader.read(); if (done) break;
 loaded += value.length;
-let mbps = ((loaded * 8) / ((Date.now() - start) / 1000) / 1000000);
-if (mbps > currentMax) {
-currentMax = scales.find(s => s >= mbps) || 1000;
+let timeSec = (Date.now() - start) / 1000;
+let mbps = ((loaded * 8) / timeSec / 1000000);
+let progress = Math.min((loaded / totalBytes) * 100, 100);
+pBar.style.width = progress + '%';
+
+// Dynamic Scaling Logic (Up & Down)
+let targetMax = scales.find(s => s >= mbps) || 1000;
+if (targetMax !== currentMax) {
+currentMax = targetMax;
 drawTicks(currentMax);
 }
+
 if (mbps >= 500) {
 valEl.innerText = (mbps/1000).toFixed(2); unitEl.innerText = "Gbps";
 } else {
 valEl.innerText = mbps.toFixed(1); unitEl.innerText = "Mbps";
 }
-let angle = -90 + (Math.min(mbps, currentMax) / currentMax * 180);
-needle.setAttribute('transform', `rotate(${angle}, 110, 120)`);
+
+document.getElementById('dl-val').innerText = mbps.toFixed(2);
+document.getElementById('dl-val').style.color = getSpeedColor(mbps);
 fill.style.strokeDashoffset = 283 - (Math.min(mbps, currentMax) / currentMax * 283);
 }
-document.getElementById('dl-val').innerText = (loaded*8/1000000/((Date.now()-start)/1000)).toFixed(2);
+
+if(isTesting) {
 let uStart = Date.now();
-await fetch('https://httpbin.org/post', {method: 'POST', body: new ArrayBuffer(500000)});
-document.getElementById('ul-val').innerText = (4 / ((Date.now() - uStart)/1000)).toFixed(2);
-} catch(e) { valEl.innerText = "Err"; }
-clearInterval(t); btn.disabled = false; btn.innerText = "إعادة";
+await fetch('https://httpbin.org/post', {method: 'POST', body: new ArrayBuffer(1000000), signal: abortCtrl.signal});
+let uMbps = (8 / ((Date.now() - uStart)/1000));
+document.getElementById('ul-val').innerText = uMbps.toFixed(2);
+document.getElementById('ul-val').style.color = getSpeedColor(uMbps);
 }
+} catch(e) { if(e.name !== 'AbortError') valEl.innerText = "Err"; }
+clearInterval(t); resetUIAfterTest();
+}
+
 function toggleExtra() {
 const el = document.getElementById('extra-data'), isOpen = el.style.display === 'block';
 el.style.display = isOpen ? 'none' : 'block';
 document.getElementById('t-btn').innerText = isOpen ? 'عرض باقي البيانات' : 'إخفاء البيانات';
 }
+
 function loadMap() {
-const mDiv = document.getElementById('map'); mDiv.style.display = 'block';
+document.getElementById('map').style.display = 'block';
 if (window.myMap) window.myMap.remove();
 window.myMap = L.map('map').setView([userLat, userLon], 12);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(window.myMap);
 L.marker([userLat, userLon]).addTo(window.myMap);
 }
+
 function updateOnlyData() {
 document.getElementById('sync-icon').classList.add('fa-spin');
 getAllData().then(() => setTimeout(() => document.getElementById('sync-icon').classList.remove('fa-spin'), 600));
 }
+
 drawTicks(currentMax); getAllData();
 </script>
 </body>
