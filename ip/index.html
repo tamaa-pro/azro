@@ -99,7 +99,7 @@
 </div>
 </div>
 </div>
-<footer>مدعوم من طرف TAMAA PRO STUDIO <br>-----------------<br>v2.28 - 2026/03/12</footer>
+<footer>مدعوم من طرف TAMAA PRO STUDIO <br>-----------------<br>v2.31 - 2026/03/12</footer>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 let userLat, userLon, clockInt, pingInt, rtGeoInt, remoteOff=0, currentMax=30, isTesting=false, abortCtrl;
@@ -141,7 +141,6 @@ const x=110+95*Math.cos(r),y=120+95*Math.sin(r);g.innerHTML+=`<text class="tick-
 async function getAllData(){
 const pctEl=document.getElementById('load-pct');
 curPct=0; tgtPct=10;
-if(pctEl) pctEl.innerText='0%';
 if(!pctInt) pctInt=setInterval(()=>{
 if(curPct<tgtPct){
 curPct+=Math.max(1,Math.floor((tgtPct-curPct)/4));
@@ -152,31 +151,35 @@ try{
 const v4 = await fetch('https://api.ipify.org?format=json').then(r=>r.json());
 tgtPct=45;
 const [geo, dns] = await Promise.all([
-fetch('https://corsproxy.io/?'+encodeURIComponent('http://ip-api.com/json/'+v4.ip+'?fields=66846719&t='+Date.now())).then(r=>r.json()),
+fetch('https://corsproxy.io/?'+encodeURIComponent('http://ip-api.com/json/'+v4.ip+'?fields=66846719&t='+Date.now())).then(r=>r.json()).catch(()=>({status:'fail'})),
 fetch('https://edns.ip-api.com/json').then(r=>r.json()).catch(()=>null)
 ]);
-tgtPct=90;
-if(geo.status==='success'){
-rawIPGeo=geo; rawIPGeo.ip=v4.ip; rawDNSGeo=dns; 
+tgtPct=95;
+rawIPGeo=(geo && geo.status==='success')?geo : {status:'fail', country:'Unknown', countryCode:'ma', isp:'Unknown', lat:33.5, lon:-7.6, query:v4.ip};
+if(!rawIPGeo.ip) rawIPGeo.ip=v4.ip;
+rawDNSGeo=dns;
 tgtPct=100;
 let chk=setInterval(()=>{
 if(curPct>=100){clearInterval(chk); renderData();}
-},50);
+},30);
+}catch(e){
+console.error(e);
+tgtPct=100;
+setTimeout(renderData, 500);
 }
-}catch(e){console.error(e); if(pctEl) pctEl.innerText='خطأ';}
 }
 
 function renderData(){
 if(!rawIPGeo)return;
 document.getElementById('loader').style.display='none'; document.getElementById('content').style.display='grid';
-document.getElementById('ipv4').innerText=rawIPGeo.ip; document.getElementById('isp').innerText=rawIPGeo.isp;
+document.getElementById('ipv4').innerText=rawIPGeo.ip||'N/A'; document.getElementById('isp').innerText=rawIPGeo.isp||'N/A';
 document.getElementById('dns-ip').innerText=rawDNSGeo?.dns?.ip||'N/A';
 document.getElementById('dns-isp').innerText=(rawDNSGeo?.dns?.geo||'').split(' - ')[1]||'N/A';
-document.getElementById('ext-code').innerText=rawIPGeo.countryCode; document.getElementById('ext-region').innerText=rawIPGeo.regionName;
+document.getElementById('ext-code').innerText=rawIPGeo.countryCode||'N/A'; document.getElementById('ext-region').innerText=rawIPGeo.regionName||'N/A';
 document.getElementById('ext-zip').innerText=rawIPGeo.zip||'N/A'; document.getElementById('ext-curr').innerText=rawIPGeo.currency||'N/A';
-document.getElementById('ext-asn').innerText=rawIPGeo.as; document.getElementById('ext-host').innerText=rawIPGeo.reverse||'N/A';
-document.getElementById('ext-dec').innerText=rawIPGeo.ip.split('.').reduce((a,b)=>(a<<8)+parseInt(b),0)>>>0;
-document.getElementById('ext-proxy').innerText=rawIPGeo.proxy?'Yes':'No'; document.getElementById('ext-org').innerText=rawIPGeo.org;
+document.getElementById('ext-asn').innerText=rawIPGeo.as||'N/A'; document.getElementById('ext-host').innerText=rawIPGeo.reverse||'N/A';
+document.getElementById('ext-dec').innerText=rawIPGeo.ip?rawIPGeo.ip.split('.').reduce((a,b)=>(a<<8)+parseInt(b),0)>>>0:'N/A';
+document.getElementById('ext-proxy').innerText=rawIPGeo.proxy?'Yes':'No'; document.getElementById('ext-org').innerText=rawIPGeo.org||'N/A';
 document.getElementById('ext-dns-detail').innerText=rawDNSGeo?.dns?.geo||'N/A';
 const now = new Date(); document.getElementById('ext-upd').innerText=now.toLocaleDateString('en-GB')+' '+now.toLocaleTimeString('en-GB');
 updateGeoDisplay(); startPingMonitor();
@@ -188,15 +191,16 @@ const src=document.getElementById('geo-src').value;
 let dLat, dLon, dOff, dName, dCity;
 if(src==='dns' && rawDNSGeo?.dns?.geo){
 const gP = rawDNSGeo.dns.geo.split(' - '); dName=gP[0]; dCity=gP[1]||'N/A';
-dLat=rawIPGeo.lat; dLon=rawIPGeo.lon; dOff=rawIPGeo.offset;
+dLat=rawIPGeo.lat||33.5; dLon=rawIPGeo.lon||-7.6; dOff=rawIPGeo.offset||0;
 document.getElementById('lbl-main-geo').innerText='موقع الـ DNS:'; document.getElementById('lbl-sub-geo').innerText='موقع الـ IP:';
-document.getElementById('dns-geo').innerText=`${rawIPGeo.country} (${rawIPGeo.city})`;
+document.getElementById('dns-geo').innerText=`${rawIPGeo.country||'Unknown'} (${rawIPGeo.city||'N/A'})`;
 }else{
-dName=rawIPGeo.country; dCity=rawIPGeo.city; dLat=rawIPGeo.lat; dLon=rawIPGeo.lon; dOff=rawIPGeo.offset;
+dName=rawIPGeo.country||'Unknown'; dCity=rawIPGeo.city||'N/A'; dLat=rawIPGeo.lat||33.5; dLon=rawIPGeo.lon||-7.6; dOff=rawIPGeo.offset||0;
 document.getElementById('lbl-main-geo').innerText='الموقع الحالي:'; document.getElementById('lbl-sub-geo').innerText='موقع الـ DNS:';
 document.getElementById('dns-geo').innerText=rawDNSGeo?.dns?.geo||'N/A';
 }
-document.getElementById('country').innerHTML=`<img src="https://flagcdn.com/w40/${rawIPGeo.countryCode.toLowerCase()}.png" style="width:16px;vertical-align:middle"> ${dName}`;
+const cCode = (rawIPGeo.countryCode||'ma').toLowerCase();
+document.getElementById('country').innerHTML=`<img src="https://flagcdn.com/w40/${cCode}.png" style="width:16px;vertical-align:middle"> ${dName}`;
 document.getElementById('city').innerText=dCity; document.getElementById('ext-coords').innerText=`${dLat}, ${dLon}`;
 remoteOff=dOff; userLat=dLat; userLon=dLon; startClock(); loadMap();
 }
