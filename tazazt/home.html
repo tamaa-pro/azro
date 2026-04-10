@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Tazazt - الرئيسية</title>
+<script>
+(function(){
+const ua = navigator.userAgent || navigator.vendor || window.opera;
+if (/FBAN|FBAV|FB_IAB|Instagram|Messenger/i.test(ua)) {
+const url = window.location.href;
+window.location.href = "intent://" + url.replace(/^https?:\/\//, '') + "#Intent;scheme=https;package=com.android.chrome;end";
+setTimeout(() => { window.open(url, "_system") || window.open(url, "_blank"); }, 1000);}
+})();
+</script>
+<script>
+if (performance.navigation.type !== 1 && !sessionStorage.getItem("reloaded")) {sessionStorage.setItem("reloaded", "true");
+setTimeout(() => {location.reload();}, 1000);} else {sessionStorage.removeItem("reloaded");}
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Changa:wght@300;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+*{box-sizing:border-box;outline:none;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;}
+body{background:#000;color:#eee;font-family:'Changa',sans-serif;margin:0;padding:0;overflow-x:hidden;user-select:none;-webkit-user-select:none;}
+.top-bar{background:#111;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 15px;position:sticky;top:0;z-index:1000;border-bottom:1px solid #222;}
+.search-box{display:flex;align-items:center;background:#1a1a1a;border-radius:25px;transition:0.4s;width:40px;height:40px;overflow:hidden;position:relative;}
+.search-box.active{width:200px;border:1px solid #3498db;}
+.search-input{background:transparent;border:none;color:#fff;padding:0 15px;font-family:'Changa';font-size:0.9rem;width:0;transition:0.3s;flex:1;}
+.search-box.active .search-input{width:140px;}
+.btn-search{width:40px;height:40px;display:flex;align-items:center;justify-content:center;color:#eee;cursor:pointer;flex-shrink:0;}
+.btn-admin{width:40px;height:40px;background:#1a1a1a;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#eee;text-decoration:none;border:1px solid #222;}
+.container{padding:15px;max-width:800px;margin:0 auto;}
+.section-title{font-size:1.1rem;font-weight:700;margin:20px 0 10px;display:flex;align-items:center;gap:8px;color:#3498db;}
+.section-title i{font-size:0.9rem;}
+.h-scroll{display:flex;gap:12px;overflow-x:auto;padding-bottom:10px;scrollbar-width:none;}
+.h-scroll::-webkit-scrollbar{display:none;}
+.app-card-sq{width:150px;height:150px;background:#111;border:1px solid #222;border-radius:15px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px;text-decoration:none;transition:0.2s;}
+.app-card-sq img{width:80px;height:80px;border-radius:15px;object-fit:cover;margin-bottom:8px;pointer-events:none;}
+.app-card-sq span{font-size:0.8rem;color:#eee;font-weight:500;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%;}
+.show-more-card{width:60px;height:150px;background:#111;border:1px solid #222;border-radius:15px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#3498db;cursor:pointer;}
+.separator{height:1px;background:#222;margin:25px 0;}
+.filter-bar{display:flex;gap:10px;margin-bottom:15px;position:relative;}
+.btn-filter{background:#111;border:1px solid #222;color:#eee;padding:8px 15px;border-radius:10px;font-family:'Changa';font-size:0.85rem;display:flex;align-items:center;gap:8px;cursor:pointer;}
+.custom-menu{position:absolute;top:45px;right:0;background:#121212;border:1px solid #3498db;border-radius:12px;width:200px;z-index:500;display:none;box-shadow:0 10px 30px rgba(0,0,0,0.8);}
+.custom-menu.show{display:block;}
+.menu-item{padding:10px 15px;color:#ccc;font-size:0.85rem;border-bottom:1px solid #1f1f1f;cursor:pointer;}
+.menu-item:last-child{border:none;}
+.menu-item:active{background:#1a1a1a;color:#3498db;}
+.app-list-item{background:#111;border:1px solid #222;border-radius:15px;padding:12px;margin-bottom:12px;display:flex;gap:12px;text-decoration:none;align-items:center;}
+.app-list-item img{width:80px;height:80px;border-radius:15px;object-fit:cover;pointer-events:none;}
+.list-content{flex:1;min-width:0;}
+.list-name{display:block;font-weight:700;color:#fff;font-size:1rem;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.list-strip{background:#1a1a1a;padding:4px 8px;border-radius:6px;font-size:0.75rem;color:#777;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:inline-block;max-width:100%;}
+.list-stats{display:flex;gap:10px;font-size:0.7rem;color:#555;}
+.list-stats span{display:flex;align-items:center;gap:4px;}
+.pagination{display:flex;align-items:center;justify-content:flex-end;gap:15px;margin:20px 0;}
+.pg-btn{width:35px;height:35px;background:#111;border:1px solid #222;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#444;cursor:default;}
+.pg-btn.active{color:#fff;border-color:#333;cursor:pointer;}
+.pg-info{font-size:0.9rem;color:#eee;font-weight:700;}
+footer{text-align:center;padding:25px;color:#222;border-top:1px solid #111;}
+.f-logo{font-weight:700;font-size:0.9rem;display:block;}
+.loader-wrap{position:fixed;top:60px;left:0;width:100%;height:calc(100% - 60px);background:#000;display:flex;align-items:center;justify-content:center;z-index:900;}
+.spinner{width:30px;height:30px;border:3px solid #111;border-top-color:#3498db;border-radius:50%;animation:spin 1s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body oncontextmenu="return false;" ondragstart="return false;">
+<div class="top-bar">
+<div class="search-box" id="search-box">
+<input type="text" class="search-input" id="search-in" placeholder="ابحث هنا...">
+<div class="btn-search" onclick="handleSearchClick()"><i class="fa-solid fa-magnifying-glass"></i></div>
+</div>
+<a href="/upload" class="btn-admin"><i class="fa-solid fa-screwdriver-wrench"></i></a>
+</div>
+<div class="loader-wrap" id="main-loader"><div class="spinner"></div></div>
+<div class="container" id="main-ui">
+<div id="home-sections">
+<div class="section-title"><i class="fa-solid fa-clock-rotate-left"></i> تطبيقات حديثة</div>
+<div class="h-scroll" id="sec-recent"></div>
+<div class="section-title"><i class="fa-solid fa-fire"></i> الأكثر تحميلاً</div>
+<div class="h-scroll" id="sec-top-down"></div>
+<div class="section-title"><i class="fa-solid fa-heart"></i> الأكثر تفاعلاً</div>
+<div class="h-scroll" id="sec-top-like"></div>
+<div class="section-title"><i class="fa-solid fa-eye"></i> الأكثر مشاهدة</div>
+<div class="h-scroll" id="sec-top-view"></div>
+</div>
+<div id="search-results-title" class="section-title" style="display:none;"><i class="fa-solid fa-magnifying-glass"></i> نتائج البحث</div>
+<div class="separator"></div>
+<div class="filter-bar">
+<button class="btn-filter" id="sort-order-btn" onclick="toggleSortOrder()"><i class="fa-solid fa-arrow-down-9-1"></i> تناقصي</button>
+<button class="btn-filter" onclick="toggleMenu(event)"><i class="fa-solid fa-filter"></i> <span id="current-sort-label">المشاهدات</span></button>
+<div class="custom-menu" id="sort-menu">
+<div class="menu-item" onclick="setSort('views_count', 'المشاهدات')">المشاهدات</div>
+<div class="menu-item" onclick="setSort('download_count', 'التحميلات')">التحميلات</div>
+<div class="menu-item" onclick="setSort('like', 'الاعجابات')">الاعجابات</div>
+<div class="menu-item" onclick="setSort('created_at', 'تاريخ الرفع')">تاريخ الرفع</div>
+<div class="menu-item" onclick="setSort('date_version', 'تاريخ الإصدار')">تاريخ الإصدار</div>
+<div class="menu-item" onclick="setSort('name', 'الاسم')">الاسم</div>
+<div class="menu-item" onclick="setSort('size', 'الحجم')">الحجم</div>
+</div>
+</div>
+<div id="main-app-list"></div>
+<div class="pagination" id="pg-bar">
+<div class="pg-btn" id="pg-next" onclick="changePage(1)"><i class="fa-solid fa-chevron-right"></i></div>
+<div class="pg-info" id="pg-text">صفحة 1</div>
+<div class="pg-btn" id="pg-prev" onclick="changePage(-1)"><i class="fa-solid fa-chevron-left"></i></div>
+</div>
+<footer>
+<span class="f-logo">TAZAZT</span>
+<small>by TAMAA PRO STUDIO</small>
+</footer>
+</div>
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+const S_URL = 'https://xghruirbkypfweqkhywz.supabase.co';
+const S_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhnaHJ1aXJia3lwZndlcWtoeXd6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUyMjYxMTMsImV4cCI6MjA5MDgwMjExM30.WndyUxxO1WK3T4PqOktTGsZtsQK6ltEUk1yMRtsZ5Vs';
+const supabase = createClient(S_URL, S_KEY);
+let currentSort = 'views_count';
+let sortOrder = false; // false = descending
+let currentPage = 1;
+const perPage = 30;
+let isSearching = false;
+async function init(){
+await Promise.all([
+loadHSection('created_at', 'sec-recent'),
+loadHSection('download_count', 'sec-top-down'),
+loadHSection('like', 'sec-top-like'),
+loadHSection('views_count', 'sec-top-view')
+]);
+loadMainList();
+document.getElementById('main-loader').style.display = 'none';}
+async function loadHSection(col, elementId){
+const { data } = await supabase.from('applications').select('*').order(col, { ascending: false }).limit(21);
+if(!data) return;
+let html = '';
+data.slice(0, 20).forEach(app => {
+html += `<a href="/download#${app.package_name}" class="app-card-sq">
+<img src="${app.icon_url}">
+<span>${app.name}</span></a>`;});
+if(data.length > 20) html += `<div class="show-more-card"><i class="fa-solid fa-plus fa-2xl"></i></div>`;
+document.getElementById(elementId).innerHTML = html;}
+async function loadMainList(){
+const from = (currentPage - 1) * perPage;
+const to = from + perPage - 1;
+let query = supabase.from('applications').select('*', { count: 'exact' });
+if(isSearching){
+const q = document.getElementById('search-in').value;
+query = query.or(`name.ilike.%${q}%,short_desc.ilike.%${q}%`);}
+const { data, count } = await query.order(currentSort, { ascending: sortOrder }).range(from, to);
+renderList(data || []);
+updatePagination(count);}
+function renderList(apps){
+let html = '';
+apps.forEach(app => {
+html += `<a href="/download#${app.package_name}" class="app-list-item">
+<img src="${app.icon_url}">
+<div class="list-content">
+<span class="list-name">${app.name}</span>
+<div class="list-strip">${app.short_desc || 'لا يوجد وصف قصير'}</div>
+<div class="list-stats">
+<span><i class="fa-solid fa-eye"></i> ${app.views_count||0}</span>
+<span><i class="fa-solid fa-download"></i> ${app.download_count||0}</span>
+<span><i class="fa-solid fa-thumbs-up"></i> ${app.like||0}</span>
+<span><i class="fa-solid fa-thumbs-down"></i> ${app.dislike||0}</span>
+</div></div></a>`;});
+document.getElementById('main-app-list').innerHTML = html || '<div style="text-align:center;padding:50px;color:#444;">لا توجد نتائج</div>';}
+function updatePagination(total){
+const maxPage = Math.ceil(total / perPage);
+document.getElementById('pg-text').innerText = `صفحة ${currentPage} من ${maxPage || 1}`;
+const next = document.getElementById('pg-next');
+const prev = document.getElementById('pg-prev');
+if(currentPage < maxPage){ next.classList.add('active'); } else { next.classList.remove('active'); }
+if(currentPage > 1){ prev.classList.add('active'); } else { prev.classList.remove('active'); }}
+window.handleSearchClick = () => {
+const box = document.getElementById('search-box');
+const input = document.getElementById('search-in');
+if(!box.classList.contains('active')){
+box.classList.add('active');
+input.focus();} else {
+if(input.value.trim() === ""){
+box.classList.remove('active');
+isSearching = false;
+document.getElementById('home-sections').style.display = 'block';
+document.getElementById('search-results-title').style.display = 'none';
+currentPage = 1; loadMainList();
+} else {
+isSearching = true;
+document.getElementById('home-sections').style.display = 'none';
+document.getElementById('search-results-title').style.display = 'flex';
+currentPage = 1; loadMainList();}}};
+window.toggleSortOrder = () => {
+sortOrder = !sortOrder;
+const btn = document.getElementById('sort-order-btn');
+btn.innerHTML = sortOrder ? '<i class="fa-solid fa-arrow-up-1-9"></i> تزايدي' : '<i class="fa-solid fa-arrow-down-9-1"></i> تناقصي';
+currentPage = 1; loadMainList();};
+window.toggleMenu = (e) => { e.stopPropagation(); document.getElementById('sort-menu').classList.toggle('show');};
+window.setSort = (col, label) => {
+currentSort = col;
+document.getElementById('current-sort-label').innerText = label;
+document.getElementById('sort-menu').classList.remove('show');
+currentPage = 1; loadMainList();};
+window.changePage = (dir) => {
+const nextActive = document.getElementById('pg-next').classList.contains('active');
+const prevActive = document.getElementById('pg-prev').classList.contains('active');
+if(dir === 1 && nextActive){ currentPage++; loadMainList(); window.scrollTo(0,0); }
+if(dir === -1 && prevActive){ currentPage--; loadMainList(); window.scrollTo(0,0); }};
+document.addEventListener('click', () => { document.getElementById('sort-menu').classList.remove('show'); });
+init();
+</script>
+</body>
+</html>
