@@ -23,17 +23,19 @@ setTimeout(() => {location.reload();}, 1000);} else {sessionStorage.removeItem("
 *{box-sizing:border-box;outline:none;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;}
 body{background:#000;color:#eee;font-family:'Changa',sans-serif;margin:0;padding:0;overflow-x:hidden;user-select:none;-webkit-user-select:none;}
 .container{padding:0;max-width:600px;margin:0 auto;min-height:100vh;}
-header{background:#111;padding:10px 15px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:1000;height:65px;border-bottom:1px solid #222;}
-.search-wrapper{display:flex;align-items:center;background:#1a1a1a;border-radius:25px;transition:0.4s;width:45px;height:45px;overflow:hidden;position:relative;border:1px solid #333;}
-.search-wrapper.active{width:calc(100% - 60px);}
-.search-input{background:transparent;border:none;color:#fff;padding:0 15px;width:100%;height:100%;font-family:'Changa';font-size:0.9rem;opacity:0;transition:0.3s;}
+header{background:#111;padding:0 15px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:1000;height:65px;border-bottom:1px solid #222;}
+.search-wrapper{display:flex;align-items:center;background:#1a1a1a;border-radius:25px;transition:0.4s cubic-bezier(0.4,0,0.2,1);width:45px;height:45px;overflow:hidden;border:1px solid #333;position:relative;z-index:10;}
+.search-wrapper.active{width:calc(100% - 60px);background:#222;border-color:#3498db;}
+.search-input{background:transparent;border:none;color:#fff;padding:0 45px 0 15px;width:100%;height:100%;font-family:'Changa';font-size:0.9rem;opacity:0;transition:0.3s;position:absolute;right:0;top:0;z-index:1;}
 .search-wrapper.active .search-input{opacity:1;}
-.search-btn{width:45px;height:45px;display:flex;align-items:center;justify-content:center;color:#eee;cursor:pointer;flex-shrink:0;background:transparent;border:none;font-size:1.1rem;}
-.admin-btn{width:45px;height:45px;background:#1a1a1a;border:1px solid #333;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#3498db;text-decoration:none;transition:0.3s;font-size:1.1rem;}
+.search-btn{width:45px;height:45px;display:flex;align-items:center;justify-content:center;color:#eee;cursor:pointer;background:transparent;border:none;font-size:1.1rem;position:absolute;right:0;top:0;z-index:2;}
+.header-title{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-weight:700;font-size:1.4rem;color:#3498db;transition:0.3s;letter-spacing:1px;pointer-events:none;}
+.header-title.hide{opacity:0;transform:translate(-50%,-100%);}
+.admin-btn{width:42px;height:42px;background:#1a1a1a;border:1px solid #333;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#3498db;text-decoration:none;transition:0.3s;font-size:1.1rem;flex-shrink:0;}
 .admin-btn:active{transform:scale(0.9);}
 .section-title{padding:15px 15px 10px;font-size:1.1rem;font-weight:700;color:#3498db;display:flex;align-items:center;gap:8px;}
 .section-title i{font-size:0.9rem;}
-.horizontal-scroll{display:flex;gap:12px;overflow-x:auto;padding:0 15px 15px;scrollbar-width:none;-ms-overflow-style:none;}
+.horizontal-scroll{display:flex;gap:12px;overflow-x:auto;padding:0 15px 15px;scrollbar-width:none;}
 .horizontal-scroll::-webkit-scrollbar{display:none;}
 .app-card-sq{width:150px;height:150px;background:#111;border:1px solid #222;border-radius:15px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-decoration:none;padding:10px;}
 .app-card-sq img{width:80px;height:80px;border-radius:18px;margin-bottom:8px;object-fit:cover;pointer-events:none;}
@@ -42,9 +44,9 @@ header{background:#111;padding:10px 15px;display:flex;align-items:center;justify
 .divider{height:1px;background:#222;margin:20px 15px;}
 .filter-bar{display:flex;gap:10px;padding:0 15px 15px;align-items:center;}
 .filter-btn{flex:1;background:#111;border:1px solid #222;color:#eee;padding:10px;border-radius:10px;font-family:'Changa';font-size:0.85rem;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;}
-.sort-popup{position:fixed;bottom:0;left:0;right:0;background:#111;border-radius:20px 20px 0 0;padding:20px;z-index:2000;display:none;border-top:2px solid #3498db;box-shadow:0 -10px 30px rgba(0,0,0,0.8);}
-.popup-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:1999;display:none;}
-.popup-item{padding:12px;color:#eee;border-bottom:1px solid #222;display:flex;align-items:center;gap:10px;font-size:0.95rem;}
+.sort-popup{position:fixed;bottom:0;left:0;right:0;background:#111;border-radius:20px 20px 0 0;padding:20px;z-index:2000;display:none;border-top:2px solid #3498db;}
+.popup-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);z-index:1999;display:none;}
+.popup-item{padding:15px;color:#eee;border-bottom:1px solid #222;display:flex;align-items:center;gap:10px;}
 .popup-item:last-child{border:none;}
 .popup-item.active{color:#3498db;font-weight:700;}
 .app-list-v{padding:0 15px;}
@@ -57,11 +59,11 @@ header{background:#111;padding:10px 15px;display:flex;align-items:center;justify
 .stat-item{font-size:0.65rem;color:#777;display:flex;align-items:center;gap:3px;}
 .stat-item i{font-size:0.75rem;color:#3498db;}
 .pagination{display:flex;align-items:center;justify-content:center;gap:20px;padding:20px 15px;}
-.page-btn{width:40px;height:40px;border-radius:50%;background:#111;border:1px solid #222;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:0.3s;}
-.page-btn.disabled{color:#333;border-color:#1a1a1a;cursor:not-allowed;}
+.page-btn{width:40px;height:40px;border-radius:50%;background:#111;border:1px solid #222;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.page-btn.disabled{color:#333;border-color:#1a1a1a;pointer-events:none;}
 .page-num{font-weight:700;color:#3498db;font-size:1.1rem;}
 footer{text-align:center;padding:30px 15px;color:#333;border-top:1px solid #111;margin-top:20px;}
-.f-logo{font-weight:700;font-size:0.9rem;display:block;color:#1a1a1a;margin-bottom:4px;}
+.f-logo{font-weight:700;font-size:0.9rem;display:block;color:#1a1a1a;}
 .loader-wrap{position:fixed;top:0;left:0;width:100%;height:100%;background:#000;display:flex;align-items:center;justify-content:center;z-index:9999;}
 .spinner{width:35px;height:35px;border:3px solid #111;border-top-color:#3498db;border-radius:50%;animation:spin 1s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
@@ -72,9 +74,10 @@ footer{text-align:center;padding:30px 15px;color:#333;border-top:1px solid #111;
 <div class="container" id="main-content" style="display:none;">
 <header>
 <div class="search-wrapper" id="sw">
-<input type="text" class="search-input" id="si" placeholder="ابحث عن اسم او وصف...">
+<input type="text" class="search-input" id="si" placeholder="بحث...">
 <button class="search-btn" onclick="toggleSearch()"><i class="fa-solid fa-magnifying-glass"></i></button>
 </div>
+<div class="header-title" id="ht">TAZAZT</div>
 <a href="/upload" class="admin-btn"><i class="fa-solid fa-cloud-arrow-up"></i></a>
 </header>
 <div id="home-view">
@@ -110,46 +113,28 @@ footer{text-align:center;padding:30px 15px;color:#333;border-top:1px solid #111;
 <div class="popup-overlay" id="overlay" onclick="hideSortPopup()"></div>
 <div class="sort-popup" id="spop">
 <div class="popup-item" data-type="created_at" onclick="setSort('created_at', 'تاريخ الرفع')">تاريخ الرفع</div>
-<div class="popup-item" data-type="date_version" onclick="setSort('date_version', 'تاريخ الإصدار')">تاريخ الإصدار</div>
 <div class="popup-item" data-type="views_count" onclick="setSort('views_count', 'المشاهدات')">المشاهدات</div>
 <div class="popup-item" data-type="download_count" onclick="setSort('download_count', 'التحميلات')">التحميلات</div>
 <div class="popup-item" data-type="like" onclick="setSort('like', 'الإعجابات')">الإعجابات</div>
 <div class="popup-item" data-type="name" onclick="setSort('name', 'الاسم')">الاسم</div>
-<div class="popup-item" data-type="size" onclick="setSort('size', 'الحجم')">الحجم</div>
 </div>
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 const S_URL = 'https://xghruirbkypfweqkhywz.supabase.co';
 const S_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhnaHJ1aXJia3lwZndlcWtoeXd6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUyMjYxMTMsImV4cCI6MjA5MDgwMjExM30.WndyUxxO1WK3T4PqOktTGsZtsQK6ltEUk1yMRtsZ5Vs';
 const supabase = createClient(S_URL, S_KEY);
-let currentPage = 1;
-const perPage = 30;
-let currentSort = 'created_at';
-let isDesc = true;
+let currentPage = 1, perPage = 30, currentSort = 'created_at', isDesc = true;
 async function fetchSection(order, limit=20) {
 const { data } = await supabase.from('applications').select('*').order(order, {ascending: false}).limit(limit);
 return data || [];}
-function renderHor(apps, containerId) {
+function renderHor(apps, containerId, sortKey) {
 const con = document.getElementById(containerId);
 let html = apps.map(a => `<a href="/download#${a.package_name}" class="app-card-sq"><img src="${a.icon_url}"><span>${a.name}</span></a>`).join('');
-if (apps.length >= 20) html += `<div class="more-card" onclick="setSort('${order}', 'المزيد')"><i class="fa-solid fa-plus"></i></div>`;
+if (apps.length >= 20) html += `<div class="more-card" onclick="setSort('${sortKey}', 'المزيد')"><i class="fa-solid fa-plus"></i></div>`;
 con.innerHTML = html;}
 function renderVer(apps, containerId) {
 const con = document.getElementById(containerId);
-con.innerHTML = apps.map(a => `
-<a href="/download#${a.package_name}" class="app-card-long">
-<img src="${a.icon_url}">
-<div class="content">
-<span class="name">${a.name}</span>
-<span class="strip">${a.short_desc || 'لا يوجد وصف قصير...'}</span>
-<div class="stats-strip">
-<div class="stat-item"><i class="fa-solid fa-eye"></i> ${a.views_count||0}</div>
-<div class="stat-item"><i class="fa-solid fa-download"></i> ${a.download_count||0}</div>
-<div class="stat-item"><i class="fa-solid fa-thumbs-up"></i> ${a.like||0}</div>
-<div class="stat-item"><i class="fa-solid fa-thumbs-down"></i> ${a.dislike||0}</div>
-</div>
-</div>
-</a>`).join('');}
+con.innerHTML = apps.map(a => `<a href="/download#${a.package_name}" class="app-card-long"><img src="${a.icon_url}"><div class="content"><span class="name">${a.name}</span><span class="strip">${a.short_desc || 'لا يوجد وصف...'}</span><div class="stats-strip"><div class="stat-item"><i class="fa-solid fa-eye"></i> ${a.views_count||0}</div><div class="stat-item"><i class="fa-solid fa-download"></i> ${a.download_count||0}</div><div class="stat-item"><i class="fa-solid fa-thumbs-up"></i> ${a.like||0}</div><div class="stat-item"><i class="fa-solid fa-thumbs-down"></i> ${a.dislike||0}</div></div></div></a>`).join('');}
 async function loadMainList() {
 const start = (currentPage - 1) * perPage;
 const { data, count } = await supabase.from('applications').select('*', { count: 'exact' }).order(currentSort, {ascending: !isDesc}).range(start, start + perPage - 1);
@@ -159,38 +144,22 @@ document.getElementById('page-info').innerText = currentPage;
 document.getElementById('prev-page').className = currentPage <= 1 ? 'page-btn disabled' : 'page-btn';
 document.getElementById('next-page').className = currentPage >= totalPages ? 'page-btn disabled' : 'page-btn';}
 window.toggleSearch = async () => {
-const sw = document.getElementById('sw');
-const si = document.getElementById('si');
-if (!sw.classList.contains('active')) { sw.classList.add('active'); si.focus(); return; }
-if (si.value.trim() === "") { sw.classList.remove('active'); document.getElementById('home-view').style.display = 'block'; document.getElementById('search-view').style.display = 'none'; return; }
+const sw = document.getElementById('sw'), si = document.getElementById('si'), ht = document.getElementById('ht');
+if (!sw.classList.contains('active')) { sw.classList.add('active'); ht.classList.add('hide'); si.focus(); return; }
+if (si.value.trim() === "") { sw.classList.remove('active'); ht.classList.remove('hide'); document.getElementById('home-view').style.display = 'block'; document.getElementById('search-view').style.display = 'none'; return; }
 document.getElementById('home-view').style.display = 'none';
 document.getElementById('search-view').style.display = 'block';
 const { data } = await supabase.from('applications').select('*').or(`name.ilike.%${si.value}%,short_desc.ilike.%${si.value}%`);
 renderVer(data || [], 'search-results');};
-window.changePage = (dir) => {
-if ((dir === -1 && currentPage > 1) || (dir === 1 && document.getElementById('next-page').className !== 'page-btn disabled')) {
-currentPage += dir; loadMainList(); window.scrollTo(0,0); }};
-window.toggleSortDir = () => {
-isDesc = !isDesc;
-document.getElementById('sort-dir-txt').innerText = isDesc ? 'تناقصي' : 'تزايدي';
-document.getElementById('sort-dir-icon').className = isDesc ? 'fa-solid fa-arrow-down-wide-short' : 'fa-solid fa-arrow-up-wide-short';
-loadMainList();};
+window.changePage = (dir) => { if ((dir===-1 && currentPage>1) || (dir===1 && document.getElementById('next-page').className!=='page-btn disabled')) { currentPage+=dir; loadMainList(); window.scrollTo(0,0); }};
+window.toggleSortDir = () => { isDesc = !isDesc; document.getElementById('sort-dir-txt').innerText = isDesc ? 'تناقصي' : 'تزايدي'; document.getElementById('sort-dir-icon').className = isDesc ? 'fa-solid fa-arrow-down-wide-short' : 'fa-solid fa-arrow-up-wide-short'; loadMainList();};
 window.showSortPopup = () => { document.getElementById('overlay').style.display = 'block'; document.getElementById('spop').style.display = 'block'; };
 window.hideSortPopup = () => { document.getElementById('overlay').style.display = 'none'; document.getElementById('spop').style.display = 'none'; };
-window.setSort = (type, label) => {
-currentSort = type;
-document.getElementById('sort-type-txt').innerText = label;
-hideSortPopup();
-currentPage = 1;
-loadMainList();};
+window.setSort = (type, label) => { currentSort = type; document.getElementById('sort-type-txt').innerText = label; hideSortPopup(); currentPage = 1; loadMainList();};
 async function init() {
-const [lat, dow, lik, vie] = await Promise.all([
-fetchSection('created_at'), fetchSection('download_count'), fetchSection('like'), fetchSection('views_count')
-]);
-renderHor(lat, 'latest-apps'); renderHor(dow, 'top-downloaded'); renderHor(lik, 'top-liked'); renderHor(vie, 'top-viewed');
-await loadMainList();
-document.getElementById('page-loader').style.display = 'none';
-document.getElementById('main-content').style.display = 'block';}
+const [lat, dow, lik, vie] = await Promise.all([fetchSection('created_at'), fetchSection('download_count'), fetchSection('like'), fetchSection('views_count')]);
+renderHor(lat, 'latest-apps', 'created_at'); renderHor(dow, 'top-downloaded', 'download_count'); renderHor(lik, 'top-liked', 'like'); renderHor(vie, 'top-viewed', 'views_count');
+await loadMainList(); document.getElementById('page-loader').style.display = 'none'; document.getElementById('main-content').style.display = 'block';}
 init();
 </script>
 </body>
