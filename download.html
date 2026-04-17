@@ -72,14 +72,16 @@ footer{text-align:center;padding:15px 10px;color:#444;margin-top:20px;}
 .f-logo{font-weight:700;font-size:0.9rem;display:block;color:#222;}
 .skeleton{background:#1a1a1a;position:relative;overflow:hidden;border-radius:4px;color:transparent!important;}
 .skeleton::after{content:"";position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.05),transparent);animation:sk-load 1.5s infinite;}
+.sk-circle{border-radius:50%!important;}
+.sk-img{width:100px;height:100px;border-radius:20px!important;}
 @keyframes sk-load{0%{transform:translateX(-100%);}100%{transform:translateX(100%);}}
 .error-view{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:70vh;padding:20px;}
 .err-card{background:#121212;border:1px solid #e74c3c;border-radius:15px;width:100%;max-width:350px;text-align:center;padding:20px;}
 .err-head{display:block;font-weight:700;font-size:1.1rem;color:#e74c3c;margin-bottom:15px;border-bottom:1px solid #222;padding-bottom:10px;}
 .err-body{font-size:0.9rem;color:#999;line-height:1.6;margin-bottom:20px;}
 .btn-home{display:inline-block;background:#333;color:#eee;padding:12px 25px;border-radius:10px;text-decoration:none;font-weight:700;font-size:0.9rem;}
-#android-warn{background:#c0392b;padding:8px 12px;display:none;align-items:center;gap:10px;transition:0.4s ease-in-out;overflow:hidden;max-height:0;}
-#android-warn.show{display:flex;max-height:100px;margin-bottom:10px;}
+#android-warn{background:#c0392b;padding:0;display:flex;align-items:center;gap:10px;transition:0.4s ease-in-out;overflow:hidden;max-height:0;margin-bottom:0;}
+#android-warn.show{padding:8px 12px;max-height:100px;margin-bottom:10px;}
 .warn-icon{color:#fff;font-size:14px;}
 .warn-txt{font-size:12px;color:#fff;flex:1;}
 .warn-txt a{color:#fff;font-weight:700;}
@@ -92,17 +94,13 @@ footer{text-align:center;padding:15px 10px;color:#444;margin-top:20px;}
 <span class="warn-txt">سيصبح اندرويد نظام مغلق في شهر سبتمبر 2026. <a href="https://keepandroidopen.org/ar">معرفة المزيد...</a></span>
 <i class="fa-solid fa-xmark warn-close" onclick="closeWarn()"></i>
 </div>
-<script>
-if(!sessionStorage.getItem('warn_closed')){ const w = document.getElementById('android-warn'); w.classList.add('show');}
-function closeWarn(){ const w = document.getElementById('android-warn'); w.style.maxHeight = '0'; w.style.padding = '0'; w.style.marginBottom = '0'; sessionStorage.setItem('warn_closed', 'true'); setTimeout(()=>w.classList.remove('show'), 400);}
-</script>
 <div class="container" id="main-content">
 <div id="app-data-view">
 <div class="card">
 <div class="app-main-info">
-<img src="" id="a-icon" class="app-icon-large skeleton" onload="this.classList.add('loaded'); this.classList.remove('skeleton')">
+<img src="" id="a-icon" class="app-icon-large skeleton sk-img" onload="this.classList.add('loaded'); this.classList.remove('skeleton', 'sk-img')">
 <div class="app-title-area">
-<div id="a-name" class="app-name-big skeleton">...</div>
+<div id="a-name" class="app-name-big skeleton" style="width:70%;">...</div>
 <div class="app-meta-strip skeleton">
 <span id="a-ver">V 0.0.0</span>
 <span>|</span>
@@ -115,9 +113,9 @@ function closeWarn(){ const w = document.getElementById('android-warn'); w.style
 </div>
 <div class="card">
 <div class="publisher-row">
-<img src="" id="p-img" class="pub-img skeleton" onload="this.classList.add('loaded'); this.classList.remove('skeleton')">
+<img src="" id="p-img" class="pub-img skeleton sk-circle" onload="this.classList.add('loaded'); this.classList.remove('skeleton', 'sk-circle')">
 <div class="pub-info-box">
-<a href="#" id="p-link" class="pub-name skeleton">...</a>
+<a href="#" id="p-link" class="pub-name skeleton" style="width:40%;">...</a>
 <span id="p-badge"></span>
 </div>
 <div class="pub-actions">
@@ -133,7 +131,7 @@ function closeWarn(){ const w = document.getElementById('android-warn'); w.style
 </div>
 <button class="btn-download" onclick="handleDownload()"><i class="fa-solid fa-cloud-arrow-down"></i> تحميل التطبيق</button>
 </div>
-<div class="card" id="card-screens" style="display:none;"><div class="screens-scroll" id="screens-con"></div></div>
+<div class="card" id="card-screens" style="display:block; min-height:190px;"><div class="screens-scroll" id="screens-con"></div></div>
 <div class="card">
 <div class="desc-card-head">
 <div class="desc-title">وصف التطبيق</div>
@@ -145,7 +143,7 @@ function closeWarn(){ const w = document.getElementById('android-warn'); w.style
 </div>
 </div>
 </div>
-<div class="long-desc-text skeleton" id="a-desc">...</div>
+<div class="long-desc-text skeleton" id="a-desc" style="height:80px; width:100%;">...</div>
 </div>
 </div>
 <div id="error-view" class="error-view">
@@ -175,24 +173,25 @@ if(!app) return showError();
 currentApp = app;
 const { data: user } = await supabase.from('users').select('*').eq('us_name', app.username).single();
 document.getElementById('a-icon').src = app.icon_url;
-const an = document.getElementById('a-name'); an.innerText = app.name; an.classList.remove('skeleton');
+const an = document.getElementById('a-name'); an.innerText = app.name; an.classList.remove('skeleton'); an.style.width = 'auto';
 const am = document.querySelector('.app-meta-strip'); am.classList.remove('skeleton');
 document.getElementById('a-ver').innerText = 'V ' + app.version;
 document.getElementById('a-date').innerText = app.date_version;
 document.getElementById('a-size').innerText = app.size + ' MB';
 document.getElementById('p-img').src = user.icon_url;
-const pl = document.getElementById('p-link'); pl.innerText = user.name; pl.href = `/user#${user.us_name}`; pl.classList.remove('skeleton');
+const pl = document.getElementById('p-link'); pl.innerText = user.name; pl.href = `/user#${user.us_name}`; pl.classList.remove('skeleton'); pl.style.width = 'auto';
 const b = document.getElementById('p-badge');
 if(user.vr === '1') b.innerHTML = '<i class="fa-solid fa-circle-check badge-v1"></i>';
 else if(user.vr === '2') b.innerHTML = '<span class="badge-v2"><i class="fa-solid fa-certificate"></i><i class="fa-solid fa-check"></i></span>';
-const ad = document.getElementById('a-desc'); ad.innerHTML = parseLinks(app.long_desc); ad.classList.remove('skeleton');
+const ad = document.getElementById('a-desc'); ad.innerHTML = parseLinks(app.long_desc); ad.classList.remove('skeleton'); ad.style.height = 'auto';
 document.getElementById('v-like').innerText = app.like || 0;
 document.getElementById('v-dis').innerText = app.dislike || 0;
 document.getElementById('v-views').innerText = app.views_count || 0;
 document.getElementById('v-downs').innerText = app.download_count || 0;
-if(app.screenshots){ document.getElementById('screens-con').innerHTML = app.screenshots.split(',').map(s => `<img src="${s}" onload="this.classList.add('loaded')">`).join(''); document.getElementById('card-screens').style.display = 'block';}
+if(app.screenshots){ document.getElementById('screens-con').innerHTML = app.screenshots.split(',').map(s => `<img src="${s}" onload="this.classList.add('loaded')">`).join(''); } else { document.getElementById('card-screens').style.display = 'none'; }
 if(app.dev_note){ document.getElementById('note-trigger').style.display = 'flex'; document.getElementById('note-text').innerHTML = parseLinks(app.dev_note);}
-updateUIState(); handleViewCount();}
+updateUIState(); handleViewCount();
+setTimeout(() => { if(!sessionStorage.getItem('warn_closed')){ document.getElementById('android-warn').classList.add('show'); } }, 1000);}
 function showError(){
 document.getElementById('app-data-view').style.display = 'none';
 document.getElementById('error-view').style.display = 'flex';}
@@ -226,6 +225,7 @@ window.location.href = currentApp.download_url;};
 window.shareApp = () => { if(navigator.share){ navigator.share({title: currentApp.name, url: window.location.href});} else { copyLink(); }};
 window.copyLink = () => { navigator.clipboard.writeText(window.location.href);};
 window.toggleNote = (e) => { e.stopPropagation(); document.getElementById('dev-note').classList.toggle('show');};
+window.closeWarn = () => { const w = document.getElementById('android-warn'); w.classList.remove('show'); sessionStorage.setItem('warn_closed', 'true'); };
 document.addEventListener('click', () => { document.getElementById('dev-note').classList.remove('show');});
 init();
 </script>
